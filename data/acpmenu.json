@@ -1,0 +1,10 @@
+{
+    "rules": {
+        "admin": {
+            "tab": "core",
+            "controller": "admin",
+            "do": "",
+            "restriction": "admin_manage"
+        }
+    }
+}

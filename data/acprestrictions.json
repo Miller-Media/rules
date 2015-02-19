@@ -1,0 +1,7 @@
+{
+    "rules": {
+        "admin": {
+            "admin_manage": "admin_manage"
+        }
+    }
+}
