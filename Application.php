@@ -197,21 +197,21 @@ class _Application extends \IPS\Application
 						/**
 						 * Bypass validation errors on form fields that aren't actually required by our configuration
 						 */
-						foreach( $_added as $el )
+						if ( $bypass_validation )
 						{
-							/* Pick the element from the form */
-							$formElement = NULL;
-							foreach ( $form->elements as $tab => $elements )
+							foreach( $_added as $el )
 							{
-								if ( isset( $elements[ $el ] ) )
+								/* Pick the element from the form */
+								$formElement = NULL;
+								foreach ( $form->elements as $tab => $elements )
 								{
-									$formElement = $elements[ $el ];
-									break;
+									if ( isset( $elements[ $el ] ) )
+									{
+										$formElement = $elements[ $el ];
+										break;
+									}
 								}
-							}
-							
-							if ( $bypass_validation )
-							{
+								
 								$formElement->error = NULL;
 							}
 						}
