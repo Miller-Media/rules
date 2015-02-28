@@ -1,0 +1,22 @@
+<ips:template parameters="$log, $event, $rule, $conditions, $actions, $subrules" />
+
+<div class='ipsPad'>
+
+	<p>Event: <span style="color:green">{$event->title()}</span></p>
+	<h2>Rule Overview</h2>
+	<ul>
+		<li>Name: <strong>{{if $rule}}{$rule->title}{{else}}Unknown (deleted){{endif}}</strong></li>
+		<li>Status: <strong>{$log[ 'message' ]}</strong></li>
+		<li>Result: <strong>{$log[ 'result' ]}</strong></li>
+	</ul>
+	
+	<h3>Conditions</h3>
+	{$conditions|raw}
+	
+	<h3>Actions</h3>
+	{$actions|raw}
+	
+	<h3>Sub Rules</h3>
+	{$subrules|raw}
+	
+</div>

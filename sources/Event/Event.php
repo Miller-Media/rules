@@ -20,189 +20,195 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Node
  */
-class _Node extends \IPS\Node\Model
+class _Event
 {
-	/**
-	 * @brief	[ActiveRecord] Multiton Store
-	 */
-	protected static $multitons;
-	
-	/**
-	 * @brief	[ActiveRecord] Database Table
-	 */
-	public static $databaseTable = 'libraries_libraries';
-	
-	/**
-	 * @brief	[ActiveRecord] Database Prefix
-	 */
-	public static $databasePrefix = 'library_';
-		
-	/**
-	 * @brief	[Node] Order Database Column
-	 */
-	public static $databaseColumnOrder = 'weight';
-	
-	/**
-	 * @brief	[ActiveRecord] Database ID Fields
-	 */
-	protected static $databaseIdFields = array();
-	
-	/**
-	 * @brief	[Node] Parent ID Database Column
-	 */
-	public static $databaseColumnParent = 'parent_id';
-	
-	/**
-	 * @brief	[Node] Node Title
-	 */
-	public static $nodeTitle = 'libraries';
-		
-	/**
-	 * @brief	[Node] ACP Restrictions
-	 * @code
-	 	array(
-	 		'app'		=> 'core',				// The application key which holds the restrictrions
-	 		'module'	=> 'foo',				// The module key which holds the restrictions
-	 		'map'		=> array(				// [Optional] The key for each restriction - can alternatively use "prefix"
-	 			'add'			=> 'foo_add',
-	 			'edit'			=> 'foo_edit',
-	 			'permissions'	=> 'foo_perms',
-	 			'delete'		=> 'foo_delete'
-	 		),
-	 		'all'		=> 'foo_manage',		// [Optional] The key to use for any restriction not provided in the map (only needed if not providing all 4)
-	 		'prefix'	=> 'foo_',				// [Optional] Rather than specifying each  key in the map, you can specify a prefix, and it will automatically look for restrictions with the key "[prefix]_add/edit/permissions/delete"
-	 * @encode
-	 */
-	protected static $restrictions = array(
-		'app'		=> 'app',
-		'module'	=> 'module',
-		'prefix'	=> 'categories_'
-	);
-	
-	/**
-	 * @brief	[Node] App for permission index
-	 */
-	public static $permApp = 'app';
-	
-	/**
-	 * @brief	[Node] Type for permission index
-	 */
-	public static $permType = 'nodetype_category';
-	
-	/**
-	 * @brief	The map of permission columns
-	 */
-	public static $permissionMap = array(
-		'view'			=> 'view',
-		//'read'		=> 2,
-		//'add'			=> 3,
-		//'reply'		=> 4,
-		//'rate'		=> 5,
-		//'review'		=> 6,
-	);
-	
-	/**
-	 * @brief	Database Column Map
-	 */
-	public static $databaseColumnMap = array(
-		//'cover_photo'			=> 'cover_photo',
-		//'cover_photo_offset'		=> 'cover_offset',
-	);
 
 	/**
-	 * @brief	Bitwise values for category_bitoptions field
+	 * @brief	App
 	 */
-	public static $bitOptions = array(
-		'bitoptions' => array(
-			'bitoptions' => array(
-			)
-		)
-	);
-
-	/**
-	 * @brief	[Node] Prefix string that is automatically prepended to permission matrix language strings
-	 */
-	public static $permissionLangPrefix = 'nodetype_';
-
-	/**
-	 * @brief	[Node] Title prefix.  If specified, will look for a language key with "{$key}_title" as the key
-	 */
-	public static $titleLangPrefix = 'nodetype_category_';
+	public $app = NULL;
 	
 	/**
-	 * @brief	[Node] Moderator Permission
+	 * @brief	Class
 	 */
-	public static $modPerm = 'nodetype_categories';
-
-	/**
-	 * @brief	Content Item Class
-	 */
-	public static $contentItemClass = 'IPS\app\Content';
+	public $class = NULL;
 	
 	/**
-	 *  Get Title
+	 * @brief	Action Key
 	 */
-	public function get__title()
+	public $key = NULL;
+	
+	/**
+	 * @brief	Event Data
+	 */
+	public $data = NULL;
+	
+	/**
+	 * Multiton Cache
+	 */
+	public static $multitons = array();
+	
+	/**
+	 * Event Loader
+	 * 
+	 * @param 	string	$app		App that defines the action
+	 * @param	string	$class		Extension class where action is defined
+	 * @param	string	$key		Action key
+	 * @return	\IPS\rules\Event	Return a rules event object
+	 */
+	public static function load( $app='null', $class='null', $key='null' )
 	{
-		return $this->title;
-	}
-	
-	/**
-	 * Set Title
-	 */
-	public function set__title( $val )
-	{
-		$this->title = $val;
-	}
-		
-	/**
-	 * Init
-	 *
-	 * @return	void
-	 */
-	public function init()
-	{
-
-	}
-	
-	/**
-	 * [Node] Custom Badge
-	 *
-	 * @return	NULL|array	Null for no badge, or an array of badge data (0 => CSS class type, 1 => language string, 2 => optional raw HTML to show instead of language string)
-	 */
-	protected function get__badge()
-	{
-		if ( 0 )
+		if ( isset ( static::$multitons[ $app ][ $class ][ $key ] ) )
 		{
-			return array(
-				0	=> 'ipsBadge ipsBadge_intermediary',
-				1	=> 'badge text',
-			);
+			return static::$multitons[ $app ][ $class ][ $key ];
 		}
 		
-		return NULL;
+		try
+		{
+			$event = new \IPS\rules\Event( $app, $class, $key );
+			return static::$multitons[ $app ][ $class ][ $key ] = $event;
+		}
+		catch ( \BadMethodCallException $e )
+		{
+			/**
+			 * Return a placeholder event
+			 */
+			$event = new \IPS\rules\Event\Placeholder( $app, $class, $key );
+			return static::$multitons[ $app ][ $class ][ $key ] = $event;
+		}
 	}
 	
 	/**
-	 * [Node] Add/Edit Form
-	 *
-	 * @param	\IPS\Helpers\Form	$form	The form
-	 * @return	void
+	 * Extension Cache
 	 */
-	public function form( &$form )
+	public static $extensions = array();
+	
+	/**
+	 * Constructor
+	 *
+	 * @param 	string	$app		App that defines the action
+	 * @param	string	$class		Extension class where action is defined
+	 * @param	string	$key		Action key
+	 */
+	public function __construct( $app, $class, $key )
 	{
+		$this->app 	= $app;
+		$this->class 	= $class;
+		$this->key	= $key;
+		
+		$extClass = '\IPS\\' . $app . '\extensions\rules\Definitions\\' . $class;
+		if ( class_exists( $extClass ) )
+		{
+			$ext = isset ( static::$extensions[ $app ][ $class ] ) ? static::$extensions[ $app ][ $class ] : new $extClass;
+			$events = $ext->events();
+			
+			if ( isset ( $events[ $key ] ) )
+			{
+				$this->data = $events[ $key ];
+				static::$multitons[ $this->app ][ $this->class ][ $this->key ] = $this;
+			}
+			else
+			{
+				throw new \BadMethodCallException( \IPS\Member::loggedIn()->language()->get( 'rules_event_not_found' ) );
+			}
+		}
+		else
+		{
+			throw new \BadMethodCallException( \IPS\Member::loggedIn()->language()->get( 'rules_event_not_found' ) );
+		}
+		
+	}
+		
+	/**
+	 * Thread ID
+	 */
+	public $thread = NULL;
+	
+	/**
+	 * Parent Thread ID
+	 */
+	public $parentThread = NULL;
+		
+	/**
+	 * Recursion Protection
+	 */
+	public $locked = FALSE;
 
+	/**
+	 * Trigger An Event
+	 */
+	public function trigger()
+	{
+		if ( ! $this->locked )
+		{
+			/* Don't do this during an upgrade */
+			if( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation === 'setup' )
+			{
+				return;
+			}
+			
+			/**
+			 * Give each new event triggered a unique thread id so
+			 * logs can be tied back to the event that generated them
+			 */
+			$this->parentThread = $this->thread;
+			$this->thread = md5( uniqid() . mt_rand() );
+			
+			foreach ( $this->rules() as $rule )
+			{
+				if ( $rule->enabled )
+				{
+					$result = call_user_func_array( array( $rule, 'invoke' ), func_get_args() );
+					
+					if ( $rule->debug )
+					{
+						\IPS\rules\Application::rulesLog( $this, $rule, NULL, $result, 'Rule evaluation complete' );
+					}
+				}
+				else
+				{
+					if ( $rule->debug )
+					{
+						\IPS\rules\Application::rulesLog( $this, $rule, NULL, '--', 'Rule not evaluated (disabled)' );
+					}
+				}
+			}
+			
+			$this->thread = $this->parentThread;
+		}
+	}
+
+	/**
+	 * Get Event Title
+	 */
+	public function title()
+	{
+		$lang = \IPS\Member::loggedIn()->language();
+		
+		if ( $lang->checkKeyExists( $this->app . '_' . $this->class . '_event_' . $this->key ) )
+		{
+			return $lang->get( $this->app . '_' . $this->class . '_event_' . $this->key );
+		}
+		
+		return '';
 	}
 	
 	/**
-	 * [Node] Save Add/Edit Form
-	 *
-	 * @param	array	$values	Values from the form
-	 * @return	void
+	 * @brief 	Cache for rules
 	 */
-	public function saveForm( $values )
+	protected $rulesCache = NULL;
+	
+	/**
+	 * Get rules attached to this event
+	 */
+	public function rules()
 	{
-		parent::saveForm( $values );
+		if ( isset( $this->rulesCache ) )
+		{
+			return $this->rulesCache;
+		}
+		
+		return $this->rulesCache = \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_event_app=? AND rule_event_class=? AND rule_event_key=?', $this->app, $this->class, $this->key ) ) );
 	}
 		
 }

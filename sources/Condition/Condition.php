@@ -60,12 +60,22 @@ class _Condition extends \IPS\Node\Model
 	/**
 	 * @brief	[Node] Parent Node Class
 	 */
-	public static $parentNodeClass = 'IPS\rules\Rule';
+	//public static $parentNodeClass = 'IPS\rules\Rule';
 	
 	/**
 	 * @brief	[Node] Parent Node Column
 	 */
-	public static $parentNodeColumnId = 'rule_id';
+	//public static $parentNodeColumnId = 'rule_id';
+	
+	/**
+	 * @brief	Use Modal Forms?
+	 */
+	public static $modalForms = FALSE;
+	
+	/**
+	 *  Disable Copy Button
+	 */	
+	public $noCopyButton = TRUE;
 	
 	/**
 	 *  Get Title
@@ -82,6 +92,43 @@ class _Condition extends \IPS\Node\Model
 	{
 		$this->title = $val;
 	}
+	
+	/**
+	 * Get Data
+	 */ 
+	public $data = array();
+	
+	/**
+	 * Associated Rule
+	 */
+	public $rule = NULL;
+	
+	/**
+	 * [Node] Get whether or not this node is enabled
+	 *
+	 * @note	Return value NULL indicates the node cannot be enabled/disabled
+	 * @return	bool|null
+	 */
+	protected function get__enabled()
+	{
+		return $this->enabled;
+	}
+
+	/**
+	 * [Node] Set whether or not this node is enabled
+	 *
+	 * @param	bool|int	$enabled	Whether to set it enabled or disabled
+	 * @return	void
+	 */
+	protected function set__enabled( $enabled )
+	{
+		$this->enabled = $enabled;
+	}
+	
+	/**
+	 * @brief	Action Definition
+	 */
+	public $definition = NULL;
 		
 	/**
 	 * Init
@@ -90,7 +137,64 @@ class _Condition extends \IPS\Node\Model
 	 */
 	public function init()
 	{
-
+		$extClass = '\IPS\\' . $this->app . '\extensions\rules\Definitions\\' . $this->class;
+		if ( class_exists( $extClass ) )
+		{
+			$ext 	= new $extClass;
+			$conditions = $ext->conditions();
+			
+			if ( isset ( $conditions[ $this->key ] ) )
+			{
+				$this->definition = $conditions[ $this->key ];
+			}
+		}
+		
+		$this->data = json_decode( $this->_data[ 'data' ], TRUE ) ?: array();
+		
+		if ( $this->rule_id )
+		{
+			try 
+			{
+				$this->rule = \IPS\rules\Rule::load( $this->rule_id );
+			}
+			catch ( \OutOfRangeException $e ) {}
+		}
+	}
+	
+	/**
+	 * Get the attached event
+	 */
+	public function event()
+	{
+		if ( $rule = $this->rule() )
+		{
+			return $rule->event();
+		}
+		
+		/* Return Event Placeholder */
+		return \IPS\rules\Event::load();
+	}
+	
+	/**
+	 * Get the attached event
+	 */
+	public function rule()
+	{
+		if ( isset ( $this->rule ) )
+		{
+			return $this->rule;
+		}
+		
+		try
+		{
+			$rule = \IPS\rules\Rule::load( $this->rule_id );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			$rule = FALSE;
+		}
+		
+		return $this->rule = $rule;
 	}
 	
 	/**
@@ -106,7 +210,7 @@ class _Condition extends \IPS\Node\Model
 		$buttons = parent::getButtons( $url, $subnode );
 		foreach ( $buttons as $id => &$button )
 		{
-			$button[ 'link' ] = $button[ 'link' ]->setQueryString( 'aspect', 'conditions-' . $this->rule_id );
+			$button[ 'link' ] = $button[ 'link' ]->setQueryString( 'rule', $this->rule_id );
 		}
 		
 		return $buttons;
@@ -119,11 +223,11 @@ class _Condition extends \IPS\Node\Model
 	 */
 	protected function get__badge()
 	{
-		if ( 0 )
+		if ( $this->hasChildren() )
 		{
 			return array(
-				0	=> 'ipsBadge ipsBadge_intermediary',
-				1	=> 'badge text',
+				0	=> 'ipsBadge ipsBadge_warning',
+				1	=> $this->compareMode() == 'or' ? 'or_group_badge' : 'and_group_badge',
 			);
 		}
 		
@@ -138,7 +242,32 @@ class _Condition extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
-		$form->add( new \IPS\Helpers\Form\Text( 'condition_title', $this->title, TRUE ) );
+		if ( ! isset ( $this->rule ) )
+		{
+			try
+			{
+				$this->rule = \IPS\rules\Rule::load( \IPS\Request::i()->rule );
+			}
+			catch( \OutOfRangeException $e ) 
+			{
+				\IPS\Output::i()->error( 'invalid_rule', '2RC02/A', 403, '' );
+			}
+		}
+		
+		$form->hiddenValues[ 'condition_rule_id' ] = $this->rule->id;
+		
+		\IPS\rules\Application::opform( $form, $this, 'conditions' );
+		
+		if ( $this->id and $this->hasChildren() )
+		{
+			$compare_options = array(
+				'and' 	=> 'AND',
+				'or'	=> 'OR',
+			);
+			
+			$form->add( new \IPS\Helpers\Form\Radio( 'condition_group_compare', $this->group_compare ?: 'and', FALSE, array( 'options' => $compare_options ), NULL, NULL, NULL, 'condition_group_compare' ), 'operation_title' );
+		}
+		
 	}
 	
 	/**
@@ -148,8 +277,103 @@ class _Condition extends \IPS\Node\Model
 	 * @return	void
 	 */
 	public function saveForm( $values )
-	{		
+	{
+		$values = \IPS\rules\Application::opformSave( $this, 'conditions', $values, array( 'condition_rule_id', 'condition_group_compare' ) );		
 		parent::saveForm( $values );
+	}
+	
+	/**
+	 * Get Compare Mode
+	 */
+	public function compareMode()
+	{
+		return $this->group_compare ?: 'and';
+	}
+	
+	/**
+	 * Recursion Protection
+	 */
+	public $locked = FALSE;
+	
+	/**
+	 * Invoke Condition
+	 */
+	public function invoke()
+	{
+		if ( ! $this->locked )
+		{
+			/**
+			 * Lock this from being triggered recursively
+			 * and creating never ending loops
+			 */
+			$this->locked = TRUE;
+			
+			$result = call_user_func_array( '\IPS\rules\Application::opInvoke', array( $this, 'conditions', func_get_args() ) );
+			
+			if ( $this->hasChildren() )
+			{
+				$compareMode = $this->compareMode();
+				
+				/**
+				 * We already have a winner
+				 */
+				if ( $result and $compareMode == 'or' )
+				{
+					return TRUE;
+				}
+				
+				/**
+				 * We have already failed
+				 */
+				if ( ! $result and $compareMode == 'and' )
+				{
+					return FALSE;
+				}
+				
+				/* Only possibilities at this point */
+				// result FALSE mode OR
+				// result TRUE mode AND
+							
+				foreach ( $this->children() as $condition )
+				{
+					if ( $condition->enabled )
+					{
+						$conditionsCount++;
+						$_result = call_user_func_array( array( $condition, 'invoke' ), func_get_args() );
+						
+						if ( $_result and $compareMode == 'or' ) 
+						{
+							$result = TRUE;
+							break;
+						}
+
+						if ( ! $_result and $compareMode == 'and' )
+						{
+							$result = FALSE;
+							break;
+						}
+					}
+					else
+					{
+						if ( $rule = $this->rule() and $rule->debug )
+						{
+							\IPS\rules\Application::rulesLog( $rule->event(), $rule, $condition, '--', 'Condition not evaluated (disabled)' );
+						}
+					}
+				}
+			}
+			
+			$this->locked = FALSE;
+			
+			return $result;
+		}
+		else
+		{
+			if ( $rule = $this->rule() and $rule->debug )
+			{
+				\IPS\rules\Application::rulesLog( $rule->event(), $rule, $this, '--', 'Condition recursion (not evaluated)' );
+			}
+		}
 	}
 	
 	/**
@@ -157,33 +381,24 @@ class _Condition extends \IPS\Node\Model
 	 */
 	public function save()
 	{
-		/**
-		 * If this condition was created as a subnode, then it's parent
-		 * will be empty and the rule_id will be set to our mock container.
-		 *
-		 * We'll need to parse it and reset it to point to our real rule_id
-		 */
-		if ( \substr( $this->rule_id, 0, 11 ) == 'conditions-' )
-		{
-			$this->rule_id = \substr( $this->rule_id, 11 );
-		}
-		
-		/**
-		 * If this condition was not created as a subnode, then it's parent
-		 * will be set to the condition it was created under, and we will
-		 * still need to assign the correct rule_id that it belongs to
-		 */
-		if ( ! $this->rule_id and \IPS\Request::i()->aspect )
-		{
-			/* Parse cryptic parent id's created by our node controller */
-			if ( count( $parts = explode( '-', $this->parent_id ) ) > 1 )
-			{
-				$this->parent_id = array_pop( $parts );
-			}
-			$this->rule_id = \substr( \IPS\Request::i()->aspect, 11 );
-		}
-		
+		$this->_data[ 'data' ] = json_encode( $this->data );
+		$this->changed[ 'data' ] = $this->_data[ 'data' ];
 		parent::save();
 	}
 		
+	/**
+	 * [ActiveRecord] Delete Record
+	 *
+	 * @return	void
+	 */
+	public function delete()
+	{
+		foreach ( $this->children() as $child )
+		{
+			$child->delete();
+		}
+		
+		return parent::delete();
+	}	
+	
 }

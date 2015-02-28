@@ -1,1 +1,6 @@
-[]
+[
+    {
+        "key": "rules_debug",
+        "default": "0"
+    }
+]

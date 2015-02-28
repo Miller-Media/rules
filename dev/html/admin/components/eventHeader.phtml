@@ -1,0 +1,9 @@
+<ips:template parameters="$event" />
+
+<div class='ipsMessage ipsMessage_info rulesMessage'>
+	<span style='font-size:1.8em'>
+		Event: {$event->title()}
+	</span>
+	<p><i class='fa fa-caret-down'></i> The following data is available for this event:</p>
+	{expression="\IPS\rules\Application::eventArgInfo( $event, '' )" raw="true"}
+</div>
