@@ -207,17 +207,13 @@ class _System
 					),
 				),
 			),
-			'execute_php' => array
+			'send_notification' => array
 			(
-				'configuration' => array
-				(
-					'form' => function( &$form, $values, $operation )
-					{
-						\IPS\Member::loggedIn()->language()->words[ 'rules_System_custom_phpcode_desc' ] = \IPS\Member::loggedIn()->language()->get( 'phpcode_desc_details_vars' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
-						$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_custom_phpcode', $values[ 'custom_phpcode' ] ?: "//<?php\n\nreturn TRUE;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'rules_System_custom_phpcode' ) );
-					},
-				),
-				'callback' 	=> array( $this, 'executePHP' ),
+
+			),
+			'send_pm' => array
+			(
+			
 			),
 			'display_message' => array
 			(
@@ -246,8 +242,78 @@ class _System
 								'description' => "Message to display to user",
 							),							
 						),
-					)
-				)
+					),
+				),
+			),
+			'url_redirect' => array
+			(
+				'callback'	=> array( $this, 'urlRedirect' ),
+				'arguments' 	=> array
+				(
+					'url' => array
+					(
+						'configuration' => array
+						(
+							'form' => function( $form, $values, $action )
+							{
+								$form->add( new \IPS\Helpers\Form\Url( 'rules_System_redirect_url', $values[ 'rules_System_redirect_url' ], TRUE, array(), NULL, NULL, NULL, 'rules_System_redirect_url' ) );
+								return array( 'rules_System_redirect_url' );
+							},
+							'getArg' => function( $values, $action )
+							{
+								return $values[ 'rules_System_redirect_url' ];
+							},
+						),
+						'required' => TRUE,
+						'argtypes' => array
+						(
+							'string' => array
+							(
+								'description' => "The url to redirect to",
+							),
+							'object' => array
+							(
+								'description' => "An IPS Suite url object",
+								'class' => '\IPS\Http\Url',
+							),
+						),
+					),
+					'message' => array
+					(
+						'configuration' => array
+						(
+							'form' => function( $form, $values, $action )
+							{
+								$form->add( new \IPS\Helpers\Form\Text( 'rules_System_redirect_message', $values[ 'rules_System_redirect_message' ], FALSE, array(), NULL, NULL, NULL, 'rules_System_redirect_message' ) );
+								return array( 'rules_System_redirect_message' );
+							},
+							'getArg' => function( $values, $action )
+							{
+								return $values[ 'rules_System_redirect_message' ];
+							},
+						),
+						'required' => TRUE,
+						'argtypes' => array
+						(
+							'string' => array
+							(
+								'description' => "Message to display after redirect",
+							),
+						),
+					),
+				),
+			),
+			'execute_php' => array
+			(
+				'configuration' => array
+				(
+					'form' => function( &$form, $values, $operation )
+					{
+						\IPS\Member::loggedIn()->language()->words[ 'rules_System_custom_phpcode_desc' ] = \IPS\Member::loggedIn()->language()->get( 'phpcode_desc_details_vars' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
+						$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_custom_phpcode', $values[ 'custom_phpcode' ] ?: "//<?php\n\nreturn TRUE;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'rules_System_custom_phpcode' ) );
+					},
+				),
+				'callback' 	=> array( $this, 'executePHP' ),
 			),
 		);
 		
@@ -286,6 +352,17 @@ class _System
 	{
 		$_SESSION[ 'inlineMessage' ] = $message;
 		return 'message set';
+	}
+	
+	/**
+	 * Redirect to URL
+	 */
+	public function urlRedirect( $url, $message )
+	{
+		if ( $url )
+		{
+			\IPS\Output::i()->redirect( $url, $message );
+		}
 	}
 	
 	/*** CONDITIONS ***/

@@ -56,17 +56,7 @@ class _Condition extends \IPS\Node\Model
 	 * @brief	[Node] Node Title
 	 */
 	public static $nodeTitle = 'conditions';
-	
-	/**
-	 * @brief	[Node] Parent Node Class
-	 */
-	//public static $parentNodeClass = 'IPS\rules\Rule';
-	
-	/**
-	 * @brief	[Node] Parent Node Column
-	 */
-	//public static $parentNodeColumnId = 'rule_id';
-	
+		
 	/**
 	 * @brief	Use Modal Forms?
 	 */
@@ -84,7 +74,7 @@ class _Condition extends \IPS\Node\Model
 	{
 		return $this->title;
 	}
-	
+		
 	/**
 	 * Set Title
 	 */
@@ -258,6 +248,8 @@ class _Condition extends \IPS\Node\Model
 		
 		\IPS\rules\Application::opform( $form, $this, 'conditions' );
 		
+		$form->add( new \IPS\Helpers\Form\YesNo( 'condition_not', $this->not, FALSE ), 'operation_title' );
+		
 		if ( $this->id and $this->hasChildren() )
 		{
 			$compare_options = array(
@@ -267,6 +259,7 @@ class _Condition extends \IPS\Node\Model
 			
 			$form->add( new \IPS\Helpers\Form\Radio( 'condition_group_compare', $this->group_compare ?: 'and', FALSE, array( 'options' => $compare_options ), NULL, NULL, NULL, 'condition_group_compare' ), 'operation_title' );
 		}
+		
 		
 	}
 	
@@ -278,7 +271,7 @@ class _Condition extends \IPS\Node\Model
 	 */
 	public function saveForm( $values )
 	{
-		$values = \IPS\rules\Application::opformSave( $this, 'conditions', $values, array( 'condition_rule_id', 'condition_group_compare' ) );		
+		$values = \IPS\rules\Application::opformSave( $this, 'conditions', $values, array( 'condition_rule_id', 'condition_group_compare', 'condition_not' ) );		
 		parent::saveForm( $values );
 	}
 	

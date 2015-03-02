@@ -2,8 +2,6 @@
 
 <div class='ipsMessage ipsMessage_warning rulesMessage'>
 	This rule will be evaluated only if the conditions of it's 
-	{{if $rule}}<a href='{url="app=rules&module=rules&controller=rules&do=form&id={$rule->parent()->id}&tab=conditions"}'>parent rule</a> 
-	{{else}}parent rule
-	{{endif}}
+	<a data-ipstooltip title='{$rule->title}' href='{url="app=rules&module=rules&controller=rules&do=form&id={$rule->id}&tab=conditions"}'>parent rule</a> 
 	are also met.
 </div>

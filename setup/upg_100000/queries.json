@@ -144,6 +144,20 @@
                         "zerofill": false,
                         "auto_increment": false,
                         "binary": false
+                    },
+                    "rule_ruleset_id": {
+                        "name": "rule_ruleset_id",
+                        "type": "INT",
+                        "length": 11,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
                     }
                 },
                 "indexes": {
@@ -315,6 +329,20 @@
                         "values": [],
                         "allow_null": false,
                         "default": "and",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "condition_not": {
+                        "name": "condition_not",
+                        "type": "INT",
+                        "length": 1,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
                         "comment": "",
                         "unsigned": false,
                         "zerofill": false,
@@ -665,6 +693,174 @@
                         "values": [],
                         "allow_null": true,
                         "default": null,
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "rule_parent": {
+                        "name": "rule_parent",
+                        "type": "VARCHAR",
+                        "length": 11,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "error": {
+                        "name": "error",
+                        "type": "INT",
+                        "length": 4,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    }
+                },
+                "indexes": {
+                    "PRIMARY": {
+                        "type": "primary",
+                        "name": "PRIMARY",
+                        "columns": [
+                            "id"
+                        ],
+                        "length": [
+                            null
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "method": "createTable",
+        "params": [
+            {
+                "name": "rules_scheduler",
+                "columns": {
+                    "id": {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "length": "20",
+                        "unsigned": true,
+                        "zerofill": false,
+                        "binary": false,
+                        "allow_null": false,
+                        "default": null,
+                        "auto_increment": true,
+                        "comment": "ID Number"
+                    },
+                    "app": {
+                        "name": "app",
+                        "type": "VARCHAR",
+                        "length": 56,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": true,
+                        "default": "",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "class": {
+                        "name": "class",
+                        "type": "VARCHAR",
+                        "length": 56,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": true,
+                        "default": "",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    }
+                },
+                "indexes": {
+                    "PRIMARY": {
+                        "type": "primary",
+                        "name": "PRIMARY",
+                        "columns": [
+                            "id"
+                        ],
+                        "length": [
+                            null
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "method": "createTable",
+        "params": [
+            {
+                "name": "rules_rulesets",
+                "columns": {
+                    "ruleset_id": {
+                        "name": "ruleset_id",
+                        "type": "BIGINT",
+                        "length": 20,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": null,
+                        "comment": "ID Number",
+                        "unsigned": true,
+                        "zerofill": false,
+                        "auto_increment": true,
+                        "binary": false
+                    },
+                    "ruleset_title": {
+                        "name": "ruleset_title",
+                        "type": "VARCHAR",
+                        "length": 255,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "ruleset_weight": {
+                        "name": "ruleset_weight",
+                        "type": "INT",
+                        "length": 11,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "ruleset_enabled": {
+                        "name": "ruleset_enabled",
+                        "type": "INT",
+                        "length": 1,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "1",
                         "comment": "",
                         "unsigned": false,
                         "zerofill": false,

@@ -49,6 +49,11 @@ class _Event
 	public static $multitons = array();
 	
 	/**
+	 * Placeholder Flag
+	 */
+	public $placeholder = FALSE;
+	
+	/**
 	 * Event Loader
 	 * 
 	 * @param 	string	$app		App that defines the action
@@ -162,7 +167,7 @@ class _Event
 					
 					if ( $rule->debug )
 					{
-						\IPS\rules\Application::rulesLog( $this, $rule, NULL, $result, 'Rule evaluation complete' );
+						\IPS\rules\Application::rulesLog( $this, $rule, NULL, $result, 'Rule evaluated' );
 					}
 				}
 				else

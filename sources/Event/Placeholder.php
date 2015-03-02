@@ -44,6 +44,11 @@ class _Placeholder extends \IPS\rules\Event
 	public $data = NULL;
 	
 	/**
+	 * Placeholder Flag
+	 */
+	public $placeholder = TRUE;
+	
+	/**
 	 * Constructor
 	 *
 	 * @param 	string	$app		App that defines the action
@@ -63,7 +68,7 @@ class _Placeholder extends \IPS\rules\Event
 	 */
 	public function trigger()
 	{
-		\IPS\rules\Application::rulesLog( $this, NULL, NULL, 'error', 'No event definition available' );
+		\IPS\rules\Application::rulesLog( $this, NULL, NULL, 'error', 'No event definition available', 1 );
 	}
 	
 	/**

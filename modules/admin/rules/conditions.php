@@ -16,6 +16,11 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 class _conditions extends \IPS\Node\Controller
 {
 	/**
+	 * Title can contain HTML?
+	 */
+	public $_titleHtml = TRUE;
+	
+	/**
 	 * Node Class
 	 */
 	protected $nodeClass = '\IPS\rules\Condition';
@@ -163,6 +168,61 @@ class _conditions extends \IPS\Node\Controller
 		return array();
 	}
 	
+	/**
+	 * Get Single Row
+	 *
+	 * @param	mixed	$id		May be ID number (or key) or an \IPS\Node\Model object
+	 * @param	bool	$root	Format this as the root node?
+	 * @param	bool	$noSort	If TRUE, sort options will be disabled (used for search results)
+	 * @return	string
+	 */
+	public function _getRow( $id, $root=FALSE, $noSort=FALSE )
+	{
+		$nodeClass = $this->nodeClass;
+		if ( $id instanceof \IPS\Node\Model )
+		{
+			$node = $id;
+		}
+		else
+		{
+			try
+			{
+				$node = $nodeClass::load( $id );
+			}
+			catch( \OutOfRangeException $e )
+			{
+				\IPS\Output::i()->error( 'node_error', '2S101/P', 404, '' );
+			}
+		}
+		
+		$id = ( $node instanceof $nodeClass ) ? $node->_id :  "s.{$node->_id}";
+		$class = get_class( $node );
+		
+		$buttons = $node->getButtons( $this->url, !( $node instanceof $this->nodeClass ) );
+		if ( isset( \IPS\Request::i()->searchResult ) and isset( $buttons['edit'] ) )
+		{
+			$buttons['edit']['link'] = $buttons['edit']['link']->setQueryString( 'searchResult', \IPS\Request::i()->searchResult );
+		}
+										
+		return \IPS\Theme::i()->getTemplate( 'trees', 'core' )->row(
+			$this->url,
+			$id,
+			( $node->not ? "<span class='ipsBadge ipsBadge_negative'>NOT</span> " : "" ) . $node->_title,
+			$node->childrenCount( NULL ),
+			$buttons,
+			$node->_description,
+			$node->_icon ? $node->_icon : NULL,
+			( $noSort === FALSE and $class::$nodeSortable and $node->canEdit() ) ? $node->_position : NULL,
+			$root,
+			$node->_enabled,
+			( $node->_locked or !$node->canEdit() ),
+			( ( $node instanceof \IPS\Node\Model ) ? $node->_badge : $this->_getRowBadge( $node ) ),
+			$this->_titleHtml,
+			$this->_descriptionHtml,
+			$node->canAdd()
+		);
+	}
+
 	/**
 	 * Redirect after save
 	 *

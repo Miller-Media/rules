@@ -4,13 +4,30 @@ $lang = array(
 	'__app_rules'				=> "Rules",
 	'menu__rules_rules'			=> "Rules",
 	'menu__rules_rules_rules'		=> "Manage Rules",
+	'menu__rules_rules_logs'		=> "Rules Logs",
 	'ext__Definitions'			=> "Events, Conditions, and Actions Definition Groups",
 	
 	// Rules Restrictions
 	'r__rules'				=> "Rules Restrictions",
 	'r__rules_manage'			=> "Manage Rules",
+	'r__logs_manage'			=> "View Logs",
+	'rules_logs'				=> "Rules Logs",
+	'rules_flush_logs'			=> "Flush Logs",
+	'rules_export_all'			=> "Export All",
+	'rules_export_enabled'			=> "Export Enabled",
+	
+	'rules_logs_table_id'			=> "Log ID",
+	'rules_logs_table_app'			=> "Event",
+	'rules_logs_table_key'			=> "Rule",
+	'rules_logs_table_type'			=> "Type",
+	'rules_logs_table_message'		=> "Status",
+	'rules_logs_table_result'		=> "Result",
+	'rules_logs_table_time'			=> "Time",
 	
 	// Form Generic
+	'rulesets'				=> "Rule Sets",
+	'ruleset_title'				=> "Ruleset Title",
+	
 	'rule'					=> "Rule",
 	'rules'					=> "Rules",
 	'conditions'				=> "Conditions",
@@ -26,8 +43,9 @@ $lang = array(
 
 	// Node Form
 	'rule_debug'				=> "Debug This Rule",
-	'debug_on'				=> "Debug On",
-	'rule_debug_desc'			=> "If checked, information related to this rule will be logged to its debug console.",
+	'debug_on_badge'			=> "<i class='fa fa-bug'></i> Debugging",
+	'rule_event_missing_badge'		=> "<i class='fa fa-warning'></i> Event Missing",
+	'rule_debug_desc'			=> "If enabled, information related to this rule will be logged in the debug console.",
 	'rules_settings'			=> "Settings",
 	'rules_conditions'			=> "Conditions",
 	'rules_actions'				=> "Actions",
@@ -47,10 +65,17 @@ $lang = array(
 	'condition_group_compare_desc'		=> "Since this condition has subconditions, you must choose how you want those subconditions to affect the state of this condition.<ul>
 							<li>If you choose AND, this condition and all subconditions must be true for this condition to be valid.</li>
 							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>",
+	'condition_not'				=> "NOT",
+	'condition_not_desc'			=> "Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.",
 	
 	'conditions_add_child'			=> "Add Sub Condition",
 	'or_group_badge'			=> "OR ANY SUBCONDITION",
 	'and_group_badge'			=> "AND ALL SUBCONDITIONS",
+	'rules_export_rule'			=> "Export Rule",
+	'rules_import'				=> "Import Rules",
+	'rules_imported'			=> "Rules Successfully Imported",
+	'rule_missing_notice'			=> "This rule was designed for an event that cannot currently be triggered on your system. Configuration is disabled.",
+	'rules_next'				=> "Next <i class='fa fa-caret-right'></i>",
 	
 	'rule_title'				=> "Rule Title",
 	'rule_title_placeholder'		=> "Describe what this rule is for",
@@ -122,19 +147,19 @@ $lang = array(
 	
 	/*** MEMBERS: Conditions ***/
 	'rules_Members_conditions_member_has_group'		=> "Member is in a certain member group",
-	'rules_Members_conditions_member_has_group_member'	=> "Member to check for group",
-	'rules_Members_member_groups'				=> "If member is in any of these groups",
+	'rules_Members_conditions_member_has_group_member'	=> "Member To Check",
+	'rules_Members_member_groups'				=> "Check if member is in any of these groups",
 	
 	'rules_Members_conditions_member_attributes'		=> "Member has particular attributes",
-	'rules_Members_conditions_member_attributes_member'	=> "Member to check attributes for",
+	'rules_Members_conditions_member_attributes_member'	=> "Member To Check",
 	
 	'rules_Members_conditions_member_status'		=> "Member has a particular status",
-	'rules_Members_conditions_member_status_member'		=> "Member to check the status of",
+	'rules_Members_conditions_member_status_member'		=> "Member To Check",
 	
 	/*** MEMBERS: Actions ***/
-	'rules_Members_actions_updateProfile'			=> "Update a members profile",
-	'rules_Members_actions_updateProfile_member'		=> "Member to update",
-	'rules_Members_actions_updateProfile_fields'		=> "Values to update",
+	'rules_Members_actions_modify_posts'			=> "Modify the post count of a member",
+	'rules_Members_actions_modify_posts_member'		=> "Modify Posts For This Member",
+	'rules_Members_actions_modify_posts_value'		=> "Value to modify posts count by",
 	
 	/**
 	 * System 
@@ -181,6 +206,11 @@ $lang = array(
 	'rules_System_actions_display_message_message'		=> "Message",
 	'rules_System_actions_display_message_message_desc'	=> "The message to display inline",
 	'rules_System_inline_message'				=> "Message",
+
+	'rules_System_actions_url_redirect'			=> "Redirect to another page",
+	'rules_System_actions_url_redirect_url'			=> "URL of page to redirect to",
+	'rules_System_actions_url_redirect_message'		=> "The message to display upon redirect",
+
 
 	/**
 	 * Comparisons 
@@ -315,6 +345,13 @@ $lang = array(
 	'rules_Content_actions_unhide_content_content'		=> "Content to unhide",
 	'rules_Content_actions_unhide_content_member'		=> "Member Responsible for Unhiding Content",
 		
+	'rules_Content_actions_delete_content'			=> "Delete content",
+	'rules_Content_actions_delete_content_content'		=> "Content To Delete",
+	
+	'rules_Content_actions_change_author'			=> "Change content author",
+	'rules_Content_actions_change_author_content'		=> "Content To Change Author Of",
+	'rules_Content_actions_change_author_author'		=> "The New Author",
+	
 	/**
 	 * Content Item
 	 *
@@ -355,7 +392,7 @@ $lang = array(
 	 *
 	 * Rules Definitions
 	 */
-	'rules_Comments_event_content_comment_created'			=> "Content comment/review has been created",
+	'rules_Comments_event_content_comment_created'			=> "Content comment/review has been posted",
 	'rules_Comments_event_content_comment_created_comment'		=> "The content comment/review item",
 	'rules_Comments_event_content_comment_created_item'		=> "The content item the comment belongs to",
 	'rules_Comments_event_content_comment_created_content'		=> "The comment content (text)",
@@ -373,12 +410,27 @@ $lang = array(
 	 * Forums
 	 */
 	
+	/*** FORUMS: Conditions ***/
+	'rules_Forums_conditions_topic_in_forum'		=> "Topic is in a particular forum",
+	'rules_Forums_conditions_topic_in_forum_topic' 		=> "The Topic to Check",
+	'rules_Forums_topic_forums'				=> "Check if topic is in one of these forums",
+	
 	/*** FORUMS: Events ***/
 	'rules_Forums_event_saved_action'				=> "Saved Action: %s",
 	'rules_Forums_event_saved_action_action'			=> "The saved action",
 	'rules_Forums_event_saved_action_topic'				=> "The topic the saved action was used on",
 	'rules_Forums_event_saved_action_member'			=> "The member using the saved action",
-	 
+	
+	
+	/*** FORUMS: Actions ***/
+	'rules_Forums_actions_move_topic'			=> "Move topic to a new forum",
+	'rules_Forums_actions_move_topic_topic'			=> "The Topic to Move",
+	'rules_Forums_topic_forum'				=> "Move topic to this forum",
+	'rules_Forums_topic_link'				=> "Leave a link?",
+	'rules_Forums_topic_link_desc'				=> "If enabled, a link will be left in the old forum that points to the new topic location.",
+	
+	
 	'time' => "Time",
 	'result' => "Result",
+	'import' => "Import",
 );

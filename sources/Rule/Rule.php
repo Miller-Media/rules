@@ -63,6 +63,16 @@ class _Rule extends \IPS\Node\Model
 	public static $subnodeClass = NULL;
 	
 	/**
+	 * @brief	Parent Node Class
+	 */
+	public static $parentNodeClass = '\IPS\rules\Rule\Ruleset';
+	
+	/**
+	 * @brief	Parent Node ID
+	 */
+	public static $parentNodeColumnId = 'ruleset_id';
+	
+	/**
 	 *  Disable Copy Button
 	 */	
 	public $noCopyButton = TRUE;
@@ -81,6 +91,17 @@ class _Rule extends \IPS\Node\Model
 	public function set__title( $val )
 	{
 		$this->title = $val;
+	}
+	
+	/**
+	 * Get Description
+	 */
+	public function get__description()
+	{
+		if ( $this->parent_id == 0 )
+		{
+			return "<i class='fa fa-flash'></i> Event: " . $this->event()->title();
+		}
 	}
 		
 	/**
@@ -104,7 +125,7 @@ class _Rule extends \IPS\Node\Model
 	{
 		$this->enabled = $enabled;
 	}
-
+	
 	/**
 	 * Init
 	 *
@@ -122,11 +143,19 @@ class _Rule extends \IPS\Node\Model
 	 */
 	protected function get__badge()
 	{
+		if ( $this->event()->placeholder )
+		{
+			return array(
+				0	=> 'ipsBadge ipsBadge_negative',
+				1	=> 'rule_event_missing_badge',
+			);
+		}
+	
 		if ( $this->debug )
 		{
 			return array(
-				0	=> 'ipsBadge ipsBadge_warning',
-				1	=> 'debug_on',
+				0	=> 'ipsBadge ipsBadge_intermediary',
+				1	=> 'debug_on_badge',
 			);
 		}
 		
@@ -141,24 +170,45 @@ class _Rule extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{	
-		$events = array();
+		$events 	= array();
+		$event_missing 	= FALSE;
+		
 		$form->addTab( 'rules_settings' );
 		
 		/**
 		 * Children Rules Inherit Event From Parent
 		 */
-		if ( ! $this->id and \IPS\Request::i()->parent )
+		if 
+		( 
+			! $this->id and 
+			(
+				\IPS\Request::i()->parent and
+				! \IPS\Request::i()->subnode
+			)
+		)
 		{
 			$parent = \IPS\rules\Rule::load( \IPS\Request::i()->parent );
 			$this->event_app 	= $parent->event_app;
 			$this->event_class 	= $parent->event_class;
 			$this->event_key	= $parent->event_key;
+			$form->actionButtons 	= array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
 		}
-					
+		
+		if ( $this->event_key and $this->event()->placeholder )
+		{
+			$form->addHtml( \IPS\Theme::i()->getTemplate( 'components' )->missingEvent( $this ) );
+			$event_missing = TRUE;
+		}
+
 		$form->add( new \IPS\Helpers\Form\Text( 'rule_title', $this->title, TRUE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->addToStack( 'rule_title_placeholder' ) ) ) );
 		
+		/**
+		 * If the event hasn't been configured for this rule, build an option list
+		 * for all available events for the user to select.
+		 */
 		if ( ! $this->event_key )
 		{
+			$form->actionButtons 	= array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
 			foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
 			{
 				foreach ( $definition[ 'events' ] as $event_key => $event_data )
@@ -168,26 +218,16 @@ class _Rule extends \IPS\Node\Model
 			}
 			$form->add( new \IPS\Helpers\Form\Select( 'rule_event_selection', $this->id ? md5( $this->event_app . $this->event_class ) . '_' . $this->event_key : NULL, TRUE, array( 'options' => $events, 'noDefault' => TRUE ), NULL, NULL, NULL, 'rule_event_selection' ) );
 		}
-		else
-		{
-			$events[ md5( $this->event_app . $this->event_class ) . '_' . $this->event_key ] = $this->event_app . '_' . $this->event_class . '_event_' . $this->event_key;
-			if ( \IPS\Request::i()->parent or $this->parent() )
-			{
-				$form->hiddenValues[ 'rule_event_selection' ] = md5( $this->event_app . $this->event_class ) . '_' . $this->event_key;
-			}
-			else
-			{
-				$form->add( new \IPS\Helpers\Form\Select( 'rule_event_selection', $this->id ? md5( $this->event_app . $this->event_class ) . '_' . $this->event_key : NULL, TRUE, array( 'options' => $events, 'noDefault' => TRUE ), NULL, NULL, NULL, 'rule_event_selection' ) );
-			}
-		}
-		
 		
 		/**
-		 * Conditions & Actions 
+		 * Conditions & Actions
+		 *
+		 * Only allow configuration if the rule has been saved (it needs an ID),
+		 * and if the event it is assigned to has a valid definition.
 		 */
-		if ( $this->id )
-		{
-			$form->add( new \IPS\Helpers\Form\Checkbox( 'rule_debug', $this->debug, FALSE ) );
+		if ( $this->id and ! $event_missing )
+		{			
+			$form->add( new \IPS\Helpers\Form\YesNo( 'rule_debug', $this->debug, FALSE ) );
 			
 			if ( isset( \IPS\Request::i()->tab ) )
 			{
@@ -273,8 +313,7 @@ class _Rule extends \IPS\Node\Model
 					},
 					'result' => function( $val )
 					{
-						$result = json_decode( $val );
-						return $result;
+						return $val;
 					},
 				);			
 				$table->sortBy = 'time';
@@ -287,15 +326,14 @@ class _Rule extends \IPS\Node\Model
 						'title'		=> 'View Details',
 						'id'		=> "{$row['id']}-view",
 						'link'		=> $controllerUrl->setQueryString( array( 'logid' => $row[ 'id' ] ) ),
-						'data'		=> array( 'ipsDialog' => '', 'ipsDialogTitle' => 'Log Details' ),
+						'data'		=> array( 'ipsDialog' => '' ),
 					);
 					
 					return $buttons;
 				};
 		
 				$form->addHtml( (string) $table );
-			}
-			
+			}			
 			
 		}
 	}
@@ -333,28 +371,61 @@ class _Rule extends \IPS\Node\Model
 	public function getButtons( $url, $subnode=FALSE )
 	{
 		$buttons = parent::getButtons( $url, $subnode );
+		
+		if ( $subnode )
+		{
+			$url = $url->setQueryString( array( 'subnode' => 1 ) );
+		}
+						
 		$_buttons = array
 		(
 			'conditions' => array
 			(
 				'icon'	=> 'pencil',
 				'title'	=> 'edit_conditions',
-				'link'	=> $url->setQueryString( array( 'do' => 'form', 'id' => $this->_id, 'tab' => 'conditions' ) ),
+				'link'	=> $url->setQueryString( array( 'do' => 'form', 'id' => $this->id, 'tab' => 'conditions' ) ),
 				'data'	=> ( static::$modalForms ? array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack( 'edit_conditions' ) ) : array() ),
 			),			
 			'actions' => array
 			(
 				'icon'	=> 'pencil',
 				'title'	=> 'edit_actions',
-				'link'	=> $url->setQueryString( array( 'do' => 'form', 'id' => $this->_id, 'tab' => 'actions' ) ),
+				'link'	=> $url->setQueryString( array( 'do' => 'form', 'id' => $this->id, 'tab' => 'actions' ) ),
 				'data'	=> ( static::$modalForms ? array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack( 'edit_actions' ) ) : array() ),
-			),			
+			),
 		);
 		
 		array_splice( $buttons, 2, 0, $_buttons );
+		
+		$buttons[ 'export' ] = array
+		(
+			'icon' => 'download',
+			'title' => 'rules_export_rule',
+			'link' => $url->setQueryString( array( 'do' => 'export', 'rule' => $this->id ) ),		
+		);
+		
 		return $buttons;
 	}
 	
+	/**
+	 * [Node] Get Parent
+	 *
+	 * @return	static|null
+	 */
+	public function parent()
+	{
+		if( static::$databaseColumnParent !== NULL )
+		{
+			$parentColumn = static::$databaseColumnParent;
+			if( $this->$parentColumn !== static::$databaseColumnParentRootValue )
+			{
+				return static::load( $this->$parentColumn );
+			}
+		}
+		
+		return NULL;
+	}
+
 	/**
 	 * Invoke Rule
 	 */
@@ -421,7 +492,12 @@ class _Rule extends \IPS\Node\Model
 				{
 					if ( $_rule->enabled )
 					{
-						call_user_func_array( array( $_rule, 'invoke' ), func_get_args() );
+						$result = call_user_func_array( array( $_rule, 'invoke' ), func_get_args() );
+						
+						if ( $this->debug )
+						{
+							\IPS\rules\Application::rulesLog( $this->event(), $_rule, NULL, $result, 'Rule evaluated' );
+						}						
 					}
 					else
 					{
@@ -444,30 +520,6 @@ class _Rule extends \IPS\Node\Model
 				\IPS\rules\Application::rulesLog( $this->event(), $this, NULL, '--', 'Rule not evaluated (disabled)' );
 			}
 		}
-	}
-	 
-	/**
-	 * [Node] Fetch Child Nodes
-	 *
-	 * @param	string|NULL			$permissionCheck	The permission key to check for or NULL to not check permissions
-	 * @param	\IPS\Member|NULL	$member				The member to check permissions for or NULL for the currently logged in member
-	 * @param	bool				$subnodes			Include subnodes? NULL to *only* check subnodes
-	 * @param	array|NULL			$skip				Children IDs to skip
-	 * @param	mixed				$_where				Additional WHERE clause
-	 * @return	array
-	 */
-	public function children( $permissionCheck='view', $member=NULL, $subnodes=TRUE, $skip=null, $_where=array() )
-	{
-		$children = parent::children( $permissionCheck, $member, $subnodes, $skip, $_where );
-		
-		/**
-		 * Add aspect containers as children here since they aren't actually
-		 * database records that can be loaded
-		 */
-		//$children[] = new \IPS\rules\Rule\Aspect( 'conditions',	$this );
-		//$children[] = new \IPS\rules\Rule\Aspect( 'actions', 	$this );
-		
-		return $children;		
 	}
 	
 	/**

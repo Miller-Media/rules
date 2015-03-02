@@ -556,6 +556,49 @@ class _Content
 					),
 				),
 			),
+			'delete_content' => array
+			(
+				'callback' 	=> array( $this, 'deleteContent' ),				
+				'arguments'	=> array
+				(
+					'content' => array
+					(
+						'argtypes' => array
+						(
+							'object' => array
+							(
+								'description' => 'Content Object',
+								'class' => '\IPS\Content',						
+							),						
+						),
+						'required'	=> TRUE,
+					),	
+				),
+			),
+			'change_author' => array
+			(
+				'callback' 	=> array( $this, 'changeAuthor' ),				
+				'arguments'	=> array
+				(
+					'content' => array
+					(
+						'argtypes' => array
+						(
+							'object' => array
+							(
+								'description' => 'Content Object',
+								'class' => '\IPS\Content',						
+							),						
+						),
+						'required'	=> TRUE,
+					),
+					'author' => array
+					(
+						'argtypes' => \IPS\rules\Application::getPreset( 'member' ),
+						'required' 	=> TRUE,
+					),
+				),
+			),
 		);
 		
 		return $actions;
@@ -846,5 +889,54 @@ class _Content
 		return 'content unhidden';
 	}
 		
+	/**
+	 * Delete Content
+	 */
+	public function deleteContent( $content )
+	{
+		if ( ! is_object( $content ) )
+		{
+			return 'content is not an object';
+		}
+		
+		if ( ! ( $content instanceof \IPS\Content ) )
+		{
+			return 'not a content class: ' . get_class( $content );
+		}
+		
+		$content->$pinned = FALSE;
+		$content->delete();
+		return 'content deleted';
+	}
+	
+	/**
+	 * Change Author
+	 */
+	public function changeAuthor( $content, $author )
+	{
+		if ( ! is_object( $content ) )
+		{
+			return 'content is not an object';
+		}
+		
+		if ( ! ( $content instanceof \IPS\Content ) )
+		{
+			return 'not a content class: ' . get_class( $content );
+		}
+		
+		if ( ! ( $author instanceof \IPS\Member ) )
+		{
+			return 'invalid new author';
+		}
+		
+		if ( $author = $content::$databaseColumnMap[ 'author' ] )
+		{
+			$content->$author = $author->member_id;
+			$content->save();
+			return 'author changed';
+		}
+		
+		return "can't change content author";
+	}
 		
 }

@@ -186,9 +186,16 @@ class _Members
 	{
 		$actions = array
 		(			
-			'updateProfile' => array
+			'modify_posts' => array
 			(
-				'callback'	=> array( $this, 'updateProfile' ),
+				'callback'	=> array( $this, 'modifyPosts' ),
+				'configuration' => array
+				(
+					'form' => function( $form, $values, $action )
+					{
+						// need to setup options... add to posts / decrement posts / set posts to value etc.
+					},
+				),
 				'arguments'	=> array
 				(
 					'member' => array
@@ -196,12 +203,52 @@ class _Members
 						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
 						'required'	=> TRUE,
 					),
-					'fields' => array
+					'value' => array
 					(
-						'argtypes'	=> array( 'array' ),
+						'configuration' => array
+						(
+							'form' => function( $form, $values, $action )
+							{
+								$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_posts_value', $values[ 'rules_Members_posts_value' ], TRUE, array( 'min' => NULL ), NULL, NULL, NULL, 'rules_Members_posts_value' ) );
+								return array( 'rules_Members_posts_value' );
+							},
+							'getArg' => function( $values, $action )
+							{
+								return $values[ 'rules_Members_posts_value' ];
+							}
+						),
+						'argtypes'	=> array( 'int' ),
 						'required'	=> TRUE,
 					),
 				),
+			),
+			'modify_reputation' => array
+			(
+			
+			),
+			'change_primary_group' => array
+			(
+			
+			),
+			'modify_secondary_groups' => array
+			(
+			
+			),
+			'change_title' => array
+			(
+			
+			),
+			'ban_member' => array
+			(
+			
+			),
+			'unban_member' => array
+			(
+			
+			),
+			'prune_member' => array
+			(
+			
 			),
 		);
 		
@@ -211,7 +258,7 @@ class _Members
 	/**
 	 * Update Member Callback
 	 */
-	public function updateProfile( $member, $fields )
+	public function modifyPosts( $member, $value, $values )
 	{
 
 	}

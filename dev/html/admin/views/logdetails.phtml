@@ -2,21 +2,22 @@
 
 <div class='ipsPad'>
 
-	<p>Event: <span style="color:green">{$event->title()}</span></p>
-	<h2>Rule Overview</h2>
+	<div class='ipsMessage ipsMessage_info' style='margin-right:30px; padding-right:20px;'>Event: <strong>{$event->title()}</strong> <span style='float:right'>{expression="\IPS\DateTime::ts( $log[ 'time' ] )"}</span></div>
+	
+	<h2 style="font-weight:normal; padding:0 15px;">Rule Overview</h2>
 	<ul>
 		<li>Name: <strong>{{if $rule}}{$rule->title}{{else}}Unknown (deleted){{endif}}</strong></li>
 		<li>Status: <strong>{$log[ 'message' ]}</strong></li>
 		<li>Result: <strong>{$log[ 'result' ]}</strong></li>
 	</ul>
 	
-	<h3>Conditions</h3>
+	<h3 style="margin:25px 15px 0;"><i class="fa fa-filter"></i> Conditions</h3>
 	{$conditions|raw}
 	
-	<h3>Actions</h3>
+	<h3 style="margin:25px 15px 0;"><i class="fa fa-flash"></i> Actions</h3>
 	{$actions|raw}
 	
-	<h3>Sub Rules</h3>
+	<h3 style="margin:25px 15px 0;"><i class="fa fa-gavel"></i> Sub Rules</h3>
 	{$subrules|raw}
 	
 </div>

@@ -128,8 +128,12 @@ class _Application extends \IPS\Application
 		$lang->words[ 'operation_title' ] = $lang->get( $optype . '_title' );
 		$form->add( new \IPS\Helpers\Form\Text( 'operation_title', $operation->title, TRUE ) );
 		
+		/**
+		 * Select options for new operations
+		 */
 		if ( ! $operation->id or ! $operation->key )
 		{
+			$form->actionButtons = array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
 			foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
 			{
 				foreach ( $definition[ $optype ] as $operation_key => $operation_data )
@@ -192,7 +196,7 @@ class _Application extends \IPS\Application
 						
 						$source 		= $argNameKey . '_source';
 						$useDefault 		= $argNameKey . '_eventArg_useDefault';
-						$bypass_validation 	= \IPS\Request::i()->$source == 'manual' or ( \IPS\Request::i()->$source == 'event' and \IPS\Request::i()->$useDefault );
+						$bypass_validation 	= ! ( \IPS\Request::i()->$source == 'manual' or ( \IPS\Request::i()->$source == 'event' and \IPS\Request::i()->$useDefault ) );
 						
 						/**
 						 * Bypass validation errors on form fields that aren't actually required by our configuration
@@ -732,6 +736,14 @@ class _Application extends \IPS\Application
 				{
 					$result = call_user_func_array( $operation->definition[ 'callback' ], array_merge( $operation_args, array( $operation->data[ 'configuration' ][ 'data' ], $arg_map, $operation ) ) );					
 					
+					/**
+					 * Conditions have a special setting to invert their result with NOT, so let's check that 
+					 */
+					if ( $operation instanceof \IPS\rules\Condition and $operation->not )
+					{
+						$result = ! $result;
+					}
+					
 					if ( $rule = $operation->rule() and $rule->debug )
 					{
 						static::rulesLog( $rule->event(), $rule, $operation, $result, 'Evaluated'  );
@@ -745,17 +757,17 @@ class _Application extends \IPS\Application
 					 * Log Exceptions
 					 */
 					$event = $operation->rule() ? $operation->rule()->event() : NULL;
-					static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage(), 'Error Exception' );
+					static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage(), 'Error Exception', 1 );
 				}
 			}
 			else
 			{
 				if ( $rule = $operation->rule() )
 				{
-					static::rulesLog( $rule->event(), $rule, $operation, FALSE, 'Missing Callback'  );
+					static::rulesLog( $rule->event(), $rule, $operation, FALSE, 'Missing Callback', 1  );
 				}
 			}
-		}	
+		}
 	}
 	
 	/**
@@ -764,9 +776,17 @@ class _Application extends \IPS\Application
 	public static $locked = FALSE;
 	
 	/**
-	 * Log Rules Info
+	 * Create a Rules Log
+	 *
+	 * @param	\IPS\rules\Event	$event		The event associated with the log
+	 * @param	\IPS\rules\Rule|NULL	$rule		The rule associated with the log
+	 * @param	\IPS\rules\Action	$operation	The condition or action associated with the log
+	 * @param	mixed			$result		The value returned by the operation or log event
+	 * @param	string			$message	The reason for the log
+	 * @param	int			$error		The error code, or zero indicating a debug log
+	 * @return 	void
 	 */
-	public static function rulesLog( $event, $rule, $operation, $result, $message='' )
+	public static function rulesLog( $event, $rule, $operation, $result, $message='', $error=0 )
 	{
 		if ( ! static::$locked )
 		{
@@ -779,10 +799,12 @@ class _Application extends \IPS\Application
 			$log->class 	= is_object( $event ) 		? $event->class 		: NULL;
 			$log->key 	= is_object( $event ) 		? $event->key			: NULL;
 			$log->rule_id	= is_object( $rule )		? $rule->id			: 0;
+			$log->rule_parent = is_object ( $rule ) 	? $rule->parent_id		: 0; 
 			$log->op_id	= is_object( $operation ) 	? $operation->id		: 0;
 			$log->type 	= is_object( $operation ) 	? get_class( $operation )	: NULL;
 			$log->result 	= json_encode( $result );
 			$log->message 	= $message;
+			$log->error	= $error;
 			$log->time 	= time();
 			
 			$log->save();

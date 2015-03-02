@@ -13,12 +13,12 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * admin
  */
-class _rules extends \IPS\Node\Controller
+class _rulesets extends \IPS\Node\Controller
 {
 	/**
 	 * Node Class
 	 */
-	protected $nodeClass = '\IPS\rules\Rule';
+	protected $nodeClass = '\IPS\rules\Rule\Ruleset';
 	
 	/**
 	 * @brief	If true, root cannot be turned into sub-items, and other items cannot be turned into roots
@@ -92,16 +92,24 @@ class _rules extends \IPS\Node\Controller
 		
 		if ( \IPS\Request::i()->id )
 		{
-			$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
-			\IPS\Output::i()->output .= \IPS\rules\Application::eventHeader( $rule->event() );
+			if ( \IPS\Request::i()->subnode )
+			{
+				$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
+				\IPS\Output::i()->output .= \IPS\rules\Application::eventHeader( $rule->event() );
+			}
 		}
 		
 		if ( $rule and $rule->parent() )
 		{
 			$parent = $rule->parent();
 		}
-		else if ( \IPS\Request::i()->parent )
+		else if ( \IPS\Request::i()->parent and \IPS\Request::i()->subnode == 0 )
 		{
+			/**
+			 * Setting nodeClass to \rules\Rule because otherwise the logic in the parent::form()
+			 * gives us the form for a new rule set instead of a new rule
+			 */
+			$this->nodeClass = '\IPS\rules\Rule';
 			$parent = \IPS\rules\Rule::load( \IPS\Request::i()->parent );
 		}
 		
@@ -128,15 +136,16 @@ class _rules extends \IPS\Node\Controller
 		}
 		else
 		{
-			if ( $old == NULL )
+			if ( \IPS\Request::i()->subnode )
 			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&do=form&id={$new->id}&tab=conditions" ) );
-			}
-			else
-			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules" ), 'saved' );
+				if ( $old == NULL )
+				{
+					\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&subnode=1&do=form&id={$new->id}&tab=conditions" ) );
+				}
 			}
 		}
+		
+		parent::_afterSave( $old, $new );
 	}
 	
 	/**

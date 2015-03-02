@@ -5,6 +5,13 @@
             "controller": "rules",
             "do": "",
             "restriction": "rules_manage"
+        },
+        "logs": {
+            "tab": "core",
+            "controller": "logs",
+            "do": "",
+            "restriction": "logs_manage"
         }
-    }
+    },
+    "logs": []
 }

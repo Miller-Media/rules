@@ -2,7 +2,7 @@
     "admin": {
         "rules": {
             "default_controller": "",
-            "protected": false
+            "protected": 0
         }
     }
 }

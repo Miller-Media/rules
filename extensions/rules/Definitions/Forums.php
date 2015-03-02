@@ -37,7 +37,7 @@ class _Forums
 	{
 		$events = array();
 		
-		if ( class_exists ( '\IPS\forums\SavedAction' ) )
+		if( \IPS\Application::appIsEnabled( 'forums', TRUE ) )
 		{
 			$lang 	= \IPS\Member::loggedIn()->language();
 			$action_definition = array
@@ -57,7 +57,31 @@ class _Forums
 				$lang->words[ 'rules_Forums_event_saved_action_' . $action->_id . '_topic' ] 	= $lang->get( 'rules_Forums_event_saved_action_topic' );
 				$lang->words[ 'rules_Forums_event_saved_action_' . $action->_id . '_member' ] 	= $lang->get( 'rules_Forums_event_saved_action_member' );
 				$events[ 'saved_action_' . $action->_id ] = $action_definition;
-			}		
+			}
+			
+			$events[ 'best_answer_set' ] = array
+			(
+				'arguments' => array
+				(
+					
+				),
+			);
+			
+			$events[ 'best_answer_unset' ] = array
+			(
+				'arguments' => array
+				(
+				
+				),
+			);
+			
+			$events[ 'topic_archived' ] = array
+			(
+				'arguments' => array
+				(
+				
+				),
+			);
 		}
 		
 		return $events;
@@ -73,10 +97,51 @@ class _Forums
 	 */
 	public function conditions()
 	{
-		$conditions = array
-		(
-
-		);
+		$conditions = array();
+		
+		if( \IPS\Application::appIsEnabled( 'forums', TRUE ) )
+		{
+			$conditions = array
+			(
+				'topic_in_forum' => array
+				(
+					'callback'	=> array( $this, 'topicInForum' ),
+					'configuration' => array
+					(
+						'form' => function( $form, $values, $action )
+						{
+							$form->add( new \IPS\Helpers\Form\Node( 'rules_Forums_topic_forums', $values[ 'rules_Forums_topic_forums' ], TRUE, array( 'class' => '\IPS\forums\Forum', 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Forums_topic_forums' ) );
+						},
+						'saveValues' => function( &$values, $action )
+						{
+							if ( is_array ( $values[ 'rules_Forums_topic_forums' ] ) )
+							{
+									$values[ 'rules_Forums_topic_forums' ] = array_keys( $values[ 'rules_Forums_topic_forums' ] );
+							}
+						},
+					),
+					'arguments' 	=> array
+					(
+						'topic' => array
+						(
+							'required' => TRUE,
+							'argtypes' => array
+							(
+								'object' => array
+								(
+									'description' => "Topic to check",
+									'class' => '\IPS\forums\Topic',
+								),							
+							),
+						),
+					),
+				),
+				'topic_archived' => array
+				(
+				
+				),
+			);
+		}
 		
 		return $conditions;
 	}
@@ -88,12 +153,100 @@ class _Forums
 	 */
 	public function actions()
 	{
-		$actions = array
-		(
-
-		);
+		$actions = array();
+		
+		if( \IPS\Application::appIsEnabled( 'forums', TRUE ) )
+		{
+			$actions = array
+			(
+				'move_topic' => array
+				(				
+					'callback'	=> array( $this, 'moveTopic' ),
+					'configuration' => array
+					(
+						'form' => function( $form, $values, $action )
+						{
+							$form->add( new \IPS\Helpers\Form\Node( 'rules_Forums_topic_forum', $values[ 'rules_Forums_topic_forum' ], TRUE, array( 'class' => '\IPS\forums\Forum' ), NULL, NULL, NULL, 'rules_Forums_topic_forum' ) );
+							$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Forums_topic_link', $values[ 'rules_Forums_topic_link' ], FALSE, array(), NULL, NULL, NULL, 'rules_Forums_topic_link' ) );
+						},
+						'saveValues' => function( &$values, $action )
+						{
+							if ( is_object ( $values[ 'rules_Forums_topic_forum' ] ) )
+							{
+								$values[ 'rules_Forums_topic_forum' ] = $values[ 'rules_Forums_topic_forum' ]->_id;
+							}
+						},
+					),					
+					'arguments' => array
+					(
+						'topic' => array
+						(
+							'required' => TRUE,
+							'argtypes' => array
+							(
+								'object' => array
+								(
+									'description' => "Topic to move",
+									'class' => '\IPS\forums\Topic',
+								),							
+							),
+						),
+					),
+				),
+			);
+		}
 		
 		return $actions;
+	}
+	
+	/**
+	 * Check If Topic Is In Forum
+	 */
+	public function topicInForum( $topic, $values )
+	{
+		if ( ! ( is_object ( $topic ) ) )
+		{
+			return FALSE;
+		}
+	
+		if ( ! ( $topic instanceof \IPS\forums\Topic ) )
+		{
+			return FALSE;
+		}
+		
+		if ( $container = $topic->containerWrapper( TRUE ) )
+		{
+			return in_array( $container->id, (array) $values[ 'rules_Forums_topic_forums' ] );
+		}
+		
+		return FALSE;	
+	}
+	
+	/**
+	 * Move Topic
+	 */
+	public function moveTopic( $topic, $values )
+	{
+		if ( ! ( is_object ( $topic ) ) )
+		{
+			return 'topic is not an object';
+		}
+	
+		if ( ! ( $topic instanceof \IPS\forums\Topic ) )
+		{
+			return 'not a valid topic class: ' . get_class( $topic );
+		}
+		
+		try
+		{
+			$forum = \IPS\forums\Forum::load( $values[ 'rules_Forums_topic_forum' ] );
+			$topic->move( $forum, $values[ 'rules_Forums_topic_link' ] );
+			return 'topic moved';
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			return "cant move topic, forum doesn't exist";
+		}
 	}
 	
 }
