@@ -176,7 +176,7 @@ class _Rule extends \IPS\Node\Model
 		$form->addTab( 'rules_settings' );
 		
 		/**
-		 * Children Rules Inherit Event From Parent
+		 * New Child Rules Inherit Event From Parent
 		 */
 		if 
 		( 
@@ -194,14 +194,34 @@ class _Rule extends \IPS\Node\Model
 			$form->actionButtons 	= array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
 		}
 		
+		/**
+		 * Root rules can be moved between rule sets
+		 */
+		else if	( ! $this->parent() )
+		{
+			if ( $sets = \IPS\rules\Rule\Ruleset::roots( NULL ) )
+			{
+				$ruleset_id = $this->ruleset_id ?: 0;
+				if 
+				( 
+					! $this->id and
+					\IPS\Request::i()->subnode == 1 and
+					\IPS\Request::i()->parent
+				)
+				{
+					$ruleset_id = \IPS\Request::i()->parent;
+				}
+				
+				$form->add( new \IPS\Helpers\Form\Node( 'rule_ruleset_id', $ruleset_id, TRUE, array( 'class' => '\IPS\rules\Rule\Ruleset', 'zeroVal' => 'rule_no_ruleset', 'subnodes' => FALSE ) ) );
+			}
+		}
+		
 		if ( $this->event_key and $this->event()->placeholder )
 		{
 			$form->addHtml( \IPS\Theme::i()->getTemplate( 'components' )->missingEvent( $this ) );
 			$event_missing = TRUE;
 		}
 
-		$form->add( new \IPS\Helpers\Form\Text( 'rule_title', $this->title, TRUE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->addToStack( 'rule_title_placeholder' ) ) ) );
-		
 		/**
 		 * If the event hasn't been configured for this rule, build an option list
 		 * for all available events for the user to select.
@@ -218,6 +238,9 @@ class _Rule extends \IPS\Node\Model
 			}
 			$form->add( new \IPS\Helpers\Form\Select( 'rule_event_selection', $this->id ? md5( $this->event_app . $this->event_class ) . '_' . $this->event_key : NULL, TRUE, array( 'options' => $events, 'noDefault' => TRUE ), NULL, NULL, NULL, 'rule_event_selection' ) );
 		}
+		
+		/* Rule Title */
+		$form->add( new \IPS\Helpers\Form\Text( 'rule_title', $this->title, TRUE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->addToStack( 'rule_title_placeholder' ) ) ) );
 		
 		/**
 		 * Conditions & Actions
@@ -303,7 +326,7 @@ class _Rule extends \IPS\Node\Model
 				$form->addTab( 'rules_debug_console' );
 				
 				$self 		= $this;
-				$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&do=viewlog" );
+				$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=viewlog" );
 				$table 		= new \IPS\Helpers\Table\Db( 'rules_logs', $controllerUrl, array( 'rule_id=? AND op_id=0', $this->id ) );
 				$table->include = array( 'time', 'message', 'result' );
 				$table->parsers = array(
@@ -356,7 +379,12 @@ class _Rule extends \IPS\Node\Model
 		}
 		
 		unset( $values[ 'rule_event_selection' ] );
-	
+		
+		if ( isset ( $values[ 'rule_ruleset_id' ] ) and is_object( $values[ 'rule_ruleset_id' ] ) )
+		{
+			$values[ 'rule_ruleset_id' ] = $values[ 'rule_ruleset_id' ]->id;
+		}
+			
 		parent::saveForm( $values );
 	}
 	
@@ -377,6 +405,11 @@ class _Rule extends \IPS\Node\Model
 			$url = $url->setQueryString( array( 'subnode' => 1 ) );
 		}
 						
+		if ( isset ( $buttons[ 'add' ] ) )
+		{
+			$buttons[ 'add' ][ 'icon' ] = 'plus-square-o';
+		}
+		
 		$_buttons = array
 		(
 			'conditions' => array
@@ -400,9 +433,20 @@ class _Rule extends \IPS\Node\Model
 		$buttons[ 'export' ] = array
 		(
 			'icon' => 'download',
-			'title' => 'rules_export_rule',
-			'link' => $url->setQueryString( array( 'do' => 'export', 'rule' => $this->id ) ),		
+			'title' => $this->hasChildren() ? 'rules_export_rule_group' : 'rules_export_rule',
+			'link' => $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'export', 'rule' => $this->id ) ),		
 		);
+		
+		if ( $this->debug )
+		{
+			$buttons[ 'debug' ] = array
+			(
+				'icon'		=> 'bug',
+				'title'		=> 'View Debug Console',
+				'id'		=> "{$row['id']}-view",
+				'link'		=> $url->setQueryString( array( 'controller' => 'rules', 'do' => 'form', 'id' => $this->id, 'tab' => 'debug_console' ) ),
+			);
+		}
 		
 		return $buttons;
 	}
@@ -419,7 +463,11 @@ class _Rule extends \IPS\Node\Model
 			$parentColumn = static::$databaseColumnParent;
 			if( $this->$parentColumn !== static::$databaseColumnParentRootValue )
 			{
-				return static::load( $this->$parentColumn );
+				try
+				{
+					return static::load( $this->$parentColumn );
+				}
+				catch ( \OutOfRangeException $e ) {}
 			}
 		}
 		
@@ -531,6 +579,33 @@ class _Rule extends \IPS\Node\Model
 	}
 	
 	/**
+	 * Ruleset Cache
+	 */
+	public $ruleset = NULL;
+	
+	/**
+	 * Get the event for this rule
+	 */
+	public function ruleset()
+	{
+		if ( isset( $this->ruleset ) )
+		{
+			return $this->ruleset;
+		}
+		
+		if ( $this->ruleset_id )
+		{
+			try
+			{
+				return $this->ruleset = \IPS\rules\Rule\Ruleset::load( $this->ruleset_id );
+			}
+			catch( \OutOfRangeException $e ) {}
+		}
+		
+		return $this->ruleset = FALSE;
+	}
+	
+	/**
 	 * @brief	Cache for conditions
 	 */
 	protected $conditionCache = NULL;
@@ -573,7 +648,76 @@ class _Rule extends \IPS\Node\Model
 	{
 		return $this->base_compare ?: 'and';
 	}
-	 
+
+	/**
+	 * Copy Rule
+	 */
+	public function __clone()
+	{
+		if ( $this->skipCloneDuplication === TRUE )
+		{
+			return;
+		}
+	
+	
+		$oldId = $this->id;
+		parent::__clone();
+		
+		$rule = \IPS\rules\Rule::load( $oldId );
+		foreach ( $rule->conditions() as $condition )
+		{
+			$newCondition = clone $condition;
+			$newCondition->rule_id = $this->id;
+			$newCondition->save();
+		}
+		
+		foreach ( $rule->actions() as $action )
+		{
+			$newAction = clone $action;
+			$newAction->rule_id = $this->id;
+			$newAction->save();
+		}
+	}
+	
+	/**
+	 * [ActiveRecord] Save Changed Columns
+	 *
+	 * @return	void
+	 */
+	public function save()
+	{
+		if ( $this->parent() )
+		{
+			if ( $this->ruleset_id != $this->parent()->ruleset_id )
+			{
+				$this->ruleset_id = $this->parent()->ruleset_id;
+			}
+		}
+		
+		parent::save();
+		
+		/**
+		 * Synchronize Any Linked Rules
+		 */
+		foreach ( $this->children() as $child )
+		{
+			$child->save();
+		}
+	}
+	
+	/**
+	 * Form to delete or move content
+	 *
+	 * @param	bool	$showMoveToChildren	If TRUE, will show "move to children" even if there are no children
+	 * @return	\IPS\Helpers\Form
+	 */
+	public function deleteOrMoveForm( $showMoveToChildren=FALSE )
+	{
+		$form = new \IPS\Helpers\Form( 'delete_custom_action', 'rules_confirm_delete' );
+		$form->hiddenValues[ 'node_move_children' ] = 0;
+		return $form;
+	}
+	
 	/**
 	 * [ActiveRecord] Delete Record
 	 *

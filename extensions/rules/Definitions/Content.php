@@ -37,6 +37,21 @@ class _Content
 	{
 		$events = array
 		(
+			'content_created' => array
+			( 
+				'arguments' => array
+				( 
+					'item' 		=> array( 'argtype' => 'object', 'class' => '\IPS\Content' ),
+				),		
+			),
+			'content_updated' => array
+			( 
+				'arguments' => array
+				( 
+					'item' 		=> array( 'argtype' => 'object', 'class' => '\IPS\Content' ),
+					'changed'	=> array( 'argtype' => 'array' ),
+				),		
+			),
 			'content_pinned' => array
 			( 
 				'arguments' => array
@@ -160,7 +175,19 @@ class _Content
 						{
 							foreach ( $router->classes as $contentItemClass )
 							{
-								$options[ $contentItemClass ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) );
+								$options[ $contentItemClass ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Content Item)';
+								
+								if ( isset ( $contentItemClass::$commentClass ) )
+								{
+									$commentClass = $contentItemClass::$commentClass;
+									$options[ $commentClass ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Comment)';
+								}
+								
+								if ( isset ( $contentItemClass::$reviewClass ) )
+								{
+									$reviewClass = $contentItemClass::$reviewClass;
+									$options[ $reviewClass ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Review)';
+								}
 							}
 						}
 						

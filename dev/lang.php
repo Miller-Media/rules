@@ -3,14 +3,17 @@
 $lang = array(
 	'__app_rules'				=> "Rules",
 	'menu__rules_rules'			=> "Rules",
-	'menu__rules_rules_rules'		=> "Manage Rules",
+	'menu__rules_rules_rulesets'		=> "Manage Rules",
 	'menu__rules_rules_logs'		=> "Rules Logs",
+	'menu__rules_rules_custom'		=> "Custom Actions",
+	'menu__rules_rules_schedule'		=> "Scheduled Actions",
 	'ext__Definitions'			=> "Events, Conditions, and Actions Definition Groups",
 	
 	// Rules Restrictions
 	'r__rules'				=> "Rules Restrictions",
 	'r__rules_manage'			=> "Manage Rules",
 	'r__logs_manage'			=> "View Logs",
+	'r__logs'				=> "Logs Restrictions",
 	'rules_logs'				=> "Rules Logs",
 	'rules_flush_logs'			=> "Flush Logs",
 	'rules_export_all'			=> "Export All",
@@ -24,9 +27,56 @@ $lang = array(
 	'rules_logs_table_result'		=> "Result",
 	'rules_logs_table_time'			=> "Time",
 	
+	'rules_scheduled_actions'		=> "Scheduled Actions",
+	'custom_actions'			=> "Custom Actions",
+	'custom_action_title'			=> "Custom Action Name",
+	'custom_action_description'		=> "Description",
+	'custom_actions_add_child'		=> "Add Action Argument",
+	
+	'argument_name'				=> "Argument Name",
+	'argument_name_desc'			=> "Human Friendly Name (i.e. Email Recipient)",
+	'argument_varname'			=> "Machine Name",
+	'argument_varname_desc'			=> "The machine name can only be alphanumeric (including underscores). It needs to be unique to this action and will used as a variable name in action code.<br>( ex: member )",
+	'argument_type'				=> "Argument Type",
+	'argument_class'			=> "Object Type",
+	'argument_custom_class'			=> "Custom Object Classname",
+	'argument_custom_class_desc'		=> "Enter the classname of the object",
+	'argument_required'			=> "Required",
+	'argument_required_desc'		=> "Select whether your action will require this argument",
+	'argument_description'			=> "Description",
+	'argument_description_desc'		=> "Describe what this action argument is for. (ex: Member to send the email to )",
+	
+	'argument_not_unique'			=> "This machine name is already being used in this action",
+	
 	// Form Generic
-	'rulesets'				=> "Rule Sets",
+	'rulesets'				=> "Rules",
 	'ruleset_title'				=> "Ruleset Title",
+	'rulesets_add_child'			=> "Add New Rule",
+	'rulesets_add'				=> "Create New Rule Set",
+	'rule_ruleset_id'			=> "Associated Rule Set",
+	'rule_no_ruleset'			=> "Independent Rule (not part of a rule set)",
+	'ruleset_description'			=> "Rule Set Description",
+	'ruleset_creator'			=> "Created BY",
+	'action_schedule_mode'			=> "Action should be executed",
+	'rules_action_execution_now'		=> "Immediately",
+	'rules_action_execution_future'		=> "Fixed amount of time in the future",
+	'rules_action_execution_date'		=> "A specific date in the future",
+	'rules_action_execution_custom'		=> "A calculated date and time",
+	'action_schedule_minutes'		=> "Minutes",
+	'action_schedule_hours'			=> "Hours",
+	'action_schedule_days'			=> "Days",
+	'action_schedule_months'		=> "Months",
+	'action_schedule_date'			=> "Date / Time",
+	'action_schedule_customcode'		=> "PHP Code",
+	'action_schedule_customcode__desc'	=> "<ul><li><strong>object</strong>: An \IPS\DateTime Object</li><li><strong>int</strong>: A unix timestamp</li><li><strong>string</strong>: A date/time string</li></ul>",
+
+	'rules_editing_scheduled_action'	=> "Editing Scheduled Action",
+	'rules_scheduled_date'			=> "Date / Time Scheduled",
+	'rules_scheduled_action_updated'	=> "Scheduled Action Updated",
+	'rules_scheduled_action_executed'	=> "Scheduled Action Executed",
+	'rules_scheduled_action_deleted'	=> "Scheduled Action Deleted",
+	
+	'rules_confirm_delete'			=> "Confirm Delete",
 	
 	'rule'					=> "Rule",
 	'rules'					=> "Rules",
@@ -43,7 +93,7 @@ $lang = array(
 
 	// Node Form
 	'rule_debug'				=> "Debug This Rule",
-	'debug_on_badge'			=> "<i class='fa fa-bug'></i> Debugging",
+	'debug_on_badge'			=> "<i class='fa fa-bug'></i> Debug Mode",
 	'rule_event_missing_badge'		=> "<i class='fa fa-warning'></i> Event Missing",
 	'rule_debug_desc'			=> "If enabled, information related to this rule will be logged in the debug console.",
 	'rules_settings'			=> "Settings",
@@ -72,6 +122,8 @@ $lang = array(
 	'or_group_badge'			=> "OR ANY SUBCONDITION",
 	'and_group_badge'			=> "AND ALL SUBCONDITIONS",
 	'rules_export_rule'			=> "Export Rule",
+	'rules_export_rule_group'		=> "Export Rule Group",
+	'rules_export_rule_set'			=> "Export Rule Set",
 	'rules_import'				=> "Import Rules",
 	'rules_imported'			=> "Rules Successfully Imported",
 	'rule_missing_notice'			=> "This rule was designed for an event that cannot currently be triggered on your system. Configuration is disabled.",
@@ -87,9 +139,16 @@ $lang = array(
 	'rules_actions_table_op_id'		=> "Action Title",
 	'rules_actions_table_message'		=> "Status",
 	'rules_actions_table_result'		=> "Result",
+	'rules_actions_table_time'		=> "Time",
 	'rules_subrules_table_rule_id'		=> "Rule Name",
 	'rules_subrules_table_message'		=> "Status",
 	'rules_subrules_table_result'		=> "Result",
+	
+	'rules_scheduled_schedule_time'		=> "Scheduled Date",
+	'rules_scheduled_schedule_action_id'	=> "Scheduled Action",
+	'rules_scheduled_schedule_unique_key'	=> "Unique Key",
+	'rules_scheduled_schedule_thread'	=> "Associated Rule",
+	'rules_scheduled_schedule_created'	=> "Created On",
 	
 	// Conditions
 	'condition_title'			=> "Condition Name",
@@ -107,6 +166,10 @@ $lang = array(
 	'invalid_rule'				=> "Invalid Rule",
 	'rules_event_not_found'			=> "Rules Event Not Found",
 	
+	// Global Arguments
+	'__global_logged_in_member'		=> "Global: Logged in member",
+	
+	
 	/**
 	 * Members 
 	 *
@@ -114,6 +177,12 @@ $lang = array(
 	 */
 	 
 	/*** MEMBERS: Events ***/
+	'rules_Members_event_memberSync_onLogin'		=> "Member logged in to system",
+	'rules_Members_event_memberSync_onLogin_member'		=> "Member that logged in",
+	
+	'rules_Members_event_memberSync_onLogout'		=> "Member logged out of system",
+	'rules_Members_event_memberSync_onLogout_member'	=> "Member that logged out",
+	
 	'rules_Members_event_memberSync_onCreateAccount'	=> "Member account is created",
 	'rules_Members_event_memberSync_onCreateAccount_member'	=> "Member that was created",
 	
@@ -150,16 +219,91 @@ $lang = array(
 	'rules_Members_conditions_member_has_group_member'	=> "Member To Check",
 	'rules_Members_member_groups'				=> "Check if member is in any of these groups",
 	
-	'rules_Members_conditions_member_attributes'		=> "Member has particular attributes",
+	'rules_Members_conditions_member_attributes'		=> "Member attribute values",
 	'rules_Members_conditions_member_attributes_member'	=> "Member To Check",
+	'rules_Members_member_attribute'			=> "Attribute to check",
+	'rules_Members_attribute_compare_type_value'		=> "Is",
+	'rules_Members_attribute_compare_type_date'		=> "Is",
+	'rules_Members_attribute_compare_value'			=> "Value",
+	'rules_Members_attribute_compare_date'			=> "Date",
+	'rules_member_attribute_photo'				=> "Has Photo",
+	'rules_member_attribute_signature'			=> "Has Signature",
+	'rules_member_attribute_followers'			=> "Followers",
+	'rules_member_attribute_reputation'			=> "Reputation Level",
+	'rules_member_attribute_posts'				=> "Post Count",
+	'rules_member_attribute_joined'				=> "Joined Date",
+	'rules_member_attribute_birthday'			=> "Birthday",
+	'rules_member_attribute_birthdate'			=> "Birthdate",
+	'rules_member_attribute_last_activity'			=> "Last Activity",
+	'rules_member_attribute_last_post'			=> "Last Post",
+	'rules_Member_attribute_compare_type'			=> "Comparison type",
+	'rules_Members_attribute_compare_date'			=> "Date",
+	'rules_Members_attribute_compare_minutes'		=> "Minutes",
+	'rules_Members_attribute_compare_hours'			=> "Hours",
+	'rules_Members_attribute_compare_days'			=> "Days",
+	'rules_Members_attribute_compare_months'		=> "Months",
+	'rules_Members_attribute_compare_years'			=> "Years",
+	
 	
 	'rules_Members_conditions_member_status'		=> "Member has a particular status",
 	'rules_Members_conditions_member_status_member'		=> "Member To Check",
+	'rules_Members_member_status'				=> "Member has the following status",
+	'rules_member_validating'				=> "Validating",
+	'rules_member_spammer'					=> "Marked as Spammer",
+	'rules_member_banned_temp'				=> "Banned: Temporarily",
+	'rules_member_banned_perm'				=> "Banned: Permanently",
+	'rules_member_warnlevel'				=> "Has Warnings",
+	'rules_member_online'					=> "Member is Online",
 	
 	/*** MEMBERS: Actions ***/
 	'rules_Members_actions_modify_posts'			=> "Modify the post count of a member",
 	'rules_Members_actions_modify_posts_member'		=> "Modify Posts For This Member",
 	'rules_Members_actions_modify_posts_value'		=> "Value to modify posts count by",
+	
+	'rules_Members_actions_change_primary_group'		=> "Change the primary group of a member",
+	'rules_Members_actions_change_primary_group_member'	=> "Member To Change Primary Group For",
+	'rules_Members_member_primary_group'			=> "Primary Group",
+	
+	'rules_Members_actions_add_secondary_groups'		=> "Add secondary group(s) to member",
+	'rules_Members_actions_add_secondary_groups_member'	=> "Member To Add Secondary Groups To",
+	'rules_Members_member_secondary_groups_add'		=> "Add Secondary Groups",
+	'rules_Members_member_secondary_groups_add_desc'	=> "Any groups selected here will be added to the members secondary groups, preserving any existing secondary groups they may be assigned to.",
+	
+	'rules_Members_actions_remove_secondary_groups'		=> "Remove secondary group(s) from member",
+	'rules_Members_actions_remove_secondary_groups_member'	=> "Member To Remove Secondary Groups From",
+	'rules_Members_member_secondary_groups_remove'		=> "Remove Secondary Groups",
+	'rules_Members_member_secondary_groups_remove_desc'	=> "Any groups selected here will be removed from the members secondary groups, preserving any other secondary groups they may be assigned to.",
+	
+	'rules_Members_actions_set_secondary_groups'		=> "Set secondary group(s) on member",
+	'rules_Members_actions_set_secondary_groups_member'	=> "Member To Set Secondary Groups For",
+	'rules_Members_member_secondary_groups_set'		=> "Set Secondary Groups",
+	'rules_Members_member_secondary_groups_set_desc'	=> "Any groups selected here will become the only secondary groups assigned to the member.",
+	
+	'rules_Members_actions_change_member_title'		=> "Change the title of a member",
+	'rules_Members_actions_change_member_title_member'	=> "Member To Change Title",
+	'rules_Members_actions_change_member_title_title'	=> "The New Member Title",
+
+	'rules_Members_actions_flag_spammer'			=> "Flag a member as spammer",
+	'rules_Members_actions_flag_spammer_member'		=> "Member To Flag As Spammer",
+	
+	'rules_Members_actions_unflag_spammer'			=> "Unflag a member as spammer",
+	'rules_Members_actions_unflag_spammer_member'		=> "Member To Unflag As Spammer",
+
+	'rules_Members_actions_ban_member'			=> "Ban a member from the site",
+	'rules_Members_actions_ban_member_member'		=> "Member To Ban",
+	'rules_Members_ban_setting'				=> "Type of ban",
+	'rules_ban_permanent'					=> "Permanent ban",
+	'rules_ban_temporary'					=> "Temporary ban",
+	'rules_Members_ban_setting_minutes'			=> "Minutes",
+	'rules_Members_ban_setting_hours'			=> "Hours",
+	'rules_Members_ban_setting_days'			=> "Days",
+	'rules_Members_ban_setting_months'			=> "Months",
+	
+	'rules_Members_actions_unban_member'			=> "Unban a member from the site",
+	'rules_Members_actions_unban_member_member'		=> "Member To Unban",
+
+	'rules_Members_actions_prune_member'			=> "Prune a member",
+	'rules_Members_actions_prune_member_member'		=> "Member To Prune",
 	
 	/**
 	 * System 
@@ -254,6 +398,13 @@ $lang = array(
 	 */
 	 
 	/*** CONTENT: Events ***/
+	'rules_Content_event_content_created'		=> "Content has been posted",
+	'rules_Content_event_content_created_item'	=> "The content object",
+
+	'rules_Content_event_content_updated'		=> "Content has been updated",
+	'rules_Content_event_content_updated_item'	=> "The content object",
+	'rules_Content_event_content_updated_changed'	=> "An array of the changed properties",
+
 	'rules_Content_event_content_pinned'		=> "Content has been pinned",
 	'rules_Content_event_content_pinned_item'	=> "The content object",
 	'rules_Content_event_content_pinned_member'	=> "The member who pinned the content",

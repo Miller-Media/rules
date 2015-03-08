@@ -88,7 +88,7 @@ class _System
 					'form' => function( &$form, $values, $operation )
 					{
 						\IPS\Member::loggedIn()->language()->words[ 'rules_System_custom_phpcode_desc' ] = \IPS\Member::loggedIn()->language()->get( 'phpcode_desc_details_vars' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
-						$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_custom_phpcode', $values[ 'custom_phpcode' ] ?: "//<?php\n\nreturn TRUE;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'rules_System_custom_phpcode' ) );
+						$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_custom_phpcode', $values[ 'rules_System_custom_phpcode' ] ?: "//<?php\n\nreturn TRUE;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'rules_System_custom_phpcode' ) );
 					},
 				),
 				'callback' 	=> array( $this, 'executePHP' ),
@@ -310,7 +310,7 @@ class _System
 					'form' => function( &$form, $values, $operation )
 					{
 						\IPS\Member::loggedIn()->language()->words[ 'rules_System_custom_phpcode_desc' ] = \IPS\Member::loggedIn()->language()->get( 'phpcode_desc_details_vars' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
-						$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_custom_phpcode', $values[ 'custom_phpcode' ] ?: "//<?php\n\nreturn TRUE;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'rules_System_custom_phpcode' ) );
+						$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_custom_phpcode', $values[ 'rules_System_custom_phpcode' ] ?: "//<?php\n\nreturn \"action complete\";", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'rules_System_custom_phpcode' ) );
 					},
 				),
 				'callback' 	=> array( $this, 'executePHP' ),
@@ -342,7 +342,7 @@ class _System
 			return @eval( $phpcode );
 		};
 		
-		return $evaluate( $values[ 'custom_phpcode' ] );
+		return $evaluate( $values[ 'rules_System_custom_phpcode' ] );
 	}
 	
 	/**

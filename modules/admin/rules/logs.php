@@ -34,7 +34,7 @@ class _logs extends \IPS\Dispatcher\Controller
 	protected function manage()
 	{		
 		/* Create the table */
-		$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&do=viewlog" );
+		$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=viewlog" );
 		$table = new \IPS\Helpers\Table\Db( 'rules_logs', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs' ), array( 'op_id=0 AND rule_parent=0' ) );
 		$table->include 	= array( 'type', 'app', 'key', 'message', 'result', 'time' );
 		$table->langPrefix 	= 'rules_logs_table_';
@@ -74,7 +74,7 @@ class _logs extends \IPS\Dispatcher\Controller
 			},
 			'result' => function( $val )
 			{
-				return $val;
+				return json_decode( $val );
 			},
 		);				
 		$table->sortBy = 'time';

@@ -23,10 +23,15 @@ class _Application extends \IPS\Application
 	public static $argPresets = NULL;
 	
 	/**
-	 * Thread ID For Logging
+	 * Preset Operation Argument Types
 	 */
-	public static $threadId = NULL;
+	public static $converterMap = NULL;
 	
+	/**
+	 * Global Arguments
+	 */
+	public static $globalArguments = NULL;
+		
 	/**
 	 * Argument Definition Presets
 	 *
@@ -125,9 +130,6 @@ class _Application extends \IPS\Application
 		$_operations 	= array();
 		$lang		= \IPS\Member::loggedIn()->language();
 		
-		$lang->words[ 'operation_title' ] = $lang->get( $optype . '_title' );
-		$form->add( new \IPS\Helpers\Form\Text( 'operation_title', $operation->title, TRUE ) );
-		
 		/**
 		 * Select options for new operations
 		 */
@@ -147,8 +149,10 @@ class _Application extends \IPS\Application
 			$_operations[ md5( $operation->app . $operation->class ) . '_' . $operation->key ] = $operation->app . '_' . $operation->class . '_' . $optype . '_' . $operation->key;
 		}
 		
+		$lang->words[ 'operation_title' ] = $lang->get( $optype . '_title' );	
 		$lang->words[ 'rule_operation_selection' ] = $lang->get( 'rule_' . $optype . '_selection' );
 		$form->add( new \IPS\Helpers\Form\Select( 'rule_operation_selection', $operation->id ? md5( $operation->app . $operation->class ) . '_' . $operation->key : NULL, TRUE, array( 'options' => $_operations, 'noDefault' => TRUE ), NULL, NULL, NULL, 'rule_operation_selection' ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'operation_title', $operation->title, TRUE ) );
 		
 		if ( $operation->definition )
 		{		
@@ -227,62 +231,94 @@ class _Application extends \IPS\Application
 					/**
 					 * Can the operation accept variable arguments?
 					 * Does the event have arguments to pass?
-					 * Are any of the arguments usable?
+					 * Are there any arguments to use?
 					 */
-					if ( isset( $arg[ 'argtypes' ] ) and $event = $operation->event() and $_usable_arguments = static::usableEventArguments( $arg, $operation ) )
+					$event = $operation->event();
+					$_usable_arguments = static::usableEventArguments( $arg, $operation );
+					if 
+					( 
+						isset( $arg[ 'argtypes' ] ) and 
+						count( $event->data[ 'arguments' ] ) and
+						$_usable_arguments
+					)
 					{
-						if ( count( $event->data[ 'arguments' ] ) )
+						$source_select->options[ 'options' ][ 'event' ] = 'operation_arg_source_event';
+										
+						$usable_arguments 	= array();
+						$usable_toggles		= array();
+						
+						/**
+						 * Add usable event arguments to our list
+						 */
+						foreach ( $_usable_arguments as $event_arg_name => $event_argument )
 						{
-							$source_select->options[ 'options' ][ 'event' ] = 'operation_arg_source_event';
-											
-							$usable_arguments 	= array();
-							$usable_toggles		= array();
+							/* Break apart argument name because it may contain converter details */
+							list( $_event_arg_name, $converter_class, $converter_key ) = explode( ':', $event_arg_name );
 							
-							/* Compile a list of usable arguments */
-							foreach( $_usable_arguments as $event_arg_name => $event_argument )
+							/**
+							 * Global Arguments
+							 */
+							if ( mb_substr( $event_arg_name, 0, 9 ) === '__global_' )
 							{
-								$eventArgNameKey = $event->app . '_' . $event->class . '_event_' . $event->key . '_' . $event_arg_name;
-								$usable_arguments[ $event_arg_name ] = $eventArgNameKey;
-								
-								if ( isset( $event_argument[ 'nullable' ] ) and $event_argument[ 'nullable' ] )
-								{
-									/* Toggle on manual settings to use in case the event argument is empty */
-									if ( $arg[ 'required' ] )
-									{
-										/* toggle the manual configuration form by necessity because it's required */
-										$usable_toggles[ $event_arg_name ] = $source_select->options[ 'toggles' ][ 'manual' ];
-										$form->hiddenValues[ $argNameKey . '_eventArg_useDefault' ] = TRUE;
-									}
-									else
-									{
-										/* a yes/no option will be given to allow the user to choose a default configuration, so just toggle that */
-										$usable_toggles[ $event_arg_name ][] = $argNameKey . '_eventArg_useDefault';
-									}
-								}
+								$eventArgNameKey = $event_arg_name;
+								$eventArgNameLang = $_event_arg_name;
 							}
 							
 							/**
-							 * Add event argument select box if we have usable arguments
+							 * Event Specific Arguments
 							 */
-							if ( count( $usable_arguments ) )
+							else
 							{
-								$lang->words[ $argNameKey . '_eventArg' ] 		= $lang->get( 'use_event_argument' );
-								$lang->words[ $argNameKey . '_eventArg_useDefault' ] 	= $lang->get( 'use_event_argument_default' );
-								$lang->words[ $argNameKey . '_eventArg_useDefault_desc']= $lang->get( 'use_event_argument_default_desc' );
-								
-								/* Event arg selector */
-								$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, NULL, NULL, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
-								
-								/**
-								 * Add option to use a default configuration if this argument is not required
-								 */
-								if ( ! $arg[ 'required' ] )
-								{
-									$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $source_select->options[ 'toggles' ][ 'manual' ] ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
-								}
-								
-								$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg' );
+								$eventArgNameKey = $event->app . '_' . $event->class . '_event_' . $event->key . '_' . $event_arg_name;
+								$eventArgNameLang = $event->app . '_' . $event->class . '_event_' . $event->key . '_' . $_event_arg_name;
 							}
+							
+							/* If it will be converted, change the item title to indicate that */
+							if ( $converter_class and $converter_key )
+							{
+								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . " ({$converter_key})";
+							}
+							
+							$usable_arguments[ $event_arg_name ] = $eventArgNameKey;			
+							
+							if ( isset( $event_argument[ 'nullable' ] ) and $event_argument[ 'nullable' ] )
+							{
+								/* Toggle on manual settings to use in case the event argument is empty */
+								if ( $arg[ 'required' ] )
+								{
+									/* toggle the manual configuration form by necessity because it's required */
+									$usable_toggles[ $event_arg_name ] = $source_select->options[ 'toggles' ][ 'manual' ];
+									$form->hiddenValues[ $argNameKey . '_eventArg_useDefault' ] = TRUE;
+								}
+								else
+								{
+									/* a yes/no option will be given to allow the user to choose a default configuration, so just toggle that */
+									$usable_toggles[ $event_arg_name ][] = $argNameKey . '_eventArg_useDefault';
+								}
+							}
+						}
+																		
+						/**
+						 * Add event argument select box if we have usable arguments
+						 */
+						if ( count( $usable_arguments ) )
+						{
+							$lang->words[ $argNameKey . '_eventArg' ] 		= $lang->get( 'use_event_argument' );
+							$lang->words[ $argNameKey . '_eventArg_useDefault' ] 	= $lang->get( 'use_event_argument_default' );
+							$lang->words[ $argNameKey . '_eventArg_useDefault_desc']= $lang->get( 'use_event_argument_default_desc' );
+							
+							/* Event arg selector */
+							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, NULL, NULL, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
+							
+							/**
+							 * Add option to use a default configuration if this argument is not required
+							 */
+							if ( ! $arg[ 'required' ] )
+							{
+								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $source_select->options[ 'toggles' ][ 'manual' ] ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
+							}
+							
+							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg' );
 						}
 					}
 					
@@ -335,7 +371,6 @@ class _Application extends \IPS\Application
 						
 						$form->add( new \IPS\Helpers\Form\Codemirror( $argNameKey . '_phpcode', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] ?: "//<?php\n\nreturn;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, $argNameKey . '_phpcode' ) );
 					}
-					
 				}
 			}
 		}	
@@ -407,56 +442,68 @@ class _Application extends \IPS\Application
 	public static function usableEventArguments( $arg, $operation )
 	{
 		$_usable_arguments = array();
+		$event = $operation->event();
 		
-		if ( isset( $arg[ 'argtypes' ] ) and $event = $operation->event() )
+		if ( isset( $arg[ 'argtypes' ] ) )
 		{
-			if ( isset( $event->data[ 'arguments' ] ) and count( $event->data[ 'arguments' ] ) )
+			if ( isset( $event->data ) )
 			{
-				/* What types of arguments are acceptable? */
-				$_types = array();
-				foreach ( $arg[ 'argtypes' ] as $type => $typedata )
+				/* Add in global arguments */
+				$all_arguments = array_merge( $event->data[ 'arguments' ] ?: array(), static::getGlobalArguments() );
+				
+				if ( is_array( $all_arguments ) and count( $all_arguments ) )
 				{
-					$_types[] = is_array( $typedata ) ? $type : $typedata;
-				}
-								
-				/* For each event argument, see if we can use it */
-				foreach( $event->data[ 'arguments' ] as $event_arg_name => $event_argument )
-				{
-					/* Check if the argtype is supported */
-					if ( in_array( 'mixed', $_types ) or in_array( $event_argument[ 'argtype' ], $_types ) )
+					/* What types of arguments are acceptable? */
+					$_types = array();
+					foreach ( $arg[ 'argtypes' ] as $type => $typedata )
 					{
-						$can_use = TRUE;
-						
-						/* Our operation argument type definition */
-						$type_def = $arg[ 'argtypes' ][ $event_argument[ 'argtype' ] ] ?: $arg[ 'argtypes' ][ 'mixed' ];
-						
-						/* If it's not an array, then it doesn't have any special needs */
-						if ( is_array( $type_def ) and ! empty ( $type_def ) )
+						$_types[] = is_array( $typedata ) ? $type : $typedata;
+					}
+									
+					/* For each event argument, see if we can use it */
+					foreach( $all_arguments as $event_arg_name => $event_argument )
+					{
+						/* Check if the argtype is supported */
+						if ( in_array( 'mixed', $_types ) or in_array( $event_argument[ 'argtype' ], $_types ) )
 						{
-							/* If a special class of argument is required, see if the event argument is compliant */
-							if ( isset( $type_def[ 'class' ] ) )
+							$can_use = TRUE;
+							
+							/* Our operation argument type definition */
+							$type_def = $arg[ 'argtypes' ][ $event_argument[ 'argtype' ] ] ?: $arg[ 'argtypes' ][ 'mixed' ];
+							
+							/* If it's not an array, then it doesn't have any special needs */
+							if ( is_array( $type_def ) and ! empty ( $type_def ) )
 							{
-								if ( ! isset( $event_argument[ 'class' ] ) or ! static::classCompliant( $event_argument[ 'class' ], $type_def[ 'class' ] ) )
+								/* If a special class of argument is required, see if the event argument is compliant */
+								if ( isset( $type_def[ 'class' ] ) )
 								{
-									$can_use = FALSE;
+									if ( ! isset( $event_argument[ 'class' ] ) or ! static::classCompliant( $event_argument[ 'class' ], $type_def[ 'class' ] ) )
+									{
+										$can_use = FALSE;
+									}
 								}
 							}
 							
-							/* If the argument needs to represent a special property, check for compliance */
-							if ( isset( $type_def[ 'property' ] ) )
+							/* So can we use it or what! */
+							if ( $can_use )
 							{
-								if ( ! isset( $event_argument[ 'property' ] ) or ! in_array( $event_argument[ 'property' ], (array) $type_def[ 'property' ] ) )
-								{
-									$can_use = FALSE;
-								}
+								$_usable_arguments[ $event_arg_name ] = $event_argument;
 							}
-						}
-						
-						/* So can we use it or what! */
-						if ( $can_use )
-						{
-							$_usable_arguments[ $event_arg_name ] = $event_argument;
-						}
+							
+							/**
+							 * Add in any other objects that we can derive from the event argument as options also
+							 */
+							if ( $event_argument[ 'argtype' ] == 'object' and isset( $event_argument[ 'class' ] ) )
+							{
+								if ( $derivative_arguments = static::classConverters( $event_argument, $type_def ) )
+								{
+									foreach ( $derivative_arguments as $map_key => $derivative_argument )
+									{
+										$_usable_arguments[ $event_arg_name . ":" . $map_key ] = $derivative_argument;
+									}
+								}						
+							}						
+						}					
 					}
 				}
 			}
@@ -466,11 +513,35 @@ class _Application extends \IPS\Application
 	}
 	
 	/**
+	 * Get Global Arguments
+	 */
+	public static function getGlobalArguments()
+	{
+		if ( isset ( static::$globalArguments ) )
+		{
+			return static::$globalArguments;
+		}
+		
+		return static::$globalArguments = array
+		(
+			'__global_logged_in_member' => array
+			(
+				'argtype' => 'object',
+				'class' => '\IPS\Member',
+				'getArg' => function()
+				{
+					return \IPS\Member::loggedIn();
+				},
+			),
+		);
+	}
+	
+	/**
 	 * Check For Class Compliance
 	 *
 	 * @param	string 		$class		Class to check compliance
 	 * @param	string|array	$classes	A classname or array of classnames to validate against
-	 * @return	bool
+	 * @return	bool				Will return TRUE if $class is the same as or is a subclass of any $classes
 	 */
 	public static function classCompliant( $class, $classes )
 	{
@@ -495,6 +566,94 @@ class _Application extends \IPS\Application
 	}
 	
 	/**
+	 * Class Converters
+	 *
+	 * @param	array	$event_argument		The argument definition provided by the event
+	 * @param	array	$type_def		The argument definition required by the operation
+	 * @return	array				Class converter methods
+	 */
+	public static function classConverters( $event_argument, $type_def )
+	{
+		if ( $event_argument[ 'argtype' ] !== 'object' )
+		{
+			return array();
+		}
+		
+		$conversion_arguments	= array();
+		$mappings		= array();
+		$current_class 		= $event_argument[ 'class' ]; 
+		$acceptable_classes 	= (array) $type_def[ 'class' ];
+		
+		if ( empty ( $acceptable_classes ) )
+		{
+			$acceptable_classes = array( '*' );
+		}
+
+		/**
+		 * Build a map of all the classes in our converter map that are compliant 
+		 * with our event argument, meaning our event argument is the same as or a
+		 * subclass of the convertable class
+		 */
+		foreach ( static::getConversions() as $base_class => $conversions )
+		{
+			if ( static::classCompliant( $current_class, $base_class ) )
+			{
+				$mappings[ $base_class ] = $conversions;
+			}
+		}
+		
+		/**
+		 * For every class that has conversions available and that our event argument is compliant with,
+		 * we look at each of the conversion options available and see if any of them convert into a class
+		 * that can then be used as an operation arugment. 
+		 */
+		foreach ( $mappings as $base_class => $conversions )
+		{
+			foreach ( $conversions as $conversion_key => $argument )
+			{
+				foreach ( $acceptable_classes as $acceptable_class )
+				{
+					if ( $acceptable_class === '*' or static::classCompliant( $argument[ 'class' ], $acceptable_class ) )
+					{
+						$conversion_arguments[ $base_class . ':' . $conversion_key ] = $argument;
+					}
+				}
+			}
+		}
+		
+		return $conversion_arguments;
+	}
+	
+	/**
+	 * Get Converter Mappings
+	 */
+	public static function getConversions( $class=NULL )
+	{
+		if ( isset ( static::$converterMap ) )
+		{
+			return isset( $class ) ? static::$converterMap[ $class ] : static::$converterMap;
+		}
+		
+		static::$converterMap = array
+		(
+			'\IPS\Content' => array
+			(
+				'Author' => array
+				(
+					'argtype' => 'object',
+					'class' => '\IPS\Member',
+					'converter' => function( $content )
+					{
+						return $content->author();
+					},
+				),
+			),
+		);
+		
+		return static::getConversions( $class );		
+	}
+
+	/**
 	 * Invoke An Operation
 	 *
 	 * @param	\IPS\Node\Model		$operation	A condition/action object to evaluate
@@ -510,16 +669,14 @@ class _Application extends \IPS\Application
 			$operation_args 	= array();
 			$event_arg_index 	= array();
 			$i			= 0;
+			$event 			= $operation->event();
 			
-			if ( $event = $operation->event() )
+			if ( isset( $event->data[ 'arguments' ] ) and count( $event->data[ 'arguments' ] ) )
 			{
-				if ( isset( $event->data[ 'arguments' ] ) and count( $event->data[ 'arguments' ] ) )
+				foreach ( $event->data[ 'arguments' ] as $event_arg_name => $event_arg )
 				{
-					foreach ( $event->data[ 'arguments' ] as $event_arg_name => $event_arg )
-					{
-						$arg_map[ $event_arg_name ] = $args[ $i ];
-						$event_arg_index[ $event_arg_name ] = $i++;
-					}
+					$arg_map[ $event_arg_name ] = $args[ $i ];
+					$event_arg_index[ $event_arg_name ] = $i++;
 				}
 			}
 			
@@ -535,19 +692,81 @@ class _Application extends \IPS\Application
 						case 'event':
 						
 							/**
-							 * Determine which argument index to use
+							 * Determine which argument index to use and if the argument
+							 * needs class conversion or not
 							 */
-							$event_arg_name = $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ];
-							$_i 		= $event_arg_index[ $event_arg_name ];
-							$_operation_arg 	= NULL;
+							list
+							( 
+								$event_arg_name, 
+								$converter_class, 
+								$converter_key 
+							) 	
+								= explode( ':', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] );
+									
+							$_operation_arg	= NULL;
+							$input_arg 	= NULL;
+							$input_arg_type	= NULL;
+							
+							/**
+							 * Get input argument from global arguments
+							 */
+							if ( mb_substr( $event_arg_name, 0, 9 ) === '__global_' )
+							{
+								$global_arguments = static::getGlobalArguments();
+								if ( isset ( $global_arguments[ $event_arg_name ] ) )
+								{
+									if ( is_callable( $global_arguments[ $event_arg_name ][ 'getArg' ] ) )
+									{
+										$input_arg = call_user_func_array( $global_arguments[ $event_arg_name ][ 'getArg' ], array() );
+									}
+									$input_arg_type = $global_arguments[ $event_arg_name ][ 'argtype' ];
+								}
+							}
+							
+							/**
+							 * Get input argument from event arguments
+							 */
+							else
+							{
+								$_i = $event_arg_index[ $event_arg_name ];
+								if ( isset( $_i ) )
+								{
+									$input_arg = $args[ $_i ];
+									$input_arg_type = $event->data[ 'arguments' ][ $event_arg_name ][ 'argtype' ];
+								}
+							}
 							
 							/**
 							 * Check if argument is present in the event
 							 */
-							if ( isset ( $_i ) and isset( $args[ $_i ] ) )
+							if ( isset ( $input_arg ) )
 							{
-								$event_arg 	= $args[ $_i ];
-								$event_arg_type = $event->data[ 'arguments' ][ $event_arg_name ][ 'argtype' ];
+								/**
+								 * Convert the event argument if necessary
+								 */
+								if ( $converter_class and $converter_key )
+								{
+									$classConverters = static::getConversions();
+									if 
+									( 
+										isset ( $classConverters[ $converter_class ][ $converter_key ] ) and 
+										is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ] ) 
+									)
+									{
+										$event_arg 	= call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
+										$event_arg_type	= $classConverters[ $converter_class ][ $converter_key ][ 'argtype' ];
+									}
+									else
+									{
+										$event_arg 	= NULL;
+										$event_arg_type = NULL;
+									}
+								}
+								else
+								{
+									$event_arg 	= $input_arg;
+									$event_arg_type = $input_arg_type;
+								}
 								
 								/**
 								 * Argtypes must be set to use event arguments
@@ -734,7 +953,77 @@ class _Application extends \IPS\Application
 			{
 				try
 				{
-					$result = call_user_func_array( $operation->definition[ 'callback' ], array_merge( $operation_args, array( $operation->data[ 'configuration' ][ 'data' ], $arg_map, $operation ) ) );					
+					/**
+					 * Check to see if actions have a future scheduling
+					 */
+					if ( $operation instanceof \IPS\rules\Action and $operation->schedule_mode )
+					{
+						$future_time = time();
+						switch ( $operation->schedule_mode )
+						{
+							/* Set amount of time in the future */
+							case 1:
+								$future_time = \strtotime
+								( 
+									'+' . intval( $operation->schedule_months ) . ' months ' . 
+									'+' . intval( $operation->schedule_days ) . ' days ' .
+									'+' . intval( $operation->schedule_hours ) . ' hours ' .
+									'+' . intval( $operation->schedule_minutes ) . ' minutes '
+								);
+								break;
+							case 2:
+								$future_time = $operation->schedule_date;
+								break;
+							case 3:
+								$evaluate = function( $phpcode ) use ( $arg_map )
+								{
+									extract( $arg_map );
+									return @eval( $phpcode );
+								};
+								
+								$future_time = 0;
+								$custom_time = $evaluate( $operation->schedule_customcode );
+								
+								if ( is_numeric( $custom_time ) )
+								{
+									$future_time = intval( $custom_time );
+								}
+								else if ( is_object( $custom_time ) )
+								{
+									if ( $custom_time instanceof \IPS\DateTime )
+									{
+										$future_time = $custom_time->getTimestamp();
+									}
+								}
+								else if ( is_string( $custom_time ) )
+								{
+									$future_time = strtotime( $custom_time );
+								}
+								break;
+						}
+						
+						if ( $future_time > time() )
+						{
+							$thread = $parentThread = NULL;
+							
+							if ( $rule = $operation->rule() )
+							{
+								$thread 	= $rule->event()->thread;
+								$parentThread 	= $rule->event()->parentThread;
+							}
+							
+							$result = static::scheduleAction( $operation, $future_time, $operation_args, $arg_map, $thread, $parentThread );
+						}
+						
+					}
+				
+					/**
+					 * If our operation was scheduled, then it will have a result already from the scheduler
+					 */
+					if ( ! isset ( $result ) )
+					{
+						$result = call_user_func_array( $operation->definition[ 'callback' ], array_merge( $operation_args, array( $operation->data[ 'configuration' ][ 'data' ], $arg_map, $operation ) ) );					
+					}
 					
 					/**
 					 * Conditions have a special setting to invert their result with NOT, so let's check that 
@@ -770,6 +1059,103 @@ class _Application extends \IPS\Application
 		}
 	}
 	
+	/**
+	 * Schedule An Action
+	 *
+	 * @param 	\IPS\rules\Action	$action		The action to schedule
+	 * @param	int			$time		The timestamp of when the action is scheduled
+	 * @param	array			$args		The arguments to send to the action
+	 * @param	array			$event_args	The arguments from the event
+	 * @param	string			$thread		The event thread to tie the action back to (for debugging)
+	 * @param	string			$parentThread	The events parent thread to tie the action back to (for debugging)
+	 * @return	mixed					A message to log to the database if debugging is on
+	 */
+	public static function scheduleAction( $action, $time, $args, $event_args, $thread, $parentThread )
+	{
+		$scheduled_action 		= new \IPS\rules\Action\Scheduled;
+		$scheduled_action->time 	= $time;
+		$scheduled_action->action_id	= $action->id;
+		$scheduled_action->thread	= $thread;
+		$scheduled_action->parent_thread = $parentThread;
+		$scheduled_action->created 	= time();
+		
+		$db_args = array();
+		foreach ( $args as $arg )
+		{
+			$db_args[] = static::storeArg( $arg );
+		}
+		
+		$db_event_args = array();
+		foreach ( $event_args as $key => $arg )
+		{
+			$db_event_args[ $key ] = static::storeArg( $arg );
+		}
+		
+		$scheduled_action->data = json_encode( array(
+			'args' => $db_args,
+			'event_args' => $db_event_args,
+		) );
+		
+		$scheduled_action->save();
+		
+		return "action scheduled: " . \IPS\DateTime::ts( $time );
+	}
+
+	/**
+	 * Prepare an argument for database storage
+	 *
+	 * @param 	mixed		$arg		The argument to store
+	 */
+	public static function storeArg( $arg )
+	{
+		if ( ! is_object( $arg ) )
+		{
+			return $arg;
+		}
+		
+		if ( $arg instanceof \IPS\Patterns\ActiveRecord )
+		{
+			$idColumn = $arg::$databaseColumnId;
+			$dbstore = array( '_obj_class' => '\\' . get_class( $arg ), 'id' => $arg->$idColumn );
+		}
+		else
+		{
+			$dbstore = array( '_obj_class' => 'stdClass', 'data' => (array) $arg );
+		}
+		
+		return $dbstore;
+	}
+
+	/**
+	 * Restore an argument from database storage
+	 *
+	 * @param 	object		$arg		The argument to restore
+	 */
+	public static function restoreArg( $arg )
+	{
+		if ( ! is_array( $arg ) or ! isset ( $arg[ '_obj_class' ] ) )
+		{
+			return $arg;
+		}
+		
+		if ( $arg[ '_obj_class' ] == 'stdClass' )
+		{
+			return (object) $arg;
+		}
+		else
+		{
+			$class = $arg[ '_obj_class' ];
+			try
+			{
+				return $class::load( $arg[ 'id' ] );
+			}
+			catch ( \OutOfRangeException $e )
+			{
+				return NULL;
+			}
+		}		
+	}
+
 	/**
 	 * Recursion Protection
 	 */
@@ -819,6 +1205,11 @@ class _Application extends \IPS\Application
 	 */
 	public static function eventArgInfo( $event, $_p='$' )
 	{
+		if ( ! $event ) 
+		{
+			return NULL;
+		}
+	
 		$_event_arg_list = array();
 		$lang = \IPS\Member::loggedIn()->language();
 		

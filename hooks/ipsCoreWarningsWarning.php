@@ -12,8 +12,9 @@ class rules_hook_ipsCoreWarningsWarning extends _HOOK_CLASS_
 	 */
 	protected function processAfterCreate( $comment, $values )
 	{
-		call_user_func_array( 'parent::processAfterCreate', func_get_args() );
+		$result = call_user_func_array( 'parent::processAfterCreate', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Members', 'member_warned' )->trigger( $this, \IPS\Member::load( $this->member ), $this->author() );
+		return $result;
 	}
 
 }

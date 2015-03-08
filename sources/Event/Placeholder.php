@@ -76,7 +76,7 @@ class _Placeholder extends \IPS\rules\Event
 	 */
 	public function title() 
 	{
-		return 'Unknown';
+		return 'Undefined ( ' . $this->app . ' / ' . $this->class . ' / ' . $this->key . ' )';
 	}
 
 	/**

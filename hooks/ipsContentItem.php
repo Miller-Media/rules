@@ -15,6 +15,7 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	{
 		$obj = call_user_func_array( 'parent::createFromForm', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'ContentItems', 'content_item_created' )->trigger( $obj, $values, $container, $sendNotification );
+		return $obj;
 	}
 
 	/**
@@ -27,8 +28,9 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	public function move( \IPS\Node\Model $container, $keepLink=false )
 	{
 		$oldContainer = $this->container();
-		call_user_func_array( 'parent::move', func_get_args() );
+		$result = call_user_func_array( 'parent::move', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'ContentItems', 'content_item_moved' )->trigger( $this, $oldContainer, $container, $keepLink );
+		return $result;
 	}
 
 	/**
@@ -40,7 +42,7 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	public function mergeIn( array $items )
 	{
 		\IPS\rules\Event::load( 'rules', 'ContentItems', 'content_item_merging' )->trigger( $this, $items );
-		call_user_func_array( 'parent::mergeIn', func_get_args() );
+		return call_user_func_array( 'parent::mergeIn', func_get_args() );
 	}
 
 	/**
@@ -51,8 +53,9 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	 */
 	public function publish( $member=NULL )
 	{
-		call_user_func_array( 'parent::publish', func_get_args() );
+		$result = call_user_func_array( 'parent::publish', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'ContentItems', 'content_item_published' )->trigger( $this, $member ?: \IPS\Member::loggedIn() );
+		return $result;
 	}
 	
 	/**
@@ -64,8 +67,9 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	 */
 	public function unpublish( $member=NULL )
 	{
-		call_user_func_array( 'parent::unpublish', func_get_args() );
+		$result = call_user_func_array( 'parent::unpublish', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'ContentItems', 'content_item_unpublished' )->trigger( $this, $member ?: \IPS\Member::loggedIn() );
+		return $result;
 	}
 	
 }

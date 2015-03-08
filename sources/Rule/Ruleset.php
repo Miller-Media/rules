@@ -83,9 +83,19 @@ class _Ruleset extends \IPS\Node\Model
 	 */
 	public function get__description()
 	{
-
+		return $this->description;
 	}
 		
+	/**
+	 * [Node] Get content table description 
+	 *
+	 * @return	string
+	 */
+	protected function get_description()
+	{
+		return $this->_data[ 'description' ];
+	}
+
 	/**
 	 * [Node] Get whether or not this node is enabled
 	 *
@@ -127,6 +137,8 @@ class _Ruleset extends \IPS\Node\Model
 	public function form( &$form )
 	{	
 		$form->add( new \IPS\Helpers\Form\Text( 'ruleset_title', $this->title, TRUE ) );
+		$form->add( new \IPS\Helpers\Form\TextArea( 'ruleset_description', $this->description, FALSE ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'ruleset_creator', $this->creator, FALSE ) );
 	}
 	
 	/**
@@ -136,7 +148,7 @@ class _Ruleset extends \IPS\Node\Model
 	 * @return	void
 	 */
 	public function saveForm( $values )
-	{
+	{		
 		parent::saveForm( $values );
 	}
 	
@@ -150,10 +162,36 @@ class _Ruleset extends \IPS\Node\Model
 	 */
 	public function getButtons( $url, $subnode=FALSE )
 	{
-		$buttons = parent::getButtons( $url, $subnode );		
+		$buttons = parent::getButtons( $url, $subnode );
+		
+		unset( $buttons[ 'copy' ] );
+		$buttons[ 'export' ] = array
+		(
+			'icon' => 'download',
+			'title' => 'rules_export_rule_set',
+			'link' => $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'export', 'ruleset' => $this->id ) ),		
+		);
+		
 		return $buttons;
 	}
 	 
+
+
+	/**
+	 * [ActiveRecord] Save Changed Columns
+	 *
+	 * @return	void
+	 */
+	public function save()
+	{
+		if ( ! $this->id and ! $this->created_time )
+		{
+			$this->created_time = time();
+		}
+		
+		parent::save();
+	}
+
 	/**
 	 * [ActiveRecord] Delete Record
 	 *

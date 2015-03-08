@@ -161,21 +161,31 @@ class _Event
 			
 			foreach ( $this->rules() as $rule )
 			{
-				if ( $rule->enabled )
+				if ( ! $rule->ruleset() or $rule->ruleset()->enabled )
 				{
-					$result = call_user_func_array( array( $rule, 'invoke' ), func_get_args() );
-					
-					if ( $rule->debug )
+					if ( $rule->enabled )
 					{
-						\IPS\rules\Application::rulesLog( $this, $rule, NULL, $result, 'Rule evaluated' );
+						$result = call_user_func_array( array( $rule, 'invoke' ), func_get_args() );
+						
+						if ( $rule->debug )
+						{
+							\IPS\rules\Application::rulesLog( $this, $rule, NULL, $result, 'Rule evaluated' );
+						}
+					}
+					else
+					{
+						if ( $rule->debug )
+						{
+							\IPS\rules\Application::rulesLog( $this, $rule, NULL, '--', 'Rule not evaluated (disabled)' );
+						}
 					}
 				}
 				else
 				{
 					if ( $rule->debug )
 					{
-						\IPS\rules\Application::rulesLog( $this, $rule, NULL, '--', 'Rule not evaluated (disabled)' );
-					}
+						\IPS\rules\Application::rulesLog( $this, $rule, NULL, '--', 'Rule not evaluated (rule set disabled)' );
+					}				
 				}
 			}
 			

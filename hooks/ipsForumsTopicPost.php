@@ -18,7 +18,8 @@ class rules_hook_ipsForumsTopicPost extends _HOOK_CLASS_
 	public static function constructFromData( $data, $updateMultitonStoreIfExists = TRUE )
 	{
 		$post = call_user_func_array( 'parent::constructFromData', func_get_args() );
-		$this->isBestAnswer = $this->post_bwoptions[ 'best_answer' ];
+		$post->isBestAnswer = $post->post_bwoptions[ 'best_answer' ];
+		return $post;
 	}
 	
 	/**

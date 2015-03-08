@@ -89,6 +89,13 @@ class _ContentItems
 					'items' 	=> array( 'argtype' => 'array', 'class' => '\IPS\Content\Item' ),
 				),		
 			),
+			'content_item_viewed' => array
+			( 
+				'arguments' => array
+				( 
+					'item' 		=> array( 'argtype' => 'object', 'class' => '\IPS\Content\Item' ),
+				),		
+			),
 		);
 		
 		return $events;

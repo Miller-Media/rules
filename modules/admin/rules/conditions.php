@@ -159,7 +159,7 @@ class _conditions extends \IPS\Node\Controller
 		if ( $nodeClass::canAddRoot() )
 		{
 			return array( 'add' => array(
-				'icon'	=> 'plus',
+				'icon'	=> 'filter',
 				'title'	=> 'rules_add_condition',
 				'link'	=> $this->url->setQueryString( array( 'do' => 'form', 'rule' => $this->rule->id ) ),
 				'data'	=> ( $nodeClass::$modalForms ? array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack( 'rules_add_condition' ) ) : array() )

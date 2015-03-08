@@ -1,8 +1,20 @@
 {
     "rules": {
-        "rules": {
+        "rulesets": {
             "tab": "core",
-            "controller": "rules",
+            "controller": "rulesets",
+            "do": "",
+            "restriction": "rules_manage"
+        },
+        "custom": {
+            "tab": "core",
+            "controller": "custom",
+            "do": "",
+            "restriction": "rules_manage"
+        },
+        "schedule": {
+            "tab": "core",
+            "controller": "schedule",
             "do": "",
             "restriction": "rules_manage"
         },
@@ -12,6 +24,5 @@
             "do": "",
             "restriction": "logs_manage"
         }
-    },
-    "logs": []
+    }
 }

@@ -12,8 +12,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function hide( \IPS\Member $member=NULL, $reason=NULL )
 	{
-		call_user_func_array( 'parent::hide', func_get_args() );
+		$result = call_user_func_array( 'parent::hide', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_hidden' )->trigger( $this, $member ?: \IPS\Member::loggedIn(), $reason );
+		return $result;
 	}
 
 	/**
@@ -24,8 +25,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function unhide( $member=NULL )
 	{
-		call_user_func_array( 'parent::unhide', func_get_args() );
+		$result = call_user_func_array( 'parent::unhide', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_unhidden' )->trigger( $this, $member ?: \IPS\Member::loggedIn() );
+		return $result;
 	}
 
 	/**
@@ -37,8 +39,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function changeAuthor( \IPS\Member $newAuthor )
 	{
 		$oldAuthor = $this->author();
-		call_user_func_array( 'parent::changeAuthor', func_get_args() );
+		$result = call_user_func_array( 'parent::changeAuthor', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_author_changed' )->trigger( $this, $oldAuthor, $newAuthor );
+		return $result;
 	}
 
 	/**
@@ -50,8 +53,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function report( $reportContent )
 	{
-		call_user_func_array( 'parent::report', func_get_args() );
+		$result = call_user_func_array( 'parent::report', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_reported' )->trigger( $this, $reportContent );
+		return $result;
 	}
 
 	/**
@@ -64,8 +68,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function giveReputation( $type, \IPS\Member $member=NULL )
 	{
-		call_user_func_array( 'parent::giveReputation', func_get_args() );
+		$result = call_user_func_array( 'parent::giveReputation', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Members', 'reputation_given' )->trigger( $this->author(), $member ?: \IPS\Member::loggedIn(), $this, $type );
+		return $result;
 	}
 	
 	/**
@@ -79,7 +84,7 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function modAction( $action, \IPS\Member $member = NULL, $reason = NULL )
 	{
-		call_user_func_array( 'parent::modAction', func_get_args() );
+		$result = call_user_func_array( 'parent::modAction', func_get_args() );
 		
 		$member = $member ?: \IPS\Member::loggedIn();
 		switch ( $action )
@@ -92,6 +97,8 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 			case 'lock'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_locked' 		)->trigger( $this, $member ); break;
 			case 'unlock'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_unlocked' 	)->trigger( $this, $member ); break;			
 		}
+		
+		return $result;
 	}
 	
 	/**
@@ -101,8 +108,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function delete()
 	{
-		call_user_func_array( 'parent::delete', func_get_args() );
+		$result = call_user_func_array( 'parent::delete', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_deleted' )->trigger( $this );
+		return $result;
 	}
 
 

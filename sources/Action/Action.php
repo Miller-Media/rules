@@ -256,10 +256,68 @@ class _Action extends \IPS\Node\Model
 			}
 		}
 
+		$lang = \IPS\Member::loggedIn()->language();
 		$form->hiddenValues[ 'action_rule_id' ] = $this->rule->id;
 				
 		\IPS\rules\Application::opform( $form, $this, 'actions' );
+		
+		$scheduling_options = array
+		(
+			0 => 'rules_action_execution_now',
+			1 => 'rules_action_execution_future',
+			2 => 'rules_action_execution_date',
+			3 => 'rules_action_execution_custom',
+		);
+		
+		$scheduling_toggles = array
+		(
+			1 => array( 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months' ),
+			2 => array( 'action_schedule_date' ),
+			3 => array( 'action_schedule_customcode' ),
+		);
+		
+		$form->add( new \IPS\Helpers\Form\Radio( 'action_schedule_mode', $this->schedule_mode ?: 0, TRUE, array( 'options' => $scheduling_options, 'toggles' => $scheduling_toggles ) ), 'operation_title' );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_minutes', $this->schedule_minutes ?: 0, TRUE, array(), NULL, NULL, NULL, 'action_schedule_minutes' ), 'action_schedule_mode' );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_hours', $this->schedule_hours ?: 0, TRUE, array(), NULL, NULL, NULL, 'action_schedule_hours' ), 'action_schedule_minutes' );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_days', $this->schedule_days ?: 0, TRUE, array(), NULL, NULL, NULL, 'action_schedule_days' ), 'action_schedule_hours' );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_months', $this->schedule_months ?: 0, TRUE, array(), NULL, NULL, NULL, 'action_schedule_months' ), 'action_schedule_days' );
+		$form->add( new \IPS\Helpers\Form\Date( 'action_schedule_date', \IPS\DateTime::ts( $this->schedule_date ), FALSE, array( 'time' => TRUE ), NULL, NULL, NULL, 'action_schedule_date' ), 'action_schedule_months' );
+		$form->add( new \IPS\Helpers\Form\Codemirror( 'action_schedule_customcode', $this->schedule_customcode ?: "//<?php\n\nreturn \IPS\DateTime::ts( time() );", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, 'action_schedule_customcode' ), 'action_schedule_date' );
+		
+		$event = $this->event();
+		
+		if ( ! $this->id )
+		{
+			try
+			{
+				$event = \IPS\rules\Rule::load( \IPS\Request::i()->rule )->event();
+			}
+			catch ( \OutOfRangeException $e ) {}
+		}
+		
+		try
+		{
+			$lang->words[ 'action_schedule_customcode_desc' ] = $lang->get( 'phpcode_desc' ) . "<br><br>" . $lang->get( 'phpcode_desc_details' ) . $lang->get( 'action_schedule_customcode__desc' ) . "<br>" . $lang->get( 'phpcode_desc_details_vars' ) . \IPS\rules\Application::eventArgInfo( $event );
+		}
+		catch ( \Exception $e ) {}
+		
+	}
 	
+	/**
+	 * [Node] Save Add/Edit Form
+	 *
+	 * @param	array	$values	Values from the form
+	 * @return	void
+	 */
+	public function saveForm( $values )
+	{
+		if ( $values[ 'action_schedule_date' ] instanceof \IPS\DateTime )
+		{
+			$values[ 'action_schedule_date' ] = $values[ 'action_schedule_date' ]->getTimestamp();
+		}
+		
+		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id', 'action_schedule_mode', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months', 'action_schedule_date', 'action_schedule_customcode' ) );		
+		parent::saveForm( $values );
 	}
 	
 	/**
@@ -291,18 +349,6 @@ class _Action extends \IPS\Node\Model
 				\IPS\rules\Application::rulesLog( $rule->event(), $rule, $this, '--', 'Action recursion (not evaluated)' );
 			}
 		}
-	}
-	
-	/**
-	 * [Node] Save Add/Edit Form
-	 *
-	 * @param	array	$values	Values from the form
-	 * @return	void
-	 */
-	public function saveForm( $values )
-	{
-		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id' ) );		
-		parent::saveForm( $values );
 	}
 	
 	/**

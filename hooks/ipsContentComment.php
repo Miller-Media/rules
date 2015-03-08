@@ -30,8 +30,9 @@ abstract class rules_hook_ipsContentComment extends _HOOK_CLASS_
 	 */
 	public function move( \IPS\Content\Item $item )
 	{
-		call_user_func_array( 'parent::move', func_get_args() );
+		$result = call_user_func_array( 'parent::move', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'Comments', 'content_comment_moved' )->trigger( $this, $item );
+		return $result;
 	}
 
 }

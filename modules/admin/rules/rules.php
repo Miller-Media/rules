@@ -62,21 +62,17 @@ class _rules extends \IPS\Node\Controller
 		
 		parent::execute();
 	}
-	
-	
+		
 	/**
 	 * Manage
 	 */
 	protected function manage()
 	{
-		\IPS\Output::i()->sidebar[ 'actions' ][ 'exportall' ] = array(
-			'icon'	=> 'download',
-			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rules&do=exportAll' ),
-			'title'	=> 'rules_export_all',
-			'data' => array( 'confirm' => '' ),
-		);
+		if ( ! \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ) );
+		}
 		
-		\IPS\Output::i()->output .= "<style> #tree_search { display:none; } </style>";
 		parent::manage();
 	}
 	 
@@ -103,6 +99,7 @@ class _rules extends \IPS\Node\Controller
 		else if ( \IPS\Request::i()->parent )
 		{
 			$parent = \IPS\rules\Rule::load( \IPS\Request::i()->parent );
+			\IPS\Output::i()->output .= \IPS\rules\Application::eventHeader( $parent->event() );
 		}
 		
 		if ( $parent )
@@ -130,258 +127,32 @@ class _rules extends \IPS\Node\Controller
 		{
 			if ( $old == NULL )
 			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&do=form&id={$new->id}&tab=conditions" ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=form&id={$new->id}&tab=conditions" ) );
 			}
 			else
 			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules" ), 'saved' );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'saved' );
 			}
 		}
 	}
 	
 	/**
-	 * View Rules Log Info
-	 */
-	protected function viewlog()
-	{
-		try
-		{
-			$log = \IPS\Db::i()->select( '*', 'rules_logs', array( 'id=?', \IPS\Request::i()->logid ) )->first();
-		}
-		catch( \UnderflowException $e )
-		{
-			\IPS\Output::i()->error( 'Log Not Found', '2RL01/A', 403 );
-		}
-		
-		$self = $this;
-		$event = \IPS\rules\Event::load( $log[ 'app' ], $log[ 'class' ], $log[ 'key' ] );
-		
-		$rule = NULL;
-		try
-		{
-			$rule = \IPS\rules\Rule::load( $log[ 'rule_id' ] );
-		}
-		catch( \OutOfRangeException $e ) {}
-		
-		$conditions		= new \IPS\Helpers\Table\Db( 'rules_logs', $this->url, array( 'thread=? AND type=? AND rule_id=?', $log[ 'thread' ], 'IPS\rules\Condition', $log[ 'rule_id' ] ) );
-		$conditions->include 	= array( 'op_id', 'message', 'result' );
-		$conditions->langPrefix = 'rules_conditions_table_';
-		$conditions->parsers 	= array
-		(
-			'op_id'	=> function( $val )
-			{
-				try
-				{
-					$operation = \IPS\rules\Condition::load( $val );
-					return $operation->title;
-				}
-				catch ( \OutOfRangeException $e )
-				{
-					return 'Unknown Condition (deleted)';
-				}
-			},
-			'result' => function( $val )
-			{
-				return $val;
-			},
-		);				
-		$conditions->sortBy = 'id';
-		$conditions->sortDirection = 'asc';
-		$conditions->noSort = array( 'op_id', 'message', 'result' );
-		
-		$actions		= new \IPS\Helpers\Table\Db( 'rules_logs', $this->url, array( 'thread=? AND type=? AND rule_id=?', $log[ 'thread' ], 'IPS\rules\Action', $log[ 'rule_id' ] ) );
-		$actions->include 	= array( 'op_id', 'message', 'result' );
-		$actions->langPrefix 	= 'rules_actions_table_';
-		$actions->parsers 	= array
-		(
-			'op_id'	=> function( $val )
-			{
-				try
-				{
-					$operation = \IPS\rules\Action::load( $val );
-					return $operation->title;
-				}
-				catch ( \OutOfRangeException $e )
-				{
-					return 'Unknown Action (deleted)';
-				}
-			},
-			'result' => function( $val )
-			{
-				return $val;
-			},
-		);				
-		$actions->sortBy = 'id';
-		$actions->sortDirection = 'asc';
-		$actions->noSort = array( 'op_id', 'message', 'result' );
-		
-		$subrules		= new \IPS\Helpers\Table\Db( 'rules_logs', $this->url, array( 'thread=? AND op_id=0 AND rule_parent=?', $log[ 'thread' ], $log[ 'rule_id' ] ) );
-		$subrules->include 	= array( 'rule_id', 'message', 'result' );
-		$subrules->langPrefix 	= 'rules_subrules_table_';
-		$subrules->parsers 	= array
-		(
-			'rule_id' => function( $val )
-			{
-				try
-				{
-					$rule = \IPS\rules\Rule::load( $val );
-					return $rule->title;
-				}
-				catch ( \OutOfRangeException $e )
-				{
-					return 'Unknown Rule (deleted)';
-				}
-			},
-			'result' => function( $val )
-			{
-				return $val;
-			},
-		);				
-		$subrules->sortBy = 'id';
-		$subrules->sortDirection = 'asc';
-		$subrules->rowButtons = function( $row ) use ( $self )
-		{	
-			$buttons = array();
-			try
-			{
-				$rule = \IPS\rules\Rule::load( $row[ 'rule_id' ] );
-				if ( $rule->debug )
-				{
-					$buttons[ 'debug' ] = array(
-						'icon'		=> 'bug',
-						'title'		=> 'View Debug Console',
-						'id'		=> "{$row['id']}-view",
-						'link'		=> $self->url->setQueryString( array( 'do' => 'form', 'id' => $row[ 'rule_id' ], 'tab' => 'debug_console' ) ),
-					);
-				}
-			}
-			catch ( \OutOfRangeException $e ) {}
-			
-			return $buttons;
-		};
-		$subrules->noSort = array( 'rule_id', 'message', 'result' );
-				
-		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'views' )->logdetails( $log, $event, $rule, $conditions, $actions, $subrules );
-	}
-	
-	/**
-	 * Export Rule(set)
-	 */
-	protected function export()
-	{
-		try
-		{
-			$rule = \IPS\rules\Rule::load( \IPS\Request::i()->rule );
-		}
-		catch( \OutOfRangeException $e )
-		{
-			\IPS\Output::i()->error( 'invalid_rule', '2RL01/B', 403 );
-		}
-		
-		$xml = \IPS\Xml\SimpleXML::create( 'rules' );
-		$this->_addRuleExport( $rule, $xml );
-		
-		\IPS\Output::i()->sendOutput( $xml->asXML(), 200, 'application/xml', array( "Content-Disposition" => \IPS\Output::getContentDisposition( 'attachment', \IPS\Http\Url::seoTitle( $rule->title ) . '.xml' ) ) );
-	}
-	
-	/**
-	 * Export Rule(set)
-	 */
-	protected function exportAll()
-	{
-	
-		$xml = \IPS\Xml\SimpleXML::create( 'rules' );
-		
-		foreach ( \IPS\rules\Rule::roots( NULL ) as $rule )
-		{
-			$this->_addRuleExport( $rule, $xml );
-		}
-		
-		\IPS\Output::i()->sendOutput( $xml->asXML(), 200, 'application/xml', array( "Content-Disposition" => \IPS\Output::getContentDisposition( 'attachment', 'all-rules.xml' ) ) );
-	}
-	
-	/**
-	 * Build Rule Nodes
+	 * Get Root Rows
 	 *
-	 * @param 	array			$rules		Rule to export
-	 * @param	\IPS\Xml\SimpleXML	$xml		XML object
+	 * @return	array
 	 */
-	protected function _addRuleExport( $rule, $xml )
-	{	
-		$ruleNode = $xml->addChild( 'rule' );
-		$ruleNode->addAttribute( 'title', 	$rule->title );
-		$ruleNode->addAttribute( 'weight', 	$rule->weight );
-		$ruleNode->addAttribute( 'enabled', 	$rule->enabled );
-		$ruleNode->addAttribute( 'app', 	$rule->event_app );
-		$ruleNode->addAttribute( 'class', 	$rule->event_class );
-		$ruleNode->addAttribute( 'key',		$rule->event_key );
-		$ruleNode->addAttribute( 'compare',	$rule->base_compare );
-		$ruleNode->addAttribute( 'debug',	FALSE );
-		
-		$conditionsNode = $ruleNode->addChild( 'conditions' );
-		foreach ( $rule->conditions() as $condition )
-		{
-			$this->_addConditionExport( $condition, $conditionsNode );
-		}
-		
-		$actionsNode = $ruleNode->addChild( 'actions' );
-		foreach ( $rule->actions() as $action )
-		{
-			$this->_addActionExport( $action, $actionsNode );
-		}
-		
-		$subrulesNode = $ruleNode->addChild( 'rules' );
-		foreach ( $rule->children() as $subrule )
-		{
-			$this->_addRuleExport( $subrule, $subrulesNode );
-		}
-	}
-	
-	/**
-	 * Build Condition Nodes
-	 */
-	protected function _addConditionExport( $condition, $xml )
+	public function _getRoots()
 	{
-		$conditionNode = $xml->addChild( 'condition' );
-		
-		$conditionNode->addAttribute( 'title', 		$condition->title );
-		$conditionNode->addAttribute( 'weight', 	$condition->weight );
-		$conditionNode->addAttribute( 'rule', 		$condition->rule_id );
-		$conditionNode->addAttribute( 'app', 		$condition->app );
-		$conditionNode->addAttribute( 'class', 		$condition->class );
-		$conditionNode->addAttribute( 'key', 		$condition->key );
-		$conditionNode->addAttribute( 'enabled',	$condition->enabled );
-		$conditionNode->addAttribute( 'compare', 	$condition->group_compare );
-		$conditionNode->addAttribute( 'not',		$condition->not );
-		
-		$conditionNode->addChild( 'data', json_encode( $condition->data ) );
-		
-		$subconditions = $conditionNode->addChild( 'conditions' );
-		foreach( $condition->children() as $_condition )
+		$nodeClass = $this->nodeClass;
+		$rows = array();
+		foreach( $nodeClass::roots( NULL, NULL, array( array( 'rule_ruleset_id=0' ) ) ) as $node )
 		{
-			$this->_addConditionExport( $_condition, $subconditions );
+			$rows[ $node->_id ] = $this->_getRow( $node );
 		}
-	}
-	
-	/**
-	 * Build Condition Nodes
-	 */
-	protected function _addActionExport( $action, $xml )
-	{
-		$actionNode = $xml->addChild( 'action' );
 		
-		$actionNode->addAttribute( 'title', 		$action->title );
-		$actionNode->addAttribute( 'weight', 		$action->weight );
-		$actionNode->addAttribute( 'rule', 		$action->rule_id );
-		$actionNode->addAttribute( 'app', 		$action->app );
-		$actionNode->addAttribute( 'class', 		$action->class );
-		$actionNode->addAttribute( 'key', 		$action->key );
-		$actionNode->addAttribute( 'enabled',		$action->enabled );
-		$actionNode->addAttribute( 'description', 	$action->description );
-		
-		$actionNode->addChild( 'data', json_encode( $action->data ) );
+		return $rows;
 	}
-	
+
 	/**
 	 * Get Root Buttons
 	 *
@@ -389,6 +160,11 @@ class _rules extends \IPS\Node\Controller
 	 */
 	public function _getRootButtons()
 	{
+		/**
+		 * Disabled since adding this controller inline with the rulesets controller
+		 */
+		return array();
+		
 		$buttons = parent::_getRootButtons();
 		
 		$buttons[ 'import' ]  = array(
@@ -402,145 +178,72 @@ class _rules extends \IPS\Node\Controller
 	}
 	
 	/**
-	 * Import Form
+	 * Get Single Row
 	 *
-	 * @return	void
+	 * @param	mixed	$id		May be ID number (or key) or an \IPS\Node\Model object
+	 * @param	bool	$root	Format this as the root node?
+	 * @param	bool	$noSort	If TRUE, sort options will be disabled (used for search results)
+	 * @return	string
 	 */
-	public function import()
-	{		
-		if ( \IPS\NO_WRITES )
-		{
-			\IPS\Output::i()->error( 'no_writes', '1RI00/A', 403, '' );
-		}
-
-		$form = new \IPS\Helpers\Form( NULL, 'import' );
-		
-		if ( isset( \IPS\Request::i()->id ) )
-		{
-			$form->hiddenValues['id'] = \IPS\Request::i()->id;
-		}
-		
-		$form->add( new \IPS\Helpers\Form\Upload( 'rules_import', NULL, TRUE, array( 'allowedFileTypes' => array( 'xml' ), 'temporary' => TRUE ) ) );
-		
-		if ( $values = $form->values() )
-		{
-			$tempFile = tempnam( \IPS\TEMP_DIRECTORY, 'IPS' );
-			move_uploaded_file( $values[ 'rules_import' ], $tempFile );
-								
-			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rules&do=doImport&file=' . urlencode( $tempFile ) . '&key=' . md5_file( $tempFile ) . ( isset( \IPS\Request::i()->id ) ? '&id=' . \IPS\Request::i()->id : '' ) ) );
-		}
-		
-		/* Display */
-		\IPS\Output::i()->output = $form;
-	}
-	
-	/**
-	 * Import
-	 *
-	 * @return	void
-	 */
-	public function doImport()
+	public function _getRow( $id, $root=FALSE, $noSort=FALSE )
 	{
-		if ( ! file_exists( \IPS\Request::i()->file ) or md5_file( \IPS\Request::i()->file ) !== \IPS\Request::i()->key )
+		$nodeClass = $this->nodeClass;
+		if ( $id instanceof \IPS\Node\Model )
 		{
-			\IPS\Output::i()->error( 'generic_error', '2RI00/B', 500, '' );
+			$node = $id;
 		}
-		
-		if ( ! ( $import = \simplexml_load_file( \IPS\Request::i()->file, 'SimpleXMLElement', LIBXML_NOCDATA ) ) )
+		else
 		{
-			\IPS\Output::i()->error( 'xml_upload_invalid', '2RI00/C', 403, '' );
-		}
-				
-		foreach ( $import->rule as $ruleXML )
-		{
-			$rule = $this->_constructNewRule( $ruleXML, 0 );
-		}
-		
-		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules" ), 'rules_imported' );
-		
-	}
-	
-	protected function _constructNewRule( $ruleXML, $parent_id )
-	{
-		$rule = new \IPS\rules\Rule;
-		
-		$rule->parent_id	= (int) 	$parent_id;
-		$rule->title 		= (string) 	$ruleXML[ 'title' ];
-		$rule->weight 		= (int) 	$ruleXML[ 'weight' ];
-		$rule->event_app 	= (string) 	$ruleXML[ 'app' ];
-		$rule->event_class 	= (string) 	$ruleXML[ 'class' ];
-		$rule->event_key	= (string) 	$ruleXML[ 'key' ];
-		$rule->base_compare	= (string) 	$ruleXML[ 'compare' ];
-		$rule->enabled		= (int) 	$ruleXML[ 'enabled' ];
-		$rule->debug		= (int) 	$ruleXML[ 'debug' ];
-		$rule->save();
-		
-		if ( $ruleXML->conditions->condition )
-		{
-			foreach ( $ruleXML->conditions->condition as $conditionXML )
+			try
 			{
-				$this->_constructNewCondition( $conditionXML, 0, $rule->id );
+				$node = $nodeClass::load( $id );
+			}
+			catch( \OutOfRangeException $e )
+			{
+				\IPS\Output::i()->error( 'node_error', '2S101/P', 404, '' );
 			}
 		}
 		
-		if ( $ruleXML->actions->action )
+		$id = ( $node instanceof $nodeClass ) ? $node->_id :  "s.{$node->_id}";
+		$class = get_class( $node );
+		
+		$buttons = $node->getButtons( $this->url, !( $node instanceof $this->nodeClass ) );
+		if ( isset( \IPS\Request::i()->searchResult ) and isset( $buttons['edit'] ) )
 		{
-			foreach ( $ruleXML->actions->action as $actionXML )
-			{
-				$this->_constructNewAction( $actionXML, $rule->id );
-			}
+			$buttons['edit']['link'] = $buttons['edit']['link']->setQueryString( 'searchResult', \IPS\Request::i()->searchResult );
 		}
 		
-		if ( $ruleXML->rules->rule )
+		$title = $node->_title;
+		
+		if ( $node instanceof \IPS\rules\Rule )
 		{
-			foreach ( $ruleXML->rules->rule as $_ruleXML )
+			if ( $node->hasChildren() )
 			{
-				$this->_constructNewRule( $_ruleXML, $rule->id );
+				$title = "<span class='ipsBadge ipsBadge_warning'>Rule Group</span> " . $title;
+			}
+			else
+			{
+				$title = "<span class='ipsBadge ipsBadge_neutral'>Rule</span> " . $title;
 			}
 		}
-		
-		return $rule;
-	}
-	
-	protected function _constructNewCondition( $conditionXML, $parent_id, $rule_id )
-	{
-		$condition = new \IPS\rules\Condition;
-		
-		$condition->rule_id 		= $rule_id;
-		$condition->parent_id		= $parent_id;
-		$condition->title 		= (string) 	$conditionXML[ 'title' ];
-		$condition->weight 		= (int) 	$conditionXML[ 'weight' ];
-		$condition->app			= (string) 	$conditionXML[ 'app' ];
-		$condition->class		= (string) 	$conditionXML[ 'class' ];
-		$condition->key			= (string) 	$conditionXML[ 'key' ];
-		$condition->enabled		= (int) 	$conditionXML[ 'enabled' ];
-		$condition->group_compare 	= (string) 	$conditionXML[ 'compare' ];
-		$condition->not			= (string) 	$conditionXML[ 'not' ];
-		$condition->data 		= json_decode( (string) $conditionXML->data );
-		$condition->save();
-		
-		if ( $conditionXML->conditions->condition )
-		{
-			foreach ( $conditionXML->conditions->condition as $_conditionXML )
-			{
-				$this->_constructNewCondition( $_conditionXML, $condition->id, $rule_id );
-			}
-		}
-	}
-
-	protected function _constructNewAction( $actionXML, $rule_id )
-	{
-		$action = new \IPS\rules\Action;
-		
-		$action->rule_id 	= $rule_id;
-		$action->title 		= (string) 	$actionXML[ 'title' ];
-		$action->weight 	= (int) 	$actionXML[ 'weight' ];
-		$action->app		= (string) 	$actionXML[ 'app' ];
-		$action->class		= (string) 	$actionXML[ 'class' ];
-		$action->key		= (string) 	$actionXML[ 'key' ];
-		$action->enabled	= (int) 	$actionXML[ 'enabled' ];
-		$action->data 		= json_decode( (string) $actionXML->data );
-		$action->save();
-	}
+										
+		return \IPS\Theme::i()->getTemplate( 'trees', 'core' )->row(
+			$this->url,
+			$id,
+			$title,
+			$node->childrenCount( NULL ),
+			$buttons,
+			$node->_description,
+			$node->_icon ? $node->_icon : NULL,
+			( $noSort === FALSE and $class::$nodeSortable and $node->canEdit() ) ? $node->_position : NULL,
+			$root,
+			$node->_enabled,
+			( $node->_locked or !$node->canEdit() ),
+			( ( $node instanceof \IPS\Node\Model ) ? $node->_badge : $this->_getRowBadge( $node ) ),
+			$this->_titleHtml,
+			$this->_descriptionHtml,
+			$node->canAdd()
+		);
+	}	
 	
 }

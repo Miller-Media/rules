@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		BulkOperations Task
+ * @brief		ScheduledActions Task
  * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
  * @copyright	(c) 2001 - SVN_YYYY Invision Power Services, Inc.
  * @license		http://www.invisionpower.com/legal/standards/
  * @package		IPS Social Suite
  * @subpackage	rules
- * @since		01 Mar 2015
+ * @since		04 Mar 2015
  * @version		SVN_VERSION_NUMBER
  */
 
@@ -15,14 +15,14 @@ namespace IPS\rules\tasks;
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
-	exit;
+    header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
 }
 
 /**
- * BulkOperations Task
+ * ScheduledActions Task
  */
-class _BulkOperations extends \IPS\Task
+class _ScheduledActions extends \IPS\Task
 {
 	/**
 	 * Execute
@@ -37,11 +37,13 @@ class _BulkOperations extends \IPS\Task
 	 */
 	public function execute()
 	{
-		//$scheduled = \IPS\Db::i()->select( '*', 'rules_scheduler', array( '' ) );
-	
-		return NULL;
+		$scheduled_actions = \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=?', time() ), 'schedule_time ASC' );
+		foreach ( new \IPS\Patterns\ActiveRecordIterator( $scheduled_actions, 'IPS\rules\Action\Scheduled' ) as $action )
+		{
+			$action->execute();
+		}
 	}
-	
+
 	/**
 	 * Cleanup
 	 *

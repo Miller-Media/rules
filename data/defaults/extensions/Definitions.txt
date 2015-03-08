@@ -85,26 +85,16 @@ class _{class}
 						 * Class Association
 						 *
 						 * This is used to help rules determine whether this argument can be used 
-						 * with certain conditions/actions or not. For example, if your argument
-						 * is a member object, (or associated with a member object ), you can define 
-						 * it's class as \IPS\Member, which allows rules to make it available as an
-						 * event argument to operations that specifically need a member object, or 
-						 * an argument associated with a member object.
+						 * with conditions/actions that require objects. For example, if your argument
+						 * is a member object, you should define it's class as \IPS\Member. This allows 
+						 * rules to make it available as an event argument when the operation
+						 * specifically needs a member object.
 						 *
-						 * It's good to be specific here. But if your argument is simply arbitrary in
-						 * nature, then you can omit this setting.
+						 * If your argument will be an object, use the actual class of your object here.
+						 * Otherwise, simply omit this setting or set it to NULL.
 						 */
 						'class'		=> '\IPS\Member',
-						
-						/**
-						 * Property Association
-						 *
-						 * If this argument can be associated specifically with a particular object
-						 * property, then it's good to define that here because certain condition or
-						 * action arguments may only be compatible with specific object properties.
-						 */
-						'property'	=> 'member_id',
-						
+												
 						/**
 						 * NULLABLE
 						 *
@@ -262,21 +252,11 @@ class _{class}
 								 * can be associated with specific classes.
 								 *
 								 * If you define classes here for an argtype, only variables that have
-								 * been associated with those class(es) in the event definition will be
-								 * passed to your converter.
+								 * been associated with these class(es) will be able to be
+								 * passed to your converter or condition callback.
 								 */
 								'class' => array( '\IPS\Member' ),
-								
-								/**
-								 * When events are defined, the arguments they receive when triggered
-								 * can also be associated with specific properties.
-								 *
-								 * If you define properties for an argtype, only variables that have
-								 * been associated with those property(ies) in the event definition will be
-								 * passed to your converter.
-								 */
-								'property' => array( 'member_id' ),
-								
+																
 							),						
 						),
 						
@@ -485,21 +465,11 @@ class _{class}
 								 * can be associated with specific classes.
 								 *
 								 * If you define classes here for an argtype, only variables that have
-								 * been associated with those class(es) in the event definition will be
-								 * passed to your converter.
+								 * been associated with these class(es) will be able to be
+								 * passed to your converter or action callback.
 								 */
 								'class' => array( '\IPS\Member' ),
-								
-								/**
-								 * When events are defined, the arguments they receive when triggered
-								 * can also be associated with specific properties.
-								 *
-								 * If you define properties for an argtype, only variables that have
-								 * been associated with those property(ies) in the event definition will be
-								 * passed to your converter.
-								 */
-								'property' => array( 'member_id' ),
-								
+																
 							),						
 						),
 						

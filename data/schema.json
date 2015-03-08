@@ -155,6 +155,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "rule_imported_time": {
+                "name": "rule_imported_time",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
@@ -359,133 +373,147 @@
         "name": "rules_actions",
         "columns": {
             "action_id": {
+                "allow_null": false,
+                "auto_increment": true,
+                "binary": false,
+                "comment": "ID Number",
+                "decimals": null,
+                "default": null,
+                "length": 20,
                 "name": "action_id",
                 "type": "BIGINT",
-                "length": 20,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "ID Number",
                 "unsigned": true,
-                "zerofill": false,
-                "auto_increment": true,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_title": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 255,
                 "name": "action_title",
                 "type": "VARCHAR",
-                "length": 255,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_weight": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "0",
+                "length": 11,
                 "name": "action_weight",
                 "type": "INT",
-                "length": 11,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "0",
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_rule_id": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 11,
                 "name": "action_rule_id",
                 "type": "INT",
-                "length": 11,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_app": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 255,
                 "name": "action_app",
                 "type": "VARCHAR",
-                "length": 255,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_class": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 255,
                 "name": "action_class",
                 "type": "VARCHAR",
-                "length": 255,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_key": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 255,
                 "name": "action_key",
                 "type": "VARCHAR",
-                "length": 255,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_data": {
+                "allow_null": true,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": null,
+                "length": 0,
                 "name": "action_data",
                 "type": "MEDIUMTEXT",
-                "length": null,
-                "decimals": null,
-                "values": [],
-                "allow_null": true,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_description": {
+                "allow_null": true,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": null,
+                "length": 0,
                 "name": "action_description",
                 "type": "TEXT",
-                "length": null,
-                "decimals": null,
-                "values": [],
-                "allow_null": true,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "action_enabled": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "1",
+                "length": 1,
                 "name": "action_enabled",
+                "type": "INT",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "action_schedule_mode": {
+                "name": "action_schedule_mode",
                 "type": "INT",
                 "length": 1,
                 "decimals": null,
@@ -497,20 +525,106 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "action_schedule_minutes": {
+                "name": "action_schedule_minutes",
+                "type": "INT",
+                "length": 4,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "action_schedule_hours": {
+                "name": "action_schedule_hours",
+                "type": "INT",
+                "length": 4,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "action_schedule_days": {
+                "name": "action_schedule_days",
+                "type": "INT",
+                "length": 4,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "action_schedule_months": {
+                "name": "action_schedule_months",
+                "type": "INT",
+                "length": 4,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "action_schedule_date": {
+                "name": "action_schedule_date",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "action_schedule_customcode": {
+                "name": "action_schedule_customcode",
+                "type": "MEDIUMTEXT",
+                "length": 0,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
             "PRIMARY": {
                 "type": "primary",
                 "name": "PRIMARY",
-                "columns": [
-                    "action_id"
-                ],
                 "length": [
                     null
+                ],
+                "columns": [
+                    "action_id"
                 ]
             }
-        }
+        },
+        "collation": "utf8_unicode_ci",
+        "engine": "InnoDB"
     },
     "rules_logs": {
         "name": "rules_logs",
@@ -723,63 +837,6 @@
             }
         }
     },
-    "rules_scheduler": {
-        "name": "rules_scheduler",
-        "columns": {
-            "id": {
-                "name": "id",
-                "type": "BIGINT",
-                "length": "20",
-                "unsigned": true,
-                "zerofill": false,
-                "binary": false,
-                "allow_null": false,
-                "default": null,
-                "auto_increment": true,
-                "comment": "ID Number"
-            },
-            "app": {
-                "name": "app",
-                "type": "VARCHAR",
-                "length": 56,
-                "decimals": null,
-                "values": [],
-                "allow_null": true,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            },
-            "class": {
-                "name": "class",
-                "type": "VARCHAR",
-                "length": 56,
-                "decimals": null,
-                "values": [],
-                "allow_null": true,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            }
-        },
-        "indexes": {
-            "PRIMARY": {
-                "type": "primary",
-                "name": "PRIMARY",
-                "columns": [
-                    "id"
-                ],
-                "length": [
-                    null
-                ]
-            }
-        }
-    },
     "rules_rulesets": {
         "name": "rules_rulesets",
         "columns": {
@@ -838,6 +895,62 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "ruleset_description": {
+                "name": "ruleset_description",
+                "type": "VARCHAR",
+                "length": 1028,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "ruleset_creator": {
+                "name": "ruleset_creator",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "ruleset_created_time": {
+                "name": "ruleset_created_time",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "ruleset_imported_time": {
+                "name": "ruleset_imported_time",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
@@ -846,6 +959,394 @@
                 "name": "PRIMARY",
                 "columns": [
                     "ruleset_id"
+                ],
+                "length": [
+                    null
+                ]
+            }
+        }
+    },
+    "rules_scheduled_actions": {
+        "name": "rules_scheduled_actions",
+        "columns": {
+            "schedule_id": {
+                "name": "schedule_id",
+                "type": "BIGINT",
+                "length": 20,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "ID Number",
+                "unsigned": true,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            },
+            "schedule_time": {
+                "name": "schedule_time",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_data": {
+                "name": "schedule_data",
+                "type": "MEDIUMTEXT",
+                "length": null,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_unique_key": {
+                "name": "schedule_unique_key",
+                "type": "VARCHAR",
+                "length": 2056,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_action_id": {
+                "name": "schedule_action_id",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_queued": {
+                "name": "schedule_queued",
+                "type": "INT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_thread": {
+                "name": "schedule_thread",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_parent_thread": {
+                "name": "schedule_parent_thread",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "schedule_created": {
+                "name": "schedule_created",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "type": "primary",
+                "name": "PRIMARY",
+                "columns": [
+                    "schedule_id"
+                ],
+                "length": [
+                    null
+                ]
+            }
+        },
+        "comment": ""
+    },
+    "rules_custom_actions": {
+        "name": "rules_custom_actions",
+        "columns": {
+            "custom_action_id": {
+                "name": "custom_action_id",
+                "type": "BIGINT",
+                "length": 20,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "ID Number",
+                "unsigned": true,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            },
+            "custom_action_title": {
+                "name": "custom_action_title",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_action_weight": {
+                "name": "custom_action_weight",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_action_description": {
+                "name": "custom_action_description",
+                "type": "VARCHAR",
+                "length": 2048,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_action_key": {
+                "name": "custom_action_key",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "type": "primary",
+                "name": "PRIMARY",
+                "columns": [
+                    "custom_action_id"
+                ],
+                "length": [
+                    null
+                ]
+            }
+        }
+    },
+    "rules_custom_action_arguments": {
+        "name": "rules_custom_action_arguments",
+        "columns": {
+            "argument_id": {
+                "name": "argument_id",
+                "type": "BIGINT",
+                "length": 20,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "ID Number",
+                "unsigned": true,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            },
+            "argument_name": {
+                "name": "argument_name",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_type": {
+                "name": "argument_type",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_class": {
+                "name": "argument_class",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_required": {
+                "name": "argument_required",
+                "type": "INT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_custom_action_id": {
+                "name": "argument_custom_action_id",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_weight": {
+                "name": "argument_weight",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_custom_class": {
+                "name": "argument_custom_class",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_description": {
+                "name": "argument_description",
+                "type": "VARCHAR",
+                "length": 1028,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "argument_varname": {
+                "name": "argument_varname",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "type": "primary",
+                "name": "PRIMARY",
+                "columns": [
+                    "argument_id"
                 ],
                 "length": [
                     null
