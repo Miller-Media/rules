@@ -24,6 +24,7 @@
   <word key="rules_export_all" js="0">Export All</word>
   <word key="rules_export_enabled" js="0">Export Enabled</word>
   <word key="rules_manage_all_rules" js="0">Manage Rules</word>
+  <word key="rules_manage_rule" js="0">Back To Rule</word>
   <word key="rules_overview" js="0">Rules Overview</word>
   <word key="rules_welcome" js="0">Welcome To Rules</word>
   <word key="rules_logs_table_id" js="0">Log ID</word>
@@ -40,8 +41,8 @@
   <word key="data_column_name_desc" js="0"><![CDATA[<div class='ipsMessage ipsMessage_warning' >
 							The data key can only be lowercase alphanumerics (including underscores).<br>
 							It is used to access this data from the host object. <em>Example: $value = $object->getRulesData( 'key' );</em><br>
-							<strong>Note:</strong> If you change this key, rules that use the update event on this data and actions that update this data will still work. <br>
-							However, any token replacements or custom code which use the existing key will break.
+							<strong>Note:</strong> If you change this key, rules that use this data will still work. <br>
+							However, any token replacements or custom code which use the changed key will break.
 						   </div>]]></word>
   <word key="data_class" js="0">Data Associated With</word>
   <word key="data_type" js="0">Stored Data Type</word>

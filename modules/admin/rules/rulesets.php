@@ -188,7 +188,12 @@ class _rulesets extends \IPS\Node\Controller
 			\IPS\Output::i()->output .= \IPS\rules\Application::ruleChild( $parent );
 		}
 		
-		parent::form();		
+		parent::form();
+		
+		if ( \IPS\Request::i()->subnode == 1 )
+		{
+			\IPS\Output::i()->title = 'Rule: ' . \IPS\Output::i()->title;
+		}		
 	}
 	
 	/**

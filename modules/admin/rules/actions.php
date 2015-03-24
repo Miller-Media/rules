@@ -123,7 +123,14 @@ class _actions extends \IPS\Node\Controller
 	{		
 		\IPS\Output::i()->output .= \IPS\rules\Application::eventHeader( $this->rule->event() );
 		\IPS\Output::i()->output .= \IPS\rules\Application::ruleHeader( $this->rule );
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'editrule' ] = array(
+			'icon'	=> 'caret-left',
+			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rules&do=form&id=' . $this->rule->id ),
+			'title'	=> 'rules_manage_rule',
+			'data' => array( ),
+		);
 		parent::form();		
+		\IPS\Output::i()->title = 'Action: ' . \IPS\Output::i()->title;
 	}
 	
 	/**

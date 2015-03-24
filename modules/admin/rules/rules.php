@@ -121,6 +121,7 @@ class _rules extends \IPS\Node\Controller
 		}
 		
 		parent::form();		
+		\IPS\Output::i()->title = 'Rule: ' . \IPS\Output::i()->title;
 	}
 	
 	/**

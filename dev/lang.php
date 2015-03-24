@@ -28,6 +28,7 @@ $lang = array(
 	'rules_export_all'			=> "Export All",
 	'rules_export_enabled'			=> "Export Enabled",
 	'rules_manage_all_rules'		=> "Manage Rules",
+	'rules_manage_rule'			=> "Back To Rule",
 	
 	'rules_overview'			=> "Rules Overview",
 	'rules_welcome'				=> "Welcome To Rules",
@@ -47,8 +48,8 @@ $lang = array(
 	'data_column_name_desc'			=> "<div class='ipsMessage ipsMessage_warning' >
 							The data key can only be lowercase alphanumerics (including underscores).<br>
 							It is used to access this data from the host object. <em>Example: \$value = \$object->getRulesData( 'key' );</em><br>
-							<strong>Note:</strong> If you change this key, rules that use the update event on this data and actions that update this data will still work. <br>
-							However, any token replacements or custom code which use the existing key will break.
+							<strong>Note:</strong> If you change this key, rules that use this data will still work. <br>
+							However, any token replacements or custom code which use the changed key will break.
 						   </div>",
 						   
 	'data_class'				=> "Data Associated With",
