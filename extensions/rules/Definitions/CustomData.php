@@ -40,7 +40,7 @@ class _CustomData
 		
 		foreach ( \IPS\rules\Data::roots( NULL ) as $data_field )
 		{
-			$event_id 	= md5( $data_field->class ) . '_' . $data_field->column_name;
+			$event_id 	= 'updated_' . $data_field->key;
 			$data_class 	= in_array( $data_field->type, array( 'object', 'array' ) ) ? str_replace( '-' , '\\' , $data_field->type_class ) : NULL;
 			
 			$lang->words[ 'rules_CustomData_event_' . $event_id ] = 'Custom data updated: ' . $data_field->name;
@@ -94,7 +94,7 @@ class _CustomData
 		
 		foreach ( \IPS\rules\Data::roots( NULL ) as $data_field )
 		{
-			$action_id 	= md5( $data_field->class ) . '_' . $data_field->column_name;
+			$action_id 	= 'set_' . $data_field->key;
 			$data_class 	= in_array( $data_field->type, array( 'object', 'array' ) ) ? str_replace( '-' , '\\' , $data_field->type_class ) : NULL;
 			
 			$lang->words[ 'rules_CustomData_actions_' . $action_id ] = 'Update custom data: ' . $data_field->name;

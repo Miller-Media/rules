@@ -694,7 +694,7 @@ class _rulesets extends \IPS\Node\Controller
 	protected function export()
 	{
 		/**
-		 * Export A Single Rule
+		 * Export A Single Rule (Group)
 		 */
 		if ( \IPS\Request::i()->rule )
 		{
@@ -712,13 +712,23 @@ class _rulesets extends \IPS\Node\Controller
 			$rulesets 	= $xml->addChild( 'rulesets' );
 			$rules 		= $xml->addChild( 'rules' );
 			$customActions 	= $xml->addChild( 'customActions' );
+			$customData	= $xml->addChild( 'customData' );
 			
-			$custom_actions = $this->_addRuleExport( $rule, $rules );
+			$results = $this->_addRuleExport( $rule, $rules );
+			
+			$custom_actions = $results[ 'custom_actions' ];
+			$custom_data 	= $results[ 'custom_data' ];
 			
 			foreach ( $custom_actions as $custom_action )
 			{
 				$this->_addCustomActionExport( $custom_action, $customActions );
 			}
+			
+			foreach ( $custom_data as $data )
+			{
+				$this->_addCustomDataExport( $data, $customData );
+			}
+
 		}
 		
 		/**
@@ -740,13 +750,23 @@ class _rulesets extends \IPS\Node\Controller
 			$rulesets 	= $xml->addChild( 'rulesets' );
 			$rules 		= $xml->addChild( 'rules' );
 			$customActions 	= $xml->addChild( 'customActions' );
+			$customData	= $xml->addChild( 'customData' );
 			
-			$custom_actions = $this->_addRulesetExport( $set, $rulesets );
+			$results = $this->_addRulesetExport( $set, $rulesets );
+			
+			$custom_actions = $results[ 'custom_actions' ];
+			$custom_data 	= $results[ 'custom_data' ];
 			
 			foreach ( $custom_actions as $custom_action )
 			{
 				$this->_addCustomActionExport( $custom_action, $customActions );
 			}
+
+			foreach ( $custom_data as $data )
+			{
+				$this->_addCustomDataExport( $data, $customData );
+			}
+
 		}
 		
 		\IPS\Output::i()->sendOutput( $xml->asXML(), 200, 'application/xml', array( "Content-Disposition" => \IPS\Output::getContentDisposition( 'attachment', \IPS\Http\Url::seoTitle( $title ) . '.xml' ) ) );
@@ -758,24 +778,39 @@ class _rulesets extends \IPS\Node\Controller
 	protected function exportAll()
 	{
 		$xml = \IPS\Xml\SimpleXML::create( 'ruledata' );
+		
 		$rulesets 	= $xml->addChild( 'rulesets' );
 		$rules 		= $xml->addChild( 'rules' );
 		$customActions 	= $xml->addChild( 'customActions' );
+		$customData	= $xml->addChild( 'customData' );
+		
 		$custom_actions	= array();
+		$custom_data 	= array();
 		
 		foreach ( \IPS\rules\Rule\Ruleset::roots( NULL ) as $ruleset )
 		{
-			$custom_actions = array_merge( $custom_actions, $this->_addRulesetExport( $ruleset, $rulesets ) );
+			$results = $this->_addRulesetExport( $ruleset, $rulesets );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
 		
 		foreach ( \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_ruleset_id=0' ) ) ) as $rule )
 		{
-			$custom_actions = array_merge( $custom_actions, $this->_addRuleExport( $rule, $rules ) );
+			$results = $this->_addRuleExport( $rule, $rules );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
 		
 		foreach ( \IPS\rules\Action\Custom::roots( NULL ) as $custom_action )
 		{
 			$this->_addCustomActionExport( $custom_action, $customActions );
+		}
+		
+		foreach ( \IPS\rules\Data::roots( NULL ) as $custom_data )
+		{
+			$this->_addCustomDataExport( $custom_data, $customData );
 		}
 		
 		\IPS\Output::i()->sendOutput( $xml->asXML(), 200, 'application/xml', array( "Content-Disposition" => \IPS\Output::getContentDisposition( 'attachment', \IPS\Http\Url::seoTitle( 'rules-export-' . \IPS\DateTime::ts( time() ) ) . '.xml' ) ) );
@@ -798,14 +833,22 @@ class _rulesets extends \IPS\Node\Controller
 		
 		$rulesetNode->addChild( 'description', 	$ruleset->description );
 		$custom_actions = array();
+		$custom_data 	= array();
 		
 		$rulesNode = $rulesetNode->addChild( 'rules' );
 		foreach ( $ruleset->children() as $rule )
 		{
-			$custom_actions = array_merge( $custom_actions, $this->_addRuleExport( $rule, $rulesNode ) );
+			$results = $this->_addRuleExport( $rule, $rulesNode );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
 		
-		return $custom_actions;
+		return array
+		( 
+			'custom_actions' => $custom_actions,
+			'custom_data' => $custom_data,
+		);
 	}
 
 	/**
@@ -827,24 +870,33 @@ class _rulesets extends \IPS\Node\Controller
 		$ruleNode->addAttribute( 'debug',	FALSE );
 		
 		$custom_actions = array();
+		$custom_data 	= array();
 		
 		$conditionsNode = $ruleNode->addChild( 'conditions' );
 		foreach ( $rule->conditions() as $condition )
 		{
-			$this->_addConditionExport( $condition, $conditionsNode );
+			$results = $this->_addConditionExport( $condition, $conditionsNode );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
 		
 		$actionsNode = $ruleNode->addChild( 'actions' );
 		foreach ( $rule->actions() as $action )
 		{
-			/* Export custom actions that we want to trigger */
-			$custom_actions = array_merge( $custom_actions, $this->_addActionExport( $action, $actionsNode ) );
+			$results = $this->_addActionExport( $action, $actionsNode );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
 		
 		$subrulesNode = $ruleNode->addChild( 'rules' );
 		foreach ( $rule->children() as $subrule )
 		{
-			$this->_addRuleExport( $subrule, $subrulesNode );
+			$results = $this->_addRuleExport( $subrule, $subrulesNode );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
 		
 		/**
@@ -866,7 +918,30 @@ class _rulesets extends \IPS\Node\Controller
 			catch ( \OutOfRangeException $e ) {}
 		}
 			
-		return $custom_actions;
+		/**
+		 * Export any custom data that this rule is triggered by
+		 */
+		if 
+		( 
+			$rule->parent_id == 0 and
+			$rule->event_app == 'rules' and
+			$rule->event_class == 'CustomData'
+		)
+		{
+			$custom_data_key = mb_substr( $rule->event_key, \strlen( 'updated_' ) );
+			try
+			{
+				$data_field = \IPS\rules\Data::load( $custom_data_key, 'data_key' );
+				$custom_data[ $custom_data_key ] = $data_field;
+			}
+			catch ( \OutOfRangeException $e ) {}
+		}
+
+		return array
+		( 
+			'custom_actions' => $custom_actions,
+			'custom_data' => $custom_data,
+		);
 	}
 	
 	/**
@@ -878,6 +953,9 @@ class _rulesets extends \IPS\Node\Controller
 	protected function _addConditionExport( $condition, $xml )
 	{
 		$conditionNode = $xml->addChild( 'condition' );
+		
+		$custom_actions = array();
+		$custom_data = array();
 		
 		$conditionNode->addAttribute( 'title', 		$condition->title );
 		$conditionNode->addAttribute( 'weight', 	$condition->weight );
@@ -894,8 +972,37 @@ class _rulesets extends \IPS\Node\Controller
 		$subconditions = $conditionNode->addChild( 'conditions' );
 		foreach( $condition->children() as $_condition )
 		{
-			$this->_addConditionExport( $_condition, $subconditions );
+			$results = $this->_addConditionExport( $_condition, $subconditions );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
 		}
+		
+		/**
+		 * Attempt to look for usage of custom data as event arguments
+		 */
+		if ( isset ( $condition->data[ 'configuration' ][ 'data' ] ) and is_array( $condition->data[ 'configuration' ][ 'data' ] ) )
+		{
+			foreach ( $condition->data[ 'configuration' ][ 'data' ] as $k => $v )
+			{
+				if ( \substr( $k, -9 ) == '_eventArg' and \substr( \substr( $v, -55 ), 0, 23 ) == 'custom_data_conversion_' )
+				{
+					$custom_data_key = \substr( $v, -32 );
+					try
+					{
+						$data_field = \IPS\rules\Data::load( $custom_data_key, 'data_key' );
+						$custom_data[ $custom_data_key ] = $data_field;
+					}
+					catch ( \OutOfRangeException $e ) {}
+				}
+			}
+		}
+		
+		return array
+		( 
+			'custom_actions' => $custom_actions,
+			'custom_data' => $custom_data,
+		);
 	}
 	
 	/**
@@ -908,6 +1015,7 @@ class _rulesets extends \IPS\Node\Controller
 	{
 		$actionNode 	= $xml->addChild( 'action' );
 		$custom_actions = array();
+		$custom_data	= array();
 		
 		$actionNode->addAttribute( 'title', 		$action->title );
 		$actionNode->addAttribute( 'weight', 		$action->weight );
@@ -945,7 +1053,29 @@ class _rulesets extends \IPS\Node\Controller
 			catch ( \OutOfRangeException $e ) {}
 		}
 			
-		return $custom_actions;		
+		/**
+		 * Export any custom data field that this action wants to update
+		 */
+		if 
+		( 
+			$action->app == 'rules' and
+			$action->class == 'CustomData'
+		)
+		{
+			$custom_data_key = mb_substr( $action->key, \strlen( 'set_' ) );
+			try
+			{
+				$data_field = \IPS\rules\Data::load( $custom_data_key, 'data_key' );
+				$custom_data[ $custom_data_key ] = $data_field;
+			}
+			catch ( \OutOfRangeException $e ) {}
+		}
+
+		return array
+		( 
+			'custom_actions' => $custom_actions,
+			'custom_data' => $custom_data,
+		);
 	}
 	
 	/**
@@ -956,7 +1086,7 @@ class _rulesets extends \IPS\Node\Controller
 	 */
 	protected function _addCustomActionExport( $action, $xml )
 	{
-		$actionNode 	= $xml->addChild( 'action' );
+		$actionNode = $xml->addChild( 'action' );
 
 		$actionNode->addAttribute( 'title', 		$action->title );
 		$actionNode->addAttribute( 'weight', 		$action->weight );
@@ -978,7 +1108,7 @@ class _rulesets extends \IPS\Node\Controller
 	 */
 	protected function _addArgumentExport( $argument, $xml )
 	{
-		$argumentNode 	= $xml->addChild( 'argument' );
+		$argumentNode = $xml->addChild( 'argument' );
 		
 		$argumentNode->addAttribute( 'name',		$argument->name );
 		$argumentNode->addAttribute( 'type',		$argument->type );
@@ -990,6 +1120,29 @@ class _rulesets extends \IPS\Node\Controller
 		$argumentNode->addAttribute( 'varname',		$argument->varname );
 	}
 
+	/**
+	 * Export Custom Data Fields
+	 *
+	 * @param 	\IPS\rules\Data		$data		Custom data field to export
+	 * @param	\IPS\Xml\SimpleXML	$xml		XML object
+	 */
+	protected function _addCustomDataExport( $data, $xml )
+	{
+		$dataNode = $xml->addChild( 'data' );
+
+		$dataNode->addAttribute( 'name', 		$data->name );
+		$dataNode->addAttribute( 'class', 		$data->class );
+		$dataNode->addAttribute( 'column_name', 	$data->column_name );
+		$dataNode->addAttribute( 'type', 		$data->type );
+		$dataNode->addAttribute( 'type_class', 		$data->type_class );
+		$dataNode->addAttribute( 'weight', 		$data->weight );
+		$dataNode->addAttribute( 'tab', 		$data->tab );
+		$dataNode->addAttribute( 'use_mode', 		$data->use_mode );
+		$dataNode->addAttribute( 'required', 		$data->required );
+		$dataNode->addAttribute( 'description',		$data->description );
+		$dataNode->addAttribute( 'key', 		$data->key );		
+	}
+	
 	/**
 	 * Import Form
 	 *
@@ -1070,6 +1223,17 @@ class _rulesets extends \IPS\Node\Controller
 			foreach ( $import->customActions->action as $actionXML )
 			{
 				$this->_constructNewCustomAction( $actionXML );
+			}
+		}
+		
+		/**
+		 * Import Custom Data Fields
+		 */
+		if ( $import->customData->data )
+		{
+			foreach ( $import->customData->data as $dataXML )
+			{
+				$this->_constructNewCustomData( $dataXML );
 			}
 		}
 		
@@ -1258,6 +1422,42 @@ class _rulesets extends \IPS\Node\Controller
 		$argument->description		= (string)	$argumentXML[ 'description' ];
 		$argument->varname		= (string)	$argumentXML[ 'varname' ];
 		$argument->save();
+		
+		return $argument;
 	}
+	
+	/**
+	 * Create Custom Data Field From XML
+	 */
+	protected function _constructNewCustomData( $dataXML )
+	{
+		/**
+		 * Look for existing custom data field with this key
+		 */
+		try
+		{
+			$data_field = \IPS\rules\Data::load( (string) $dataXML[ 'key' ], 'data_key' );
+			return $data_field;
+		}
+		catch ( \OutOfRangeException $e ) {}
+		
+		$data_field = new \IPS\rules\Data;
+		
+		$data_field->key		= (string)	$dataXML[ 'key' ];
+		$data_field->name 		= (string) 	$dataXML[ 'name' ];
+		$data_field->class		= (string) 	$dataXML[ 'class' ];
+		$data_field->type 		= (string) 	$dataXML[ 'type' ];
+		$data_field->type_class		= (string)	$dataXML[ 'type_class' ];
+		$data_field->column_name	= (string)	$dataXML[ 'column_name' ];
+		$data_field->weight		= (int)		$dataXML[ 'weight' ];
+		$data_field->required		= (int) 	$dataXML[ 'required' ];
+		$data_field->description	= (string)	$dataXML[ 'description' ];
+		$data_field->tab		= (string)	$dataXML[ 'tab' ];
+		$data_field->use_mode		= (string)	$dataXML[ 'use_mode' ];
+		$data_field->save();
+		
+		return $data_field;
+	}
+		
 	
 }

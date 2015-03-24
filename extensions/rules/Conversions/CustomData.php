@@ -53,6 +53,7 @@ class _CustomData
 	public function conversionMap()
 	{
 		$map = array();
+		$lang = \IPS\Member::loggedIn()->language();
 		
 		foreach ( \IPS\rules\Data::roots( NULL ) as $data )
 		{
@@ -60,7 +61,9 @@ class _CustomData
 			$returnObjClass = str_replace( '-', '\\', $data->type_class );
 			$key 		= $data->column_name;
 			
-			$map[ $objClass ][ $data->name ] = array
+			$lang->words[ 'custom_data_conversion_' . $data->key ] = $data->name;
+			
+			$map[ $objClass ][ 'custom_data_conversion_' . $data->key ] = array
 			(
 				'token' 	=> $key,
 				'description' 	=> ucfirst( mb_strtolower( $data->name ) ),

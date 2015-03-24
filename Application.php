@@ -522,7 +522,7 @@ class _Application extends \IPS\Application
 							/* If it will be converted, change the item title to indicate that */
 							if ( $converter_class and $converter_key )
 							{
-								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . " ({$converter_key})";
+								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . ' ( ' . $lang->addToStack( $converter_key ) . ' )';
 							}
 							
 							$usable_arguments[ $event_arg_name ] = $eventArgNameKey;			
@@ -1493,7 +1493,7 @@ class _Application extends \IPS\Application
 		/**
 		 * For every class that has conversions available and that our event argument is compliant with,
 		 * we look at each of the conversion options available and see if any of them convert into a class
-		 * that can then be used as an operation arugment. 
+		 * that can then be used as an operation argument. 
 		 */
 		foreach ( $mappings as $base_class => $conversions )
 		{

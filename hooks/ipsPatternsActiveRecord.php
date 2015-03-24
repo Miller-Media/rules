@@ -306,11 +306,11 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 			if ( \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key ) )
 			{
 				$save_value = NULL;
+				$data_class = $this::rulesDataClass();
+				$data_field = \IPS\rules\Data::load( $key, 'data_column_name', array( 'data_class=?', $data_class ) );
+				
 				if ( $value !== NULL )
-				{
-					$data_class = $this::rulesDataClass();
-					$data_field = \IPS\rules\Data::load( $key, 'data_column_name', array( 'data_class=?', $data_class ) );
-											
+				{											
 					switch ( $data_field->type )
 					{
 						case 'object':
@@ -455,7 +455,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 				$this->rulesData[ $key ] = $value;
 				
 				/* Trigger Event */
-				$event_id = md5( $this::rulesDataClass() ) . '_' . $key;
+				$event_id = 'updated_' . $data_field->key;
 				\IPS\rules\Event::load( 'rules', 'CustomData', $event_id )->trigger( $this, $value );
 				
 				return TRUE;

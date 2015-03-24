@@ -12,6 +12,9 @@
   <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
   <word key="notifications__rules_notification" js="0">Rules Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
+  <word key="rules_perm__label" js="0">Data Permissions</word>
+  <word key="rules_perm__view" js="0">View Data</word>
+  <word key="rules_perm__edit" js="0">Edit Data</word>
   <word key="r__rules" js="0">Rules Restrictions</word>
   <word key="r__rules_manage" js="0">Manage Rules</word>
   <word key="r__logs_manage" js="0">View Logs</word>
@@ -36,8 +39,9 @@
   <word key="data_column_name" js="0">Data Key</word>
   <word key="data_column_name_desc" js="0"><![CDATA[<div class='ipsMessage ipsMessage_warning' >
 							The data key can only be lowercase alphanumerics (including underscores).<br>
-							It is used to access this data from the host object.<br> 
-							Example: $value = $object->getRulesData( 'key' );
+							It is used to access this data from the host object. <em>Example: $value = $object->getRulesData( 'key' );</em><br>
+							<strong>Note:</strong> If you change this key, rules that use the update event on this data and actions that update this data will still work. <br>
+							However, any token replacements or custom code which use the existing key will break.
 						   </div>]]></word>
   <word key="data_class" js="0">Data Associated With</word>
   <word key="data_type" js="0">Stored Data Type</word>

@@ -14,6 +14,9 @@ $lang = array(
 	
 	'notifications__rules_notification'	=> "Rules Automated Notifications",
 	'member__rules_RulesMember'		=> "Rules Data",
+	'rules_perm__label'			=> "Data Permissions",
+	'rules_perm__view'			=> "View Data",
+	'rules_perm__edit'			=> "Edit Data",
 	
 	// Rules Restrictions
 	'r__rules'				=> "Rules Restrictions",
@@ -43,8 +46,9 @@ $lang = array(
 	'data_column_name'			=> "Data Key",
 	'data_column_name_desc'			=> "<div class='ipsMessage ipsMessage_warning' >
 							The data key can only be lowercase alphanumerics (including underscores).<br>
-							It is used to access this data from the host object.<br> 
-							Example: \$value = \$object->getRulesData( 'key' );
+							It is used to access this data from the host object. <em>Example: \$value = \$object->getRulesData( 'key' );</em><br>
+							<strong>Note:</strong> If you change this key, rules that use the update event on this data and actions that update this data will still work. <br>
+							However, any token replacements or custom code which use the existing key will break.
 						   </div>",
 						   
 	'data_class'				=> "Data Associated With",

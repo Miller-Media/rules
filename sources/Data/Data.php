@@ -40,7 +40,7 @@ class _Data extends \IPS\Node\Model
 	/**
 	 * @brief	[ActiveRecord] Database ID Fields
 	 */
-	protected static $databaseIdFields = array( 'data_column_name' );
+	protected static $databaseIdFields = array( 'data_column_name', 'data_key' );
 	
 	/**
 	 * @brief	[Node] Parent ID Database Column
@@ -60,20 +60,25 @@ class _Data extends \IPS\Node\Model
 	/**
 	 * @brief	[Node] App for permission index
 	 */
-	public static $permApp = 'rules';
+	//public static $permApp = 'rules';
 	
 	/**
 	 * @brief	[Node] Type for permission index
 	 */
-	public static $permType = 'data_field';
+	//public static $permType = 'data_field';
 	
 	/**
 	 * @brief	The map of permission columns
 	 */
-	public static $permissionMap = array(
+	/*public static $permissionMap = array(
 		'view'			=> 'view',
 		'edit'			=> 2,
-	);
+	);*/
+	
+	/**
+	 * @brief	[Node] Prefix string that is automatically prepended to permission matrix language strings
+	 */
+	//public static $permissionLangPrefix = 'rules_';
 	
 	/**
 	 * @brief	Use Modal Forms?
@@ -112,7 +117,10 @@ class _Data extends \IPS\Node\Model
 	public function get__description()
 	{		
 		$typeTitle = $this->storedValueTitle();	
-		return "<i class='fa fa-caret-right'></i> <strong>{$this->entityTitle()} Data</strong> / <strong>" . ucfirst( $this->type ) . "</strong>" . ( $typeTitle ? " ({$typeTitle})" : "" );
+		return "<strong>{$this->entityTitle()} Data</strong> / <strong>" . 
+			ucfirst( $this->type ) . "</strong>" . ( $typeTitle ? " ({$typeTitle})" : "" ) . " " .
+			" <div style='display:inline-block; width:20px'></div> <span style='color:green'><i class='fa fa-key'></i> {$this->column_name}</span>"
+			. ( $this->description ? "<br><i class='fa fa-caret-right'></i> " . $this->description : "" );
 	}
 	
 	public function entityTitle()
@@ -455,7 +463,14 @@ class _Data extends \IPS\Node\Model
 	 */
 	public function save()
 	{
-	
+		/**
+		 * Assign a unique key if needed
+		 */
+		if ( ! $this->key )
+		{
+			$this->key = md5( uniqid() . mt_rand() );
+		}
+		
 		/**
 		 * Work out a column name automatically
 		 */

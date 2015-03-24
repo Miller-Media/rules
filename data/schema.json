@@ -1530,6 +1530,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "data_key": {
+                "name": "data_key",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
