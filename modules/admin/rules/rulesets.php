@@ -60,6 +60,12 @@ class _rulesets extends \IPS\Node\Controller
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'rules_manage' );
 		
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'chosen.jquery.js', 'rules', 'interface' ) );	
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'chosen.css', 'rules', 'admin' ) );
+		
+		/* Javascript Controller */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_ui.js', 'rules', 'admin' ) );
+		
 		parent::execute();
 	}
 	
@@ -75,7 +81,15 @@ class _rulesets extends \IPS\Node\Controller
 			'data' => array( 'confirm' => '' ),
 		);
 		
-		\IPS\Output::i()->output .= "<style> #tree_search { display:none; } </style>";
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'overview' ] = array(
+			'icon'	=> 'info',
+			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rulesets&do=overview' ),
+			'title'	=> 'rules_overview',
+			'data' => array( 'rules-overview' => true, 'ipsDialog' => true, 'ipsDialog-size' => 'medium', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack( 'rules_welcome' ) ),
+		);
+		
+		/* Suppress "No Results" message since we show two trees back to back and it looks awkward */
+		\IPS\Member::loggedIn()->language()->words[ 'no_results' ] = '';
 		
 		parent::manage();
 		
@@ -93,6 +107,36 @@ class _rulesets extends \IPS\Node\Controller
 		
 		if ( ! \IPS\Request::i()->isAjax() )
 		{
+			$rules_empty	= ! ( 
+						\IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() or
+						\IPS\Db::i()->select( 'COUNT(*)', 'rules_rulesets' )->first()
+					);
+					
+			$dim		= $rules_empty ? "-dim" : "";
+			$bgimage 	= rtrim( \IPS\Http\Url::baseUrl(), '/' ) . "/applications/rules/img/rules-bg{$dim}.png";
+			
+			\IPS\Output::i()->output .= "
+			  <style> 
+			    #tree_search { display:none; }
+			    #acpMainArea {
+			      background:url(\"{$bgimage}\") no-repeat top left rgba( 255, 255, 255, 0.5 );
+			      background-size:100% auto;
+			    }
+			    .ipsTree {
+			      background-color:#fff;
+			    }
+			  </style>
+			";
+			
+			if ( $rules_empty )
+			{
+				$title = \IPS\Member::loggedIn()->language()->addToStack( 'rules_welcome' );
+				$overview_url = \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=overview" );
+				\IPS\Output::i()->output .= "
+					<a href='{$overview_url}' style='width:220px; position:absolute; left:50%; top:50%; margin-left:-110px;' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title='{$title}' class='ipsButton ipsButton_large ipsButton_positive'><i class='fa fa-graduation-cap'></i> &nbsp;&nbsp;Learn About Rules</a>
+				";
+			}
+			
 			\IPS\Output::i()->output .= (string) $rules;
 		}
 		
@@ -107,6 +151,13 @@ class _rulesets extends \IPS\Node\Controller
 	{	
 		$rule 	= NULL;
 		$parent = NULL;
+		
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'manageall' ] = array(
+			'icon'	=> 'caret-left',
+			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rulesets' ),
+			'title'	=> 'rules_manage_all_rules',
+			'data' => array( ),
+		);
 		
 		if ( \IPS\Request::i()->id )
 		{
@@ -189,11 +240,10 @@ class _rulesets extends \IPS\Node\Controller
 			'add_rule' => array
 			(
 				'icon' => 'plus',
-				'title' => 'rulesets_add_child',
+				'title' => 'rules_add_rule',
 				'link' => $this->url->setQueryString( array( 'do' => 'form', 'subnode' => 1 ) ),
 			),
 		);
-	
 	
 		$buttons = array_merge( $buttons, parent::_getRootButtons() );
 		
@@ -237,7 +287,7 @@ class _rulesets extends \IPS\Node\Controller
 			}
 			catch( \OutOfRangeException $e )
 			{
-				\IPS\Output::i()->error( 'node_error', '2S101/P', 404, '' );
+				\IPS\Output::i()->error( 'node_error', '2R101/E', 404, '' );
 			}
 		}
 		
@@ -315,6 +365,168 @@ class _rulesets extends \IPS\Node\Controller
 	}
 	
 	/**
+	 * Reorder
+	 *
+	 * @return	void
+	 */
+	protected function reorder()
+	{	
+		/* Init */
+		$nodeClass = $this->nodeClass;
+		
+		/* Normalise AJAX vs non-AJAX */
+		if( isset( \IPS\Request::i()->ajax_order ) )
+		{
+			$order = array();
+			$position = array();
+			foreach( \IPS\Request::i()->ajax_order as $id => $parent )
+			{
+				if ( !isset( $order[ $parent ] ) )
+				{
+					$order[ $parent ] = array();
+					$position[ $parent ] = 1;
+				}
+				$order[ $parent ][ $id ] = $position[ $parent ]++;
+			}
+		}
+		/* Non-AJAX way */
+		else
+		{
+			$order = array( \IPS\Request::i()->root ?: 'null' => \IPS\Request::i()->order );
+		}
+
+		/* Okay, now order */
+		foreach( $order as $parent => $nodes )
+		{
+			foreach ( $nodes as $id => $position )
+			{
+				/* Load Node */
+				try
+				{
+					if ( mb_substr( $id, 0, 2 ) === 's.' )
+					{
+						$node = call_user_func( array( $nodeClass::$subnodeClass, 'load' ), mb_substr( $id, 2 ) );
+						$parentColumn = $node::$parentNodeColumnId;
+					}
+					else
+					{
+						$node = $nodeClass::load( $id );
+						$parentColumn = $node::$databaseColumnParent;
+					}
+				}
+				catch ( \OutOfRangeException $e )
+				{
+					\IPS\Output::i()->error( 'node_error', '3S101/B', 404, '' );
+				}
+				$orderColumn = $node::$databaseColumnOrder;
+				
+				/* Check permission */
+				if( !$node->canEdit() )
+				{
+					continue;
+				}
+				if( !$node::$nodeSortable or $orderColumn === NULL )
+				{
+					continue;
+				}
+								
+				/* Do it */
+				if ( $parentColumn )
+				{
+					$node->$parentColumn = ( $parent === 'null' ) ? 0 : is_numeric( $parent ) ? $parent : $nodeClass::$databaseColumnParentRootValue;
+				}
+				$node->$orderColumn = $position;
+				$node->save();
+			}
+			
+		}
+				
+		/* Log */
+		\IPS\Session::i()->log( 'acplog__node_reorder', array( $this->title => TRUE ), TRUE );
+				
+		/* If this is an AJAX request, just respond */
+		if( \IPS\Request::i()->isAjax() )
+		{
+			return;
+		}
+		/* Otherwise, redirect */
+		else
+		{
+			\IPS\Output::i()->redirect( $this->url->setQueryString( array( 'root' => \IPS\Request::i()->root ) ) );
+		}
+		\IPS\Output::i()->sendOutput();
+	}
+
+	/**
+	 * Rules Overview Help Page
+	 */
+	protected function overview()
+	{
+		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'rules_welcome' );
+		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'help' )->overview();
+	}
+	
+	/**
+	 * Enable Debugging
+	 */
+	protected function debugEnable()
+	{
+		try
+		{
+			$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
+			
+			$enableRecursive = function( $rule, $enableRecursive )
+			{
+				$rule->debug = 1;
+				$rule->save();
+				
+				foreach ( $rule->children() as $_rule )
+				{
+					$enableRecursive( $_rule, $enableRecursive );
+				}
+			};
+			
+			$enableRecursive( $rule, $enableRecursive );
+			
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'Debugging Enabled' );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			\IPS\Output::i()->error( 'node_error', '2R101/F', 404, '' );
+		}
+	}
+	
+	/**
+	 * Disable Debugging
+	 */
+	protected function debugDisable()
+	{
+		try
+		{
+			$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
+			
+			$disableRecursive = function( $rule, $disableRecursive )
+			{
+				$rule->debug = 0;
+				$rule->save();
+				
+				foreach ( $rule->children() as $_rule )
+				{
+					$disableRecursive( $_rule, $disableRecursive );
+				}
+			};
+			
+			$disableRecursive( $rule, $disableRecursive );
+			
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'Debugging Disabled' );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			\IPS\Output::i()->error( 'node_error', '2R101/G', 404, '' );
+		}
+	}
+
+	/**
 	 * View Rules Log Info
 	 */
 	protected function viewlog()
@@ -348,7 +560,7 @@ class _rulesets extends \IPS\Node\Controller
 				try
 				{
 					$operation = \IPS\rules\Condition::load( $val );
-					return $operation->title;
+					return ( $operation->not ? "<span class='ipsBadge ipsBadge_warning'>NOT</span> " : "" ) .  $operation->title;
 				}
 				catch ( \OutOfRangeException $e )
 				{
@@ -357,9 +569,16 @@ class _rulesets extends \IPS\Node\Controller
 			},
 			'result' => function( $val )
 			{
-				if ( $json_val = json_decode( $val ) )
+				if ( $json_val = json_decode( $val ) or $val == 'false' )
 				{
-					return "<pre>" . print_r( $json_val, true ) . "</pre>";
+					if ( ! is_bool ( $json_val ) )
+					{
+						return "<pre style='font-family:inherit'>" . print_r( $json_val, true ) . "</pre>";
+					}
+					else
+					{
+						return $json_val ? '<span style="color:green">TRUE</span>' : '<span style="color:red">FALSE</span>';
+					}
 				}				
 				return $val;
 			},
@@ -387,9 +606,16 @@ class _rulesets extends \IPS\Node\Controller
 			},
 			'result' => function( $val )
 			{
-				if ( $json_val = json_decode( $val ) )
+				if ( $json_val = json_decode( $val ) or $val == 'false' )
 				{
-					return "<pre>" . print_r( $json_val, true ) . "</pre>";
+					if ( ! is_bool ( $json_val ) )
+					{
+						return "<pre style='font-family:inherit'>" . print_r( $json_val, true ) . "</pre>";
+					}
+					else
+					{
+						return $json_val ? '<span style="color:green">TRUE</span>' : '<span style="color:red">FALSE</span>';
+					}
 				}				
 				return $val;
 			},
@@ -421,9 +647,16 @@ class _rulesets extends \IPS\Node\Controller
 			},
 			'result' => function( $val )
 			{
-				if ( $json_val = json_decode( $val ) )
+				if ( $json_val = json_decode( $val ) or $val == 'false' )
 				{
-					return "<pre>" . print_r( $json_val, true ) . "</pre>";
+					if ( ! is_bool ( $json_val ) )
+					{
+						return "<pre style='font-family:inherit'>" . print_r( $json_val, true ) . "</pre>";
+					}
+					else
+					{
+						return $json_val ? '<span style="color:green">TRUE</span>' : '<span style="color:red">FALSE</span>';
+					}
 				}				
 				return $val;
 			},
@@ -442,7 +675,7 @@ class _rulesets extends \IPS\Node\Controller
 						'icon'		=> 'bug',
 						'title'		=> 'View Debug Console',
 						'id'		=> "{$row['id']}-view",
-						'link'		=> $self->url->setQueryString( array( 'do' => 'form', 'id' => $row[ 'rule_id' ], 'tab' => 'debug_console' ) ),
+						'link'		=> $self->url->setQueryString( array( 'controller' => 'rules', 'do' => 'form', 'id' => $row[ 'rule_id' ], 'tab' => 'debug_console' ) ),
 					);
 				}
 			}

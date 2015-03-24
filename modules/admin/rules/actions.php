@@ -45,6 +45,12 @@ class _actions extends \IPS\Node\Controller
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'rules_manage' );
 		
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'chosen.jquery.js', 'rules', 'interface' ) );	
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'chosen.css', 'rules', 'admin' ) );
+		
+		/* Javascript Controllers */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_ui.js', 'rules', 'admin' ) );
+				
 		if ( ! isset( $this->rule ) and \IPS\Request::i()->do != 'enableToggle' )
 		{
 			if ( \IPS\Request::i()->id )

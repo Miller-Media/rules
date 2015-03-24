@@ -98,10 +98,18 @@ class _Rule extends \IPS\Node\Model
 	 */
 	public function get__description()
 	{
+		$description = "";
+		
 		if ( $this->parent_id == 0 )
 		{
-			return "<i class='fa fa-flash'></i> Event: " . $this->event()->title();
+			$description .= "<i class='fa fa-flash'></i> Event: {$this->event()->title()}<br>";
 		}
+		
+		$conditions_count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_conditions', array( 'condition_rule_id=? AND condition_enabled=1', $this->id ) )->first();
+		$actions_count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_actions', array( 'action_rule_id=? AND action_enabled=1', $this->id ) )->first();
+		
+		$description .= "<i class='fa fa-info'></i> Summary: {$conditions_count} Conditions / {$actions_count} Actions";
+		return $description;
 	}
 		
 	/**
@@ -173,6 +181,18 @@ class _Rule extends \IPS\Node\Model
 		$events 	= array();
 		$event_missing 	= FALSE;
 		
+		/**
+		 * @LITE VERSION: Restrict amount of rules available in lite version
+		 */
+		if ( \IPS\rules\LITE and ! $this->id )
+		{
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= 10 )
+			{
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of 10 rules.', 'RULES', 200, '' );
+				exit;
+			}
+		}
+		
 		$form->addTab( 'rules_settings' );
 		
 		/**
@@ -199,7 +219,7 @@ class _Rule extends \IPS\Node\Model
 		 */
 		else if	( ! $this->parent() )
 		{
-			if ( $sets = \IPS\rules\Rule\Ruleset::roots( NULL ) )
+			if ( \IPS\rules\Rule\Ruleset::roots( NULL ) )
 			{
 				$ruleset_id = $this->ruleset_id ?: 0;
 				if 
@@ -232,11 +252,12 @@ class _Rule extends \IPS\Node\Model
 			foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
 			{
 				foreach ( $definition[ 'events' ] as $event_key => $event_data )
-				{				
-					$events[ $definition[ 'group' ] ][ $definition_key . '_' . $event_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_event_' . $event_key;
+				{
+					$group = $event_data[ 'group' ] ?: $definition[ 'group' ];
+					$events[ $group ][ $definition_key . '_' . $event_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_event_' . $event_key;
 				}
 			}
-			$form->add( new \IPS\Helpers\Form\Select( 'rule_event_selection', $this->id ? md5( $this->event_app . $this->event_class ) . '_' . $this->event_key : NULL, TRUE, array( 'options' => $events, 'noDefault' => TRUE ), NULL, NULL, NULL, 'rule_event_selection' ) );
+			$form->add( new \IPS\Helpers\Form\Select( 'rule_event_selection', $this->id ? md5( $this->event_app . $this->event_class ) . '_' . $this->event_key : NULL, TRUE, array( 'options' => $events, 'noDefault' => TRUE ), NULL, "<div class='chosen-collapse' data-controller='rules.admin.ui.chosen'>", "</div>", 'rule_event_selection' ) );
 		}
 		
 		/* Rule Title */
@@ -327,7 +348,7 @@ class _Rule extends \IPS\Node\Model
 				
 				$self 		= $this;
 				$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=viewlog" );
-				$table 		= new \IPS\Helpers\Table\Db( 'rules_logs', $controllerUrl, array( 'rule_id=? AND op_id=0', $this->id ) );
+				$table 		= new \IPS\Helpers\Table\Db( 'rules_logs', \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&do=form&id=". $this->id ), array( 'rule_id=? AND op_id=0', $this->id ) );
 				$table->include = array( 'time', 'message', 'result' );
 				$table->parsers = array(
 					'time'	=> function( $val )
@@ -359,6 +380,8 @@ class _Rule extends \IPS\Node\Model
 			}			
 			
 		}
+		
+		parent::form( $form );
 	}
 	
 	/**
@@ -439,13 +462,31 @@ class _Rule extends \IPS\Node\Model
 		
 		if ( $this->debug )
 		{
+			$buttons[ 'debug_disable' ] = array
+			(
+				'icon'		=> 'bug',
+				'title'		=> 'Disable Debugging',
+				'id'		=> "{$row['id']}-debug-disable",
+				'link'		=> $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'debugDisable', 'id' => $this->id ) ),
+			);
+		
 			$buttons[ 'debug' ] = array
 			(
 				'icon'		=> 'bug',
 				'title'		=> 'View Debug Console',
-				'id'		=> "{$row['id']}-view",
-				'link'		=> $url->setQueryString( array( 'controller' => 'rules', 'do' => 'form', 'id' => $this->id, 'tab' => 'debug_console' ) ),
+				'id'		=> "{$row['id']}-debug",
+				'link'		=> $url->setQueryString( array( 'controller' => 'rules', 'do' => 'form', 'id' => $this->id, 'tab' => 'debug_console', 'subnode' => NULL ) ),
 			);
+		}
+		else
+		{
+			$buttons[ 'debug_enable' ] = array
+			(
+				'icon'		=> 'bug',
+				'title'		=> 'Enable Debugging',
+				'id'		=> "{$row['id']}-debug-enable",
+				'link'		=> $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'debugEnable', 'id' => $this->id ) ),
+			);		
 		}
 		
 		return $buttons;
@@ -659,7 +700,18 @@ class _Rule extends \IPS\Node\Model
 			return;
 		}
 	
-	
+		/**
+		 * @LITE VERSION: Restrict amount of rules available in lite version
+		 */
+		if ( \IPS\rules\LITE )
+		{
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= 10 )
+			{
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of 10 rules.', 'RULES', 200, '' );
+				exit;
+			}
+		}
+		
 		$oldId = $this->id;
 		parent::__clone();
 		
@@ -686,6 +738,18 @@ class _Rule extends \IPS\Node\Model
 	 */
 	public function save()
 	{
+		/**
+		 * @LITE VERSION: Restrict amount of rules available in lite version
+		 */
+		if ( \IPS\rules\LITE and $this->_new )
+		{
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= 10 )
+			{
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of 10 rules.', 'RULES', 200, '' );
+				exit;
+			}
+		}
+
 		if ( $this->parent() )
 		{
 			if ( $this->ruleset_id != $this->parent()->ruleset_id )

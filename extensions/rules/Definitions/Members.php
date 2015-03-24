@@ -24,7 +24,7 @@ class _Members
 	/**
 	 * Definition Group
 	 */
-	public $group = 'members';
+	public $defaultGroup = 'members';
 
 	/**
 	 * @brief	Triggerable Events
@@ -102,7 +102,7 @@ class _Members
 				(
 					'member' 	=> $memberArg,
 					'giver' 	=> $memberArg,
-					'content' 	=> array( 'argtype' => '\IPS\Content' ),
+					'content' 	=> array( 'argtype' => 'object', 'class' => '\IPS\Content' ),
 					'reptype' 	=> array( 'argtype' => 'int' ),
 				),
 			),
@@ -147,7 +147,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required' 	=> TRUE,
 					),
 				),
@@ -175,7 +176,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required' 	=> TRUE,
 					),
 				),
@@ -259,18 +261,63 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required' 	=> TRUE,
 					),
 				),
 			),
 			'member_following' => array
 			(
-			
+				'callback' 	=> array( $this, 'memberFollowing' ),
+				'arguments' => array
+				(
+					'member' => array
+					(
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
+						'required' 	=> TRUE,
+					),
+					'member2' => array
+					(
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member2' ),
+						'required' 	=> TRUE,
+					),
+				),			
 			),
 			'member_ignoring' => array
 			(
-			
+				'callback' 	=> array( $this, 'memberIgnoring' ),
+				'configuration' => array
+				(
+					'form' => function( $form, $values )
+					{
+						$ignore_options = array
+						(
+							'topics' 	=> 'Content Posts',
+							'messages'	=> 'Messages',
+							'signatures'	=> 'Signatures',
+						);
+						
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_ignore_type', $values[ 'rules_Members_ignore_type' ] ?: 'topics', TRUE, array( 'options' => $ignore_options ) ) );
+					},
+				),
+				'arguments' => array
+				(
+					'member' => array
+					(
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ),
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
+						'required' 	=> TRUE,
+					),
+					'member2' => array
+					(
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member2' ),
+						'required' 	=> TRUE,
+					),
+				),			
 			),
 		);
 	}
@@ -281,47 +328,7 @@ class _Members
 	public function actions()
 	{
 		$actions = array
-		(			
-			'modify_posts' => array
-			(
-				'callback'	=> array( $this, 'modifyPosts' ),
-				'configuration' => array
-				(
-					'form' => function( $form, $values, $action )
-					{
-						// need to setup options... add to posts / decrement posts / set posts to value etc.
-					},
-				),
-				'arguments'	=> array
-				(
-					'member' => array
-					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
-						'required'	=> TRUE,
-					),
-					'value' => array
-					(
-						'configuration' => array
-						(
-							'form' => function( $form, $values, $action )
-							{
-								$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_posts_value', $values[ 'rules_Members_posts_value' ], TRUE, array( 'min' => NULL ), NULL, NULL, NULL, 'rules_Members_posts_value' ) );
-								return array( 'rules_Members_posts_value' );
-							},
-							'getArg' => function( $values, $action )
-							{
-								return $values[ 'rules_Members_posts_value' ];
-							}
-						),
-						'argtypes'	=> array( 'int' ),
-						'required'	=> TRUE,
-					),
-				),
-			),
-			'modify_reputation' => array
-			(
-			
-			),
+		(	
 			'change_primary_group' => array
 			(
 				'callback'	=> array( $this, 'changePrimaryGroup' ),
@@ -336,7 +343,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),			
@@ -355,7 +363,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),			
@@ -374,7 +383,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),			
@@ -393,7 +403,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),			
@@ -405,7 +416,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 					'title' => array
@@ -434,7 +446,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),					
@@ -446,7 +459,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),								
@@ -480,7 +494,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),					
@@ -492,7 +507,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),					
@@ -504,7 +520,8 @@ class _Members
 				(
 					'member' => array
 					(
-						'argtypes' 	=> \IPS\rules\Application::getPreset( 'member' ), 
+						'argtypes' 	=> \IPS\rules\Application::argPreset( 'member' ), 
+						'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 						'required'	=> TRUE,
 					),
 				),								
@@ -514,244 +531,10 @@ class _Members
 		return $actions;
 	}
 	
-	/**
-	 * Modify Member Posts
-	 */
-	public function modifyPosts( $member, $value, $values )
-	{
-
-	}
+	/***			***
+	 ***     CONDITIONS	***
+	 ***			***/
 	
-	/**
-	 * Change Member Primary Group
-	 */
-	public function changePrimaryGroup( $member, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			if ( $member->member_group_id != $values[ 'rules_Members_member_primary_group' ] )
-			{
-				try
-				{
-					$group = \IPS\Member\Group::load( $values[ 'rules_Members_member_primary_group' ] );
-					$member->member_group_id = $group->g_id;
-					$member->save();
-					return "member group changed";
-				}
-				catch ( \OutOfRangeException $e )
-				{
-					return "invalid member group, group not changed";
-				}
-			}
-			else
-			{
-				return "member already has primary group";
-			}
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-	
-	/**
-	 * Add Member Secondary Groups
-	 */
-	public function addSecondaryGroups( $member, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member_groups = explode( ',', $member->mgroup_others );
-			foreach ( (array) $values[ 'rules_Members_member_secondary_groups_add' ] as $g_id )
-			{
-				try
-				{
-					$group = \IPS\Member\Group::load( $g_id );
-					$member_groups[] = $group->g_id;
-				}
-				catch ( \OutOfRangeException $e ) {}
-			}
-			
-			$member_groups = array_unique( $member_groups );
-			$member->mgroup_others = implode( ',', $member_groups );
-			$member->save();
-			return "member groups added";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-
-	/**
-	 * Add Member Secondary Groups
-	 */
-	public function removeSecondaryGroups( $member, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member_groups = explode( ',', $member->mgroup_others );
-			foreach ( (array) $values[ 'rules_Members_member_secondary_groups_remove' ] as $g_id )
-			{
-				$i = array_search( $g_id, $member_groups );
-				if ( $i !== FALSE )
-				{
-					unset( $member_groups[ $i ] );
-				}
-			}
-			
-			$member->mgroup_others = implode( ',', $member_groups );
-			$member->save();
-			return "member groups removed";
-		}
-		else
-		{
-			return "invalid member";
-		}		
-	}
-
-	/**
-	 * Add Member Secondary Groups
-	 */
-	public function setSecondaryGroups( $member, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member_groups = array();
-			foreach ( (array) $values[ 'rules_Members_member_secondary_groups_set' ] as $g_id )
-			{
-				try
-				{
-					$group = \IPS\Member\Group::load( $g_id );
-					$member_groups[] = $group->g_id;
-				}
-				catch ( \OutOfRangeException $e ) {}
-			}
-			
-			$member->mgroup_others = implode( ',', $member_groups );
-			$member->save();
-			return "member groups set";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-
-	/**
-	 * Change Member Title
-	 */
-	public function changeMemberTitle( $member, $title, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member->member_title = $title;
-			$member->save();
-			return "member title changed";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-	
-	/**
-	 * Flag As Spammer Callback
-	 */
-	public function flagAsSpammer( $member )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member->flagAsSpammer();
-			return "member flagged as spammer";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-	
-	/**
-	 * Unflag As Spammer Callback
-	 */
-	public function unflagAsSpammer( $member )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member->unflagAsSpammer();
-			return "member unflagged as spammer";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-	
-	/**
-	 * Flag As Spammer Callback
-	 */
-	public function banMember( $member, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			switch ( $values[ 'rules_Members_ban_setting' ] )
-			{
-				case 'temporary':
-					$ban_time = \strtotime
-					( 
-						'+' . intval( $values[ 'rules_Members_ban_setting_months' ] ) . ' months ' . 
-						'+' . intval( $values[ 'rules_Members_ban_setting_days' ] ) . ' days ' .
-						'+' . intval( $values[ 'rules_Members_ban_setting_hours' ] ) . ' hours ' .
-						'+' . intval( $values[ 'rules_Members_ban_setting_minutes' ] ) . ' minutes '
-					);
-					$member->temp_ban = $ban_time;
-					$member->save();
-					return "member temporarily banned";
-					
-				default:
-					$member->temp_ban = -1;
-					$member->save();
-					return "member banned permanently";
-			}
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-	
-	/**
-	 * Flag As Spammer Callback
-	 */
-	public function unbanMember( $member )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member->temp_ban = 0;
-			$member->save();
-			return "member unbanned";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
-	
-	/**
-	 * Prune A Member
-	 */
-	public function pruneMember( $member, $values )
-	{
-		if ( $member instanceof \IPS\Member )
-		{
-			$member->delete();
-			return "member deleted";
-		}
-		else
-		{
-			return "invalid member";
-		}
-	}
 	
 	/**
 	 * Check Member Groups
@@ -918,9 +701,282 @@ class _Members
 					return FALSE;
 			}
 		}
+
+		return FALSE;
+	}
+	
+	/**
+	 * Member Following Another Member
+	 */
+	public function memberFollowing( $member, $member2 )
+	{
+		if ( ! ( $member instanceof \IPS\Member ) or ! ( $member2 instanceof \IPS\Member ) )
+		{
+			return FALSE;
+		}
+			
+		try
+		{
+			$where = array( array( 'follow_app=? AND follow_area=? AND follow_member_id=? AND follow_rel_id=?', 'core', 'member', $member->member_id, $member2->member_id ) );
+			\IPS\Db::i()->select( 'core_follow.*', 'core_follow', $where )->first();
+			return TRUE;
+		}
+		catch ( \UnderflowException $e )
+		{
+			return FALSE;
+		}
+	}
+	
+	/**
+	 * Member Ignoring Another Member
+	 */
+	public function memberIgnoring( $member, $member2, $values )
+	{
+		if ( ! ( $member instanceof \IPS\Member ) or ! ( $member2 instanceof \IPS\Member ) )
+		{
+			return FALSE;
+		}
+			
+		if ( ! $member2 instanceof \IPS\Member )
+		{
+			return FALSE;
+		}
+		
+		return $member->isIgnoring( $member2, $values[ 'rules_Members_ignore_type' ] );
+	}
+	
+	/***		***
+	 ***  ACTIONS	***
+	 ***		***/
+	 
+	/**
+	 * Change Member Primary Group
+	 */
+	public function changePrimaryGroup( $member, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			if ( $member->member_group_id != $values[ 'rules_Members_member_primary_group' ] )
+			{
+				try
+				{
+					$group = \IPS\Member\Group::load( $values[ 'rules_Members_member_primary_group' ] );
+					$member->member_group_id = $group->g_id;
+					$member->save();
+					return "member group changed";
+				}
+				catch ( \OutOfRangeException $e )
+				{
+					throw new \UnexpectedValueException( "invalid member group, group not changed" );
+				}
+			}
+			else
+			{
+				return "member already has primary group";
+			}
+		}
 		else
 		{
-			return "invalid member";
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+	
+	/**
+	 * Add Member Secondary Groups
+	 */
+	public function addSecondaryGroups( $member, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member_groups = explode( ',', $member->mgroup_others );
+			foreach ( (array) $values[ 'rules_Members_member_secondary_groups_add' ] as $g_id )
+			{
+				try
+				{
+					$group = \IPS\Member\Group::load( $g_id );
+					$member_groups[] = $group->g_id;
+				}
+				catch ( \OutOfRangeException $e ) {}
+			}
+			
+			$member_groups = array_unique( $member_groups );
+			$member->mgroup_others = implode( ',', $member_groups );
+			$member->save();
+			return "member groups added";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+
+	/**
+	 * Add Member Secondary Groups
+	 */
+	public function removeSecondaryGroups( $member, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member_groups = explode( ',', $member->mgroup_others );
+			foreach ( (array) $values[ 'rules_Members_member_secondary_groups_remove' ] as $g_id )
+			{
+				$i = array_search( $g_id, $member_groups );
+				if ( $i !== FALSE )
+				{
+					unset( $member_groups[ $i ] );
+				}
+			}
+			
+			$member->mgroup_others = implode( ',', $member_groups );
+			$member->save();
+			return "member groups removed";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}		
+	}
+
+	/**
+	 * Add Member Secondary Groups
+	 */
+	public function setSecondaryGroups( $member, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member_groups = array();
+			foreach ( (array) $values[ 'rules_Members_member_secondary_groups_set' ] as $g_id )
+			{
+				try
+				{
+					$group = \IPS\Member\Group::load( $g_id );
+					$member_groups[] = $group->g_id;
+				}
+				catch ( \OutOfRangeException $e ) {}
+			}
+			
+			$member->mgroup_others = implode( ',', $member_groups );
+			$member->save();
+			return "member groups set";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+
+	/**
+	 * Change Member Title
+	 */
+	public function changeMemberTitle( $member, $title, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member->member_title = $title;
+			$member->save();
+			return "member title changed";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+	
+	/**
+	 * Flag As Spammer Callback
+	 */
+	public function flagAsSpammer( $member )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member->flagAsSpammer();
+			return "member flagged as spammer";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+	
+	/**
+	 * Unflag As Spammer Callback
+	 */
+	public function unflagAsSpammer( $member )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member->unflagAsSpammer();
+			return "member unflagged as spammer";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+	
+	/**
+	 * Flag As Spammer Callback
+	 */
+	public function banMember( $member, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			switch ( $values[ 'rules_Members_ban_setting' ] )
+			{
+				case 'temporary':
+					$ban_time = \strtotime
+					( 
+						'+' . intval( $values[ 'rules_Members_ban_setting_months' ] ) . ' months ' . 
+						'+' . intval( $values[ 'rules_Members_ban_setting_days' ] ) . ' days ' .
+						'+' . intval( $values[ 'rules_Members_ban_setting_hours' ] ) . ' hours ' .
+						'+' . intval( $values[ 'rules_Members_ban_setting_minutes' ] ) . ' minutes '
+					);
+					$member->temp_ban = $ban_time;
+					$member->save();
+					return "member temporarily banned";
+					
+				default:
+					$member->temp_ban = -1;
+					$member->save();
+					return "member banned permanently";
+			}
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+	
+	/**
+	 * Flag As Spammer Callback
+	 */
+	public function unbanMember( $member )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member->temp_ban = 0;
+			$member->save();
+			return "member unbanned";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
+		}
+	}
+	
+	/**
+	 * Prune A Member
+	 */
+	public function pruneMember( $member, $values )
+	{
+		if ( $member instanceof \IPS\Member )
+		{
+			$member->delete();
+			return "member deleted";
+		}
+		else
+		{
+			throw new \UnexpectedValueException( "invalid member" );
 		}
 	}
 	

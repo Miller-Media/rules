@@ -35,7 +35,7 @@ class _logs extends \IPS\Dispatcher\Controller
 	{		
 		/* Create the table */
 		$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=viewlog" );
-		$table = new \IPS\Helpers\Table\Db( 'rules_logs', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs' ), array( 'op_id=0 AND rule_parent=0' ) );
+		$table = new \IPS\Helpers\Table\Db( 'rules_logs', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs' ), array( 'error>0 OR ( op_id=0 AND rule_parent=0 )' ) );
 		$table->include 	= array( 'type', 'app', 'key', 'message', 'result', 'time' );
 		$table->langPrefix 	= 'rules_logs_table_';
 		$table->parsers 	= array
@@ -110,7 +110,9 @@ class _logs extends \IPS\Dispatcher\Controller
 	
 	protected function flushlogs()
 	{
-		\IPS\Db::i()->delete( 'rules_logs' );
+		$db = \IPS\Db::i();
+		$db->delete( 'rules_logs' );
+		$db->query( "ALTER TABLE `{$db->prefix}rules_logs` AUTO_INCREMENT = 1" );
 		\IPS\Output::i()->redirect( $this->url->setQueryString( 'do', NULL ) );
 	}
 }

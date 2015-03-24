@@ -195,7 +195,9 @@ class _Custom extends \IPS\Node\Model
 	public function form( &$form )
 	{
 		$form->add( new \IPS\Helpers\Form\Text( 'custom_action_title', $this->title, TRUE ) );
-		$form->add( new \IPS\Helpers\Form\TextArea( 'custom_action_description', $this->description, FALSE ) );
+		$form->add( new \IPS\Helpers\Form\TextArea( 'custom_action_description', $this->description, FALSE ) );	
+
+		parent::form( $form );
 	}
 	
 	/**

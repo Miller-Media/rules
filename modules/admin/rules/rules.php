@@ -60,6 +60,12 @@ class _rules extends \IPS\Node\Controller
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'rules_manage' );
 		
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'chosen.jquery.js', 'rules', 'interface' ) );	
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'chosen.css', 'rules', 'admin' ) );
+		
+		/* Javascript Controller */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_ui.js', 'rules', 'admin' ) );
+		
 		parent::execute();
 	}
 		
@@ -85,6 +91,13 @@ class _rules extends \IPS\Node\Controller
 	{	
 		$rule 	= NULL;
 		$parent = NULL;
+		
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'manageall' ] = array(
+			'icon'	=> 'caret-left',
+			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rulesets' ),
+			'title'	=> 'rules_manage_all_rules',
+			'data' => array( ),
+		);
 		
 		if ( \IPS\Request::i()->id )
 		{
@@ -127,7 +140,7 @@ class _rules extends \IPS\Node\Controller
 		{
 			if ( $old == NULL )
 			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=form&id={$new->id}&tab=conditions" ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&do=form&id={$new->id}&tab=conditions" ) );
 			}
 			else
 			{

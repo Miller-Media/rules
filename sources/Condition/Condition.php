@@ -260,7 +260,7 @@ class _Condition extends \IPS\Node\Model
 			$form->add( new \IPS\Helpers\Form\Radio( 'condition_group_compare', $this->group_compare ?: 'and', FALSE, array( 'options' => $compare_options ), NULL, NULL, NULL, 'condition_group_compare' ), 'operation_title' );
 		}
 		
-		
+		parent::form( $form );
 	}
 	
 	/**

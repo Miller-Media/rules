@@ -22,9 +22,9 @@ class _{class}
 {
 
 	/**
-	 * @brief	Group events and actions in this extension with other extensions by group name
+	 * @brief	The default option group title to list events, conditions, and actions from this class
 	 */
-	public $group = '{class}';
+	public $defaultGroup = '{class}';
 
 	/**
 	 * Triggerable Events
@@ -46,6 +46,16 @@ class _{class}
 			'event_id' => array
 			( 
 				/**
+				 * Option Group
+				 *
+				 * Customize the option group heading that this event is listed under in the ACP
+				 *
+				 * If this setting is omitted, then this option will be listed under the title of the 
+				 * $default_group property of this class definition.
+				 */
+				'group' => '{class}',
+				
+				/**
 				 * Event Arguments
 				 *
 				 * Define the arguments that are sent to your event trigger
@@ -55,12 +65,15 @@ class _{class}
 					/**
 					 * Argument/Variable Names
 					 *
-					 * Arguments are defined in the order that they are given
-					 * in the event trigger.
+					 * Arguments need to be defined in the same order that they are provided
+					 * by the event trigger.
 					 *
 					 * The names you define will be available as PHP variables
 					 * when using PHP code in the rules configurations.
 					 * eg: $variable1
+					 *
+					 * Note: since they are used as variable names, you may only
+					 * use alphanumerics and underscores in the name.
 					 */
 					'variable1' => array
 					(
@@ -134,6 +147,16 @@ class _{class}
 			 */
 			'condition_key' => array
 			(
+				/**
+				 * Option Group
+				 *
+				 * Customize the option group heading that this condition is listed under in the ACP
+				 *
+				 * If this setting is omitted, then this option will be listed under the title of the 
+				 * $default_group property of this class definition.
+				 */
+				'group' => '{class}',
+				
 				/**
 				 * Condition Callback
 				 *
@@ -349,6 +372,16 @@ class _{class}
 			'action_key' => array
 			(
 				/**
+				 * Option Group
+				 *
+				 * Customize the option group heading that this action is listed under in the ACP
+				 *
+				 * If this setting is omitted, then this option will be listed under the title of the 
+				 * $default_group property of this class definition.
+				 */
+				'group' => '{class}',
+				
+				/**
 				 * Action Callback
 				 *
 				 * The action callback is the function that will be executed
@@ -536,8 +569,8 @@ class _{class}
 								return $values[ 'custom_arg_value' ];
 							},
 						),
-					),	
-				),				
+					),
+				),
 			),
 		);
 		

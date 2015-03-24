@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language>
+ <app key="rules" version="100000">
+  <word key="__app_rules" js="0">Rules</word>
+  <word key="menu__rules_rules" js="0">Rules</word>
+  <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
+  <word key="menu__rules_rules_logs" js="0">Rules Logs</word>
+  <word key="menu__rules_rules_custom" js="0">Custom Actions</word>
+  <word key="menu__rules_rules_data" js="0">Custom Data Fields</word>
+  <word key="menu__rules_rules_schedule" js="0">Scheduled Actions</word>
+  <word key="ext__Definitions" js="0">Events, Conditions, and Actions Definition Groups</word>
+  <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
+  <word key="notifications__rules_notification" js="0">Rules Automated Notifications</word>
+  <word key="member__rules_RulesMember" js="0">Rules Data</word>
+  <word key="r__rules" js="0">Rules Restrictions</word>
+  <word key="r__rules_manage" js="0">Manage Rules</word>
+  <word key="r__logs_manage" js="0">View Logs</word>
+  <word key="r__logs" js="0">Logs Restrictions</word>
+  <word key="rules_logs" js="0">Rules Logs</word>
+  <word key="rules_flush_logs" js="0">Flush Logs</word>
+  <word key="rules_export_all" js="0">Export All</word>
+  <word key="rules_export_enabled" js="0">Export Enabled</word>
+  <word key="rules_manage_all_rules" js="0">Manage Rules</word>
+  <word key="rules_overview" js="0">Rules Overview</word>
+  <word key="rules_welcome" js="0">Welcome To Rules</word>
+  <word key="rules_logs_table_id" js="0">Log ID</word>
+  <word key="rules_logs_table_app" js="0">Event</word>
+  <word key="rules_logs_table_key" js="0">Rule</word>
+  <word key="rules_logs_table_type" js="0">Type</word>
+  <word key="rules_logs_table_message" js="0">Status</word>
+  <word key="rules_logs_table_result" js="0">Result</word>
+  <word key="rules_logs_table_time" js="0">Time</word>
+  <word key="custom_data" js="0">Custom Data Fields</word>
+  <word key="data_name" js="0">Custom Data Title</word>
+  <word key="data_description" js="0">Description</word>
+  <word key="data_column_name" js="0">Data Key</word>
+  <word key="data_column_name_desc" js="0"><![CDATA[<div class='ipsMessage ipsMessage_warning' >
+							The data key can only be lowercase alphanumerics (including underscores).<br>
+							It is used to access this data from the host object.<br> 
+							Example: $value = $object->getRulesData( 'key' );
+						   </div>]]></word>
+  <word key="data_class" js="0">Data Associated With</word>
+  <word key="data_type" js="0">Stored Data Type</word>
+  <word key="data_type_class" js="0">Stored Object Class</word>
+  <word key="data_custom_class" js="0">Custom Classname</word>
+  <word key="data_use_mode" js="0">Field Editing Mode</word>
+  <word key="data_tab" js="0">Form Tab Name</word>
+  <word key="data_tab_desc" js="0">Enter the name of the tab that this field should appear under on editing forms</word>
+  <word key="data_required" js="0">Is this data required?</word>
+  <word key="rules_numeric_math_operation" js="0">Value update method</word>
+  <word key="rules_array_operation" js="0">Array update method</word>
+  <word key="rules_node_data_tab" js="0">Rules Data</word>
+  <word key="data_column_not_unique" js="0">This key is already being used for another field</word>
+  <word key="rules_data_column_invalid" js="0">Your data key contains invalid characters. Only lowercase alphanumerics (including underscores) are allowed.</word>
+  <word key="rules_scheduled_actions" js="0">Scheduled Actions</word>
+  <word key="custom_actions" js="0">Custom Actions</word>
+  <word key="custom_action_title" js="0">Custom Action Name</word>
+  <word key="custom_action_description" js="0">Description</word>
+  <word key="custom_actions_add_child" js="0">Add Action Argument</word>
+  <word key="rules_tokens_description" js="0">You can type the names of tokens (include the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.</word>
+  <word key="argument_name" js="0">Argument Name</word>
+  <word key="argument_name_desc" js="0">Human Friendly Name (i.e. Email Recipient)</word>
+  <word key="argument_varname" js="0">Machine Name</word>
+  <word key="argument_varname_desc" js="0"><![CDATA[The machine name can only be lowercase alphanumerics (including underscores). It needs to be unique to this action and will used as a variable name in action code.<br>( ex: member )]]></word>
+  <word key="argument_type" js="0">Argument Type</word>
+  <word key="argument_class" js="0">Object Type</word>
+  <word key="argument_custom_class" js="0">Custom Object Classname</word>
+  <word key="argument_custom_class_desc" js="0">Enter the classname of the object</word>
+  <word key="argument_required" js="0">Required</word>
+  <word key="argument_required_desc" js="0">Select whether your action will require this argument</word>
+  <word key="argument_description" js="0">Description</word>
+  <word key="argument_description_desc" js="0">Describe what this action argument is for. (ex: Member to send the email to )</word>
+  <word key="argument_not_unique" js="0">This machine name is already being used in this action</word>
+  <word key="argument_name_invalid" js="0">This machine name contains invalid characters.  Only lowercase alphanumerics (including underscores) are allowed.</word>
+  <word key="rulesets" js="0">Rules</word>
+  <word key="ruleset_title" js="0">Ruleset Title</word>
+  <word key="rulesets_add_child" js="0">Add Rule to Ruleset</word>
+  <word key="rules_add_rule" js="0">Add New Rule</word>
+  <word key="rulesets_add" js="0">Create New Rule Set</word>
+  <word key="rule_ruleset_id" js="0">Associated Rule Set</word>
+  <word key="rule_no_ruleset" js="0">Independent Rule (not part of a rule set)</word>
+  <word key="ruleset_description" js="0">Rule Set Description</word>
+  <word key="ruleset_creator" js="0">Created By</word>
+  <word key="action_schedule_mode" js="0">Action should be executed</word>
+  <word key="action_schedule_mode_desc" js="0">Actions that are executed immediately can affect the conditions of other rules operating on the same event. In some cases this is desirable, but is generally not recommended as it can lead to unexpected rule results.</word>
+  <word key="rules_action_execution_now" js="0">Immediately</word>
+  <word key="rules_action_execution_defer" js="0">At the end of the event</word>
+  <word key="rules_action_execution_future" js="0">Fixed amount of time in the future</word>
+  <word key="rules_action_execution_date" js="0">A specific date in the future</word>
+  <word key="rules_action_execution_custom" js="0">A calculated date and time</word>
+  <word key="action_schedule_minutes" js="0">Minutes</word>
+  <word key="action_schedule_hours" js="0">Hours</word>
+  <word key="action_schedule_days" js="0">Days</word>
+  <word key="action_schedule_months" js="0">Months</word>
+  <word key="action_schedule_date" js="0">Date / Time</word>
+  <word key="action_schedule_customcode" js="0">PHP Code</word>
+  <word key="action_schedule_customcode__desc" js="0"><![CDATA[<ul><li><strong>object</strong>: An \IPS\DateTime Object</li><li><strong>int</strong>: A unix timestamp</li><li><strong>string</strong>: A date/time string</li></ul>]]></word>
+  <word key="action_schedule_key" js="0">Unique Scheduling Keyphrase</word>
+  <word key="action_schedule_key_desc" js="0"><![CDATA[Optional. Only one action will remain scheduled for any given keyphrase at a time. If an action is rescheduled, any previously scheduled actions with the same keyphrase will be removed.<br><strong>Note:</strong> Token replacements can be used in your keyphrase.]]></word>
+  <word key="rules_editing_scheduled_action" js="0">Editing Scheduled Action</word>
+  <word key="rules_scheduled_date" js="0">Date / Time Scheduled</word>
+  <word key="rules_scheduled_action_updated" js="0">Scheduled Action Updated</word>
+  <word key="rules_scheduled_action_executed" js="0">Scheduled Action Executed</word>
+  <word key="rules_scheduled_action_deleted" js="0">Scheduled Action Deleted</word>
+  <word key="rules_confirm_delete" js="0">Confirm Delete</word>
+  <word key="rule" js="0">Rule</word>
+  <word key="rules" js="0">Rules</word>
+  <word key="conditions" js="0">Conditions</word>
+  <word key="actions" js="0">Actions</word>
+  <word key="source" js="0">Source</word>
+  <word key="phpcode" js="0">PHP Code</word>
+  <word key="phpcode_desc" js="0"><![CDATA[<strong>Warning</strong>: PHP is for advanced users only. Your php code needs to return a value to use as the argument. Do not include a &lt;?php tag at the beginning of your code, or comment it out if you do.]]></word>
+  <word key="phpcode_desc_details" js="0">The operation expects you to return one of the following argument types:</word>
+  <word key="phpcode_desc_details_vars" js="0">The following variables are available to your php code:</word>
+  <word key="use_event_argument" js="0">Data To Use</word>
+  <word key="use_event_argument_default" js="0">Use A Default Configuration?</word>
+  <word key="use_event_argument_default_desc" js="0">If the event data for this argument is empty, use a default configuration.</word>
+  <word key="rule_debug" js="0">Debug This Rule</word>
+  <word key="debug_on_badge" js="0"><![CDATA[<i class='fa fa-bug'></i> Debug Mode]]></word>
+  <word key="rule_event_missing_badge" js="0"><![CDATA[<i class='fa fa-warning'></i> Event Missing]]></word>
+  <word key="rule_debug_desc" js="0">If enabled, information related to this rule will be logged in the debug console.</word>
+  <word key="rules_settings" js="0">Settings</word>
+  <word key="rules_conditions" js="0">Conditions</word>
+  <word key="rules_actions" js="0">Actions</word>
+  <word key="rule_actions" js="0">Rule Actions</word>
+  <word key="rule_conditions" js="0">Rule Conditions</word>
+  <word key="rules_add_condition" js="0">Add New Condition</word>
+  <word key="rules_add_action" js="0">Add New Action</word>
+  <word key="rules_add_child" js="0">Add New Linked Rule</word>
+  <word key="rule_event_selection" js="0">Rule Triggered When:</word>
+  <word key="edit_conditions" js="0">Edit Conditions</word>
+  <word key="edit_actions" js="0">Edit Actions</word>
+  <word key="rule_base_compare" js="0">Base Conditions Comparison</word>
+  <word key="rule_base_compare_desc" js="0"><![CDATA[You can choose how you want the base conditions for this rule to be evaluated.<ul>
+							<li>If you choose AND, all base conditions must be valid for actions to be executed.</li>
+							<li>If you choose OR, actions will be executed if any base condition is valid.</li></ul>]]></word>
+  <word key="condition_group_compare" js="0">Compare Sub Conditions Using:</word>
+  <word key="condition_group_compare_desc" js="0"><![CDATA[Since this condition has subconditions, you must choose how you want those subconditions to affect the state of this condition.<ul>
+							<li>If you choose AND, this condition and all subconditions must be true for this condition to be valid.</li>
+							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>]]></word>
+  <word key="condition_not" js="0">NOT</word>
+  <word key="condition_not_desc" js="0">Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.</word>
+  <word key="rules_event_argument_optional_notice" js="0">The event has indicated that this data may sometimes be empty. And even though this data is not required for the operation, you may choose to use a default configuration if it is (empty).</word>
+  <word key="rules_event_argument_required_notice" js="0">The event has indicated that this data may sometimes be empty. Since this argument is required by the operation, you must also provide a default configuration to use.</word>
+  <word key="conditions_add_child" js="0">Add Sub Condition</word>
+  <word key="or_group_badge" js="0">OR ANY SUBCONDITION</word>
+  <word key="and_group_badge" js="0">AND ALL SUBCONDITIONS</word>
+  <word key="rules_export_rule" js="0">Export Rule</word>
+  <word key="rules_export_rule_group" js="0">Export Rule Group</word>
+  <word key="rules_export_rule_set" js="0">Export Rule Set</word>
+  <word key="rules_import" js="0">Import Rules</word>
+  <word key="rules_imported" js="0">Rules Successfully Imported</word>
+  <word key="rule_missing_notice" js="0">This rule was designed for an event that cannot currently be triggered on your system. Configuration is disabled.</word>
+  <word key="rules_next" js="0"><![CDATA[Next <i class='fa fa-caret-right'></i>]]></word>
+  <word key="rule_title" js="0">Rule Title</word>
+  <word key="rule_title_placeholder" js="0">Describe what this rule is for</word>
+  <word key="rules_debug_console" js="0">Debug Console</word>
+  <word key="rules_conditions_table_op_id" js="0">Condition Title</word>
+  <word key="rules_conditions_table_message" js="0">Status</word>
+  <word key="rules_conditions_table_result" js="0">Result</word>
+  <word key="rules_actions_table_op_id" js="0">Action Title</word>
+  <word key="rules_actions_table_message" js="0">Status</word>
+  <word key="rules_actions_table_result" js="0">Result</word>
+  <word key="rules_actions_table_time" js="0">Time</word>
+  <word key="rules_subrules_table_rule_id" js="0">Rule Name</word>
+  <word key="rules_subrules_table_message" js="0">Status</word>
+  <word key="rules_subrules_table_result" js="0">Result</word>
+  <word key="rules_scheduled_schedule_time" js="0">Scheduled Date</word>
+  <word key="rules_scheduled_schedule_action_id" js="0">Scheduled Action</word>
+  <word key="rules_scheduled_schedule_unique_key" js="0">Keyphrase</word>
+  <word key="rules_scheduled_schedule_thread" js="0">Associated Rule</word>
+  <word key="rules_scheduled_schedule_created" js="0">Created On</word>
+  <word key="rules_choose_member" js="0">Type A Member Name</word>
+  <word key="rules_choose_member2" js="0">Type A Member Name</word>
+  <word key="rules_choose_members" js="0">Type Member Names</word>
+  <word key="rules_choose_members2" js="0">Type Member Names</word>
+  <word key="condition_title" js="0">Condition Name</word>
+  <word key="actions_title" js="0">Action Title</word>
+  <word key="rule_actions_selection" js="0">Action to perform:</word>
+  <word key="conditions_title" js="0">Condition Title</word>
+  <word key="rule_conditions_selection" js="0">Condition to check</word>
+  <word key="operation_arg_source_event" js="0">Event / Global Data</word>
+  <word key="operation_arg_source_manual" js="0">Manual Configuration</word>
+  <word key="operation_arg_source_phpcode" js="0">PHP Code</word>
+  <word key="invalid_rule" js="0">Invalid Rule</word>
+  <word key="rules_event_not_found" js="0">Rules Event Not Found</word>
+  <word key="__global_logged_in_member" js="0">Global: Logged in member</word>
+  <word key="__global_current_time" js="0">Global: Current time</word>
+  <word key="__global_request_url" js="0">Global: Current page url</word>
+  <word key="rules_Members_event_memberSync_onLogin" js="0">Member logged in to system</word>
+  <word key="rules_Members_event_memberSync_onLogin_member" js="0">Member that logged in</word>
+  <word key="rules_Members_event_memberSync_onLogout" js="0">Member logged out of system</word>
+  <word key="rules_Members_event_memberSync_onLogout_member" js="0">Member that logged out</word>
+  <word key="rules_Members_event_memberSync_onCreateAccount" js="0">Member account is created</word>
+  <word key="rules_Members_event_memberSync_onCreateAccount_member" js="0">Member that was created</word>
+  <word key="rules_Members_event_memberSync_onProfileUpdate" js="0">Member profile is updated</word>
+  <word key="rules_Members_event_memberSync_onProfileUpdate_member" js="0">Member that was updated</word>
+  <word key="rules_Members_event_memberSync_onProfileUpdate_changed" js="0">Array of profile fields that have changed</word>
+  <word key="rules_Members_event_memberSync_onSetAsSpammer" js="0">Member is flagged as spammer</word>
+  <word key="rules_Members_event_memberSync_onSetAsSpammer_member" js="0">Member that was flagged as spammer</word>
+  <word key="rules_Members_event_memberSync_onValidate" js="0">Member account is validated</word>
+  <word key="rules_Members_event_memberSync_onValidate_member" js="0">Member that was validated</word>
+  <word key="rules_Members_event_memberSync_onMerge" js="0">Member accounts are merged together</word>
+  <word key="rules_Members_event_memberSync_onMerge_member" js="0">Member that is being deleted</word>
+  <word key="rules_Members_event_memberSync_onMerge_mergedMember" js="0">Member that is being kept</word>
+  <word key="rules_Members_event_memberSync_onDelete" js="0">Member account is deleted</word>
+  <word key="rules_Members_event_memberSync_onDelete_member" js="0">Member flagged as spammer</word>
+  <word key="rules_Members_event_reputation_given" js="0">Member receives reputation points</word>
+  <word key="rules_Members_event_reputation_given_member" js="0">Member that received the reputation</word>
+  <word key="rules_Members_event_reputation_given_giver" js="0">Member that gave the reputation</word>
+  <word key="rules_Members_event_reputation_given_content" js="0">Content the reputation was given from</word>
+  <word key="rules_Members_event_reputation_given_reptype" js="0">Type of reputation given (1 or -1)</word>
+  <word key="rules_Members_event_member_warned" js="0">Member has been given a warning</word>
+  <word key="rules_Members_event_member_warned_warning" js="0">The warning content item</word>
+  <word key="rules_Members_event_member_warned_member" js="0">Member that was warned</word>
+  <word key="rules_Members_event_member_warned_moderator" js="0">Member that issued the warning</word>
+  <word key="rules_Members_conditions_member_has_group" js="0">Member is in a certain member group</word>
+  <word key="rules_Members_conditions_member_has_group_member" js="0">Member To Check</word>
+  <word key="rules_Members_member_groups" js="0">Check if member is in any of these groups</word>
+  <word key="rules_Members_conditions_member_attributes" js="0">Member attribute values</word>
+  <word key="rules_Members_conditions_member_attributes_member" js="0">Member To Check</word>
+  <word key="rules_Members_member_attribute" js="0">Attribute to check</word>
+  <word key="rules_Members_attribute_compare_type_value" js="0">Is</word>
+  <word key="rules_Members_attribute_compare_type_date" js="0">Is</word>
+  <word key="rules_Members_attribute_compare_value" js="0">Value</word>
+  <word key="rules_Members_attribute_compare_date" js="0">Date</word>
+  <word key="rules_member_attribute_photo" js="0">Has Photo</word>
+  <word key="rules_member_attribute_signature" js="0">Has Signature</word>
+  <word key="rules_member_attribute_followers" js="0">Followers</word>
+  <word key="rules_member_attribute_reputation" js="0">Reputation Level</word>
+  <word key="rules_member_attribute_posts" js="0">Post Count</word>
+  <word key="rules_member_attribute_joined" js="0">Joined Date</word>
+  <word key="rules_member_attribute_birthday" js="0">Birthday</word>
+  <word key="rules_member_attribute_birthdate" js="0">Birthdate</word>
+  <word key="rules_member_attribute_last_activity" js="0">Last Activity</word>
+  <word key="rules_member_attribute_last_post" js="0">Last Post</word>
+  <word key="rules_Member_attribute_compare_type" js="0">Comparison type</word>
+  <word key="rules_Members_attribute_compare_minutes" js="0">Minutes</word>
+  <word key="rules_Members_attribute_compare_hours" js="0">Hours</word>
+  <word key="rules_Members_attribute_compare_days" js="0">Days</word>
+  <word key="rules_Members_attribute_compare_months" js="0">Months</word>
+  <word key="rules_Members_attribute_compare_years" js="0">Years</word>
+  <word key="rules_Members_conditions_member_status" js="0">Member has a particular status</word>
+  <word key="rules_Members_conditions_member_status_member" js="0">Member To Check</word>
+  <word key="rules_Members_member_status" js="0">Member has the following status</word>
+  <word key="rules_member_validating" js="0">Validating</word>
+  <word key="rules_member_spammer" js="0">Marked as Spammer</word>
+  <word key="rules_member_banned_temp" js="0">Banned: Temporarily</word>
+  <word key="rules_member_banned_perm" js="0">Banned: Permanently</word>
+  <word key="rules_member_warnlevel" js="0">Has Warnings</word>
+  <word key="rules_member_online" js="0">Member is Online</word>
+  <word key="rules_Members_conditions_member_following" js="0">Member is following another member</word>
+  <word key="rules_Members_conditions_member_following_member" js="0">Member Who Is Following</word>
+  <word key="rules_Members_conditions_member_following_member2" js="0">Member Being Followed</word>
+  <word key="rules_Members_conditions_member_ignoring" js="0">Member is ignoring another member</word>
+  <word key="rules_Members_conditions_member_ignoring_member" js="0">Member Who Is Ignoring</word>
+  <word key="rules_Members_conditions_member_ignoring_member2" js="0">Member Being Ignored</word>
+  <word key="rules_Members_ignore_type" js="0">Ignoring What?</word>
+  <word key="rules_Members_actions_modify_posts" js="0">Modify the post count of a member</word>
+  <word key="rules_Members_actions_modify_posts_member" js="0">Modify Posts For This Member</word>
+  <word key="rules_Members_actions_modify_posts_value" js="0">Value to modify posts count by</word>
+  <word key="rules_Members_actions_change_primary_group" js="0">Change the primary group of a member</word>
+  <word key="rules_Members_actions_change_primary_group_member" js="0">Member To Change Primary Group For</word>
+  <word key="rules_Members_member_primary_group" js="0">Primary Group</word>
+  <word key="rules_Members_actions_add_secondary_groups" js="0">Add secondary group(s) to member</word>
+  <word key="rules_Members_actions_add_secondary_groups_member" js="0">Member To Add Secondary Groups To</word>
+  <word key="rules_Members_member_secondary_groups_add" js="0">Add Secondary Groups</word>
+  <word key="rules_Members_member_secondary_groups_add_desc" js="0">Any groups selected here will be added to the members secondary groups, preserving any existing secondary groups they may be assigned to.</word>
+  <word key="rules_Members_actions_remove_secondary_groups" js="0">Remove secondary group(s) from member</word>
+  <word key="rules_Members_actions_remove_secondary_groups_member" js="0">Member To Remove Secondary Groups From</word>
+  <word key="rules_Members_member_secondary_groups_remove" js="0">Remove Secondary Groups</word>
+  <word key="rules_Members_member_secondary_groups_remove_desc" js="0">Any groups selected here will be removed from the members secondary groups, preserving any other secondary groups they may be assigned to.</word>
+  <word key="rules_Members_actions_set_secondary_groups" js="0">Set secondary group(s) on member</word>
+  <word key="rules_Members_actions_set_secondary_groups_member" js="0">Member To Set Secondary Groups For</word>
+  <word key="rules_Members_member_secondary_groups_set" js="0">Set Secondary Groups</word>
+  <word key="rules_Members_member_secondary_groups_set_desc" js="0">Any groups selected here will become the only secondary groups assigned to the member.</word>
+  <word key="rules_Members_actions_change_member_title" js="0">Change the title of a member</word>
+  <word key="rules_Members_actions_change_member_title_member" js="0">Member To Change Title</word>
+  <word key="rules_Members_actions_change_member_title_title" js="0">The New Member Title</word>
+  <word key="rules_Members_actions_flag_spammer" js="0">Flag a member as spammer</word>
+  <word key="rules_Members_actions_flag_spammer_member" js="0">Member To Flag As Spammer</word>
+  <word key="rules_Members_actions_unflag_spammer" js="0">Unflag a member as spammer</word>
+  <word key="rules_Members_actions_unflag_spammer_member" js="0">Member To Unflag As Spammer</word>
+  <word key="rules_Members_actions_ban_member" js="0">Ban a member from the site</word>
+  <word key="rules_Members_actions_ban_member_member" js="0">Member To Ban</word>
+  <word key="rules_Members_ban_setting" js="0">Type of ban</word>
+  <word key="rules_ban_permanent" js="0">Permanent ban</word>
+  <word key="rules_ban_temporary" js="0">Temporary ban</word>
+  <word key="rules_Members_ban_setting_minutes" js="0">Minutes</word>
+  <word key="rules_Members_ban_setting_hours" js="0">Hours</word>
+  <word key="rules_Members_ban_setting_days" js="0">Days</word>
+  <word key="rules_Members_ban_setting_months" js="0">Months</word>
+  <word key="rules_Members_actions_unban_member" js="0">Unban a member from the site</word>
+  <word key="rules_Members_actions_unban_member_member" js="0">Member To Unban</word>
+  <word key="rules_Members_actions_prune_member" js="0">Prune a member</word>
+  <word key="rules_Members_actions_prune_member_member" js="0">Member To Prune</word>
+  <word key="rules_System_event_record_updated" js="0">ActiveRecord: Record Created/Updated</word>
+  <word key="rules_System_event_record_updated_record" js="0">Record that was created/updated</word>
+  <word key="rules_System_event_record_updated_changed" js="0">An array of the values which have changed</word>
+  <word key="rules_System_event_record_updated_new" js="0">A boolean value indicating if the record is new</word>
+  <word key="rules_System_event_record_deleted" js="0">ActiveRecord: Record Deleted</word>
+  <word key="rules_System_event_record_deleted_record" js="0">Record that was deleted</word>
+  <word key="rules_System_event_browser_output" js="0">Output is being sent to browser</word>
+  <word key="rules_System_event_browser_output_output" js="0">The content which is going to be output</word>
+  <word key="rules_System_event_browser_output_status" js="0">The http status code</word>
+  <word key="rules_System_event_browser_output_type" js="0">The http content type</word>
+  <word key="rules_System_event_browser_output_headers" js="0">An array containing the http headers</word>
+  <word key="rules_System_event_browser_output_docache" js="0">Boolean value indicating of this page should be cached</word>
+  <word key="rules_System_event_browser_output_iscache" js="0">Boolean value indicating if this page is from a cache</word>
+  <word key="rules_System_conditions_compare_numbers" js="0">Number Value</word>
+  <word key="rules_System_conditions_compare_numbers_number1" js="0">The First Number</word>
+  <word key="rules_Comparisons_number1" js="0">Number Value</word>
+  <word key="rules_System_conditions_compare_numbers_number2" js="0">The Second Number</word>
+  <word key="rules_Comparisons_number2" js="0">Number Value</word>
+  <word key="rules_System_conditions_compare_strings" js="0">String Value</word>
+  <word key="rules_System_conditions_compare_strings_string1" js="0">The First String</word>
+  <word key="rules_Comparisons_string1" js="0">String Value</word>
+  <word key="rules_System_conditions_compare_strings_string2" js="0">The Second String</word>
+  <word key="rules_Comparisons_string2" js="0">String Value</word>
+  <word key="rules_System_conditions_compare_truth" js="0">Truth Value</word>
+  <word key="rules_System_conditions_compare_truth_value" js="0">Value to Compare</word>
+  <word key="rules_System_conditions_compare_type" js="0">Value Type</word>
+  <word key="rules_System_conditions_compare_type_value" js="0">Value to Compare</word>
+  <word key="rules_System_conditions_compare_dates" js="0">Compare Dates</word>
+  <word key="rules_System_conditions_compare_dates_date1" js="0">The First Date</word>
+  <word key="rules_System_conditions_compare_dates_date2" js="0">The Second Date</word>
+  <word key="rules_Comparisons_date1" js="0">Date</word>
+  <word key="rules_Comparisons_date2" js="0">Date</word>
+  <word key="rules_System_conditions_compare_objects" js="0">Compare Objects</word>
+  <word key="rules_System_conditions_compare_objects_object" js="0">Object to Compare</word>
+  <word key="rules_System_conditions_compare_objects_value" js="0">Value to Compare Object</word>
+  <word key="rules_System_conditions_compare_array" js="0">Array Value</word>
+  <word key="rules_System_conditions_compare_array_array" js="0">Array to Compare</word>
+  <word key="rules_System_conditions_compare_array_value" js="0">Value to Use</word>
+  <word key="rules_System_conditions_execute_php" js="0">Custom PHP Code</word>
+  <word key="rules_System_custom_phpcode" js="0">PHP Code</word>
+  <word key="rules_System_conditions_board_status" js="0">Board Status (Online/Offline)</word>
+  <word key="rules_System_board_online_status" js="0">Check that the board is:</word>
+  <word key="rules_System_actions_send_email" js="0">Send an email</word>
+  <word key="rules_System_actions_send_email_recipients" js="0">Recipients</word>
+  <word key="rules_System_actions_send_email_recipients_desc" js="0">Members to send the email to</word>
+  <word key="rules_System_actions_send_email_bcc_recipients" js="0">Blind Carbon Copy Recipients</word>
+  <word key="rules_System_actions_send_email_bcc_recipients_desc" js="0">Choose additional members to recieve a bcc.</word>
+  <word key="rules_System_actions_send_email_subject" js="0">Email Subject Line</word>
+  <word key="rules_System_actions_send_email_message" js="0">Message Content</word>
+  <word key="rules_System_actions_send_email_message_desc" js="0">The contents of the message you want to send</word>
+  <word key="rules_System_email_message" js="0">Email Message</word>
+  <word key="rules_System_email_message_desc" js="0">Enter the content for the email message. HTML is allowed.</word>
+  <word key="rules_System_message_subject" js="0">Subject</word>
+  <word key="rules_System_message_body" js="0">Content</word>
+  <word key="rules_System_actions_execute_php" js="0">Execute PHP Code</word>
+  <word key="rules_System_actions_unschedule_action" js="0">Delete a scheduled action</word>
+  <word key="rules_System_actions_unschedule_action_key" js="0">Action To Unschedule</word>
+  <word key="rules_System_unschedule_mode" js="0">Keyphrase Matching</word>
+  <word key="rules_System_unschedule_key" js="0">Keyphrase</word>
+  <word key="rules_System_unschedule_key_desc" js="0">Enter the unique keyphrase of the action you want to unschedule. If it is scheduled, it will be deleted. If it isn't already scheduled, then no action will be taken.</word>
+  <word key="rules_System_actions_display_message" js="0">Display Inline Message</word>
+  <word key="rules_System_actions_display_message_message" js="0">Message</word>
+  <word key="rules_System_actions_display_message_message_desc" js="0">The message to display inline</word>
+  <word key="rules_System_inline_message" js="0">Message</word>
+  <word key="rules_System_actions_url_redirect" js="0">Redirect to another page</word>
+  <word key="rules_System_actions_url_redirect_url" js="0">URL of page to redirect to</word>
+  <word key="rules_System_actions_url_redirect_message" js="0">The message to display upon redirect</word>
+  <word key="rules_System_actions_create_conversation" js="0">Create a new private conversation</word>
+  <word key="rules_System_actions_create_conversation_creator" js="0">Conversation Starter</word>
+  <word key="rules_System_actions_create_conversation_participants" js="0">Conversation Participants</word>
+  <word key="rules_System_actions_create_conversation_subject" js="0">Conversation Subject</word>
+  <word key="rules_System_actions_create_conversation_message" js="0">Conversation Message Body</word>
+  <word key="rules_System_actions_create_notification" js="0">Create a new member notification</word>
+  <word key="rules_System_actions_create_notification_recipients" js="0">Notification Recipients</word>
+  <word key="rules_System_actions_create_notification_title" js="0">Notification Title</word>
+  <word key="rules_System_actions_create_notification_url" js="0">Notification Url</word>
+  <word key="rules_System_actions_create_notification_content" js="0">Notification Content</word>
+  <word key="rules_System_actions_create_notification_author" js="0">Notification Sponsor</word>
+  <word key="rules_System_url" js="0">Url</word>
+  <word key="rules_Comparisons_type" js="0">Comparison Type</word>
+  <word key="rules_Comparisons_value" js="0">Value</word>
+  <word key="rules_Content_event_content_updated" js="0">Any content has been created or updated</word>
+  <word key="rules_Content_event_content_updated_content" js="0">The updated content</word>
+  <word key="rules_Content_event_content_updated_changed" js="0">An array of the properties being saved</word>
+  <word key="rules_Content_event_content_updated_new" js="0">Boolean value indicating if content is new</word>
+  <word key="rules_Content_event_content_approved" js="0">Any content has been approved</word>
+  <word key="rules_Content_event_content_approved_content" js="0">The content</word>
+  <word key="rules_Content_event_content_approved_member" js="0">The member who approved the content</word>
+  <word key="rules_Content_event_content_pinned" js="0">Any content has been pinned</word>
+  <word key="rules_Content_event_content_pinned_content" js="0">The pinned content</word>
+  <word key="rules_Content_event_content_pinned_member" js="0">The member who pinned the content</word>
+  <word key="rules_Content_event_content_unpinned" js="0">Any content has been unpinned</word>
+  <word key="rules_Content_event_content_unpinned_content" js="0">The unpinned content</word>
+  <word key="rules_Content_event_content_unpinned_member" js="0">The member who unpinned the content</word>
+  <word key="rules_Content_event_content_featured" js="0">Any content has been featured</word>
+  <word key="rules_Content_event_content_featured_content" js="0">The featured content</word>
+  <word key="rules_Content_event_content_featured_member" js="0">The member who featured the content</word>
+  <word key="rules_Content_event_content_unfeatured" js="0">Any content has been unfeatured</word>
+  <word key="rules_Content_event_content_unfeatured_content" js="0">The unfeatured content</word>
+  <word key="rules_Content_event_content_unfeatured_member" js="0">The member who unfeatured the content</word>
+  <word key="rules_Content_event_content_locked" js="0">Any content has been locked</word>
+  <word key="rules_Content_event_content_locked_content" js="0">The locked content</word>
+  <word key="rules_Content_event_content_locked_member" js="0">The member who locked the content</word>
+  <word key="rules_Content_event_content_unlocked" js="0">Any content has been unlocked</word>
+  <word key="rules_Content_event_content_unlocked_content" js="0">The unlocked content</word>
+  <word key="rules_Content_event_content_unlocked_member" js="0">The member who unlocked the content</word>
+  <word key="rules_Content_event_content_hidden" js="0">Any content has been hidden</word>
+  <word key="rules_Content_event_content_hidden_content" js="0">The hidden content</word>
+  <word key="rules_Content_event_content_hidden_member" js="0">The member who hid the content</word>
+  <word key="rules_Content_event_content_hidden_reason" js="0">Reason given for hiding the content</word>
+  <word key="rules_Content_event_content_unhidden" js="0">Any content has been unhidden</word>
+  <word key="rules_Content_event_content_unhidden_content" js="0">The unhidden content</word>
+  <word key="rules_Content_event_content_unhidden_member" js="0">The member who unhid the content</word>
+  <word key="rules_Content_event_content_reported" js="0">Any content has been reported</word>
+  <word key="rules_Content_event_content_reported_content" js="0">The reported content</word>
+  <word key="rules_Content_event_content_reported_message" js="0">The message provided by the reporting member</word>
+  <word key="rules_Content_event_content_author_changed" js="0">Any content author has changed</word>
+  <word key="rules_Content_event_content_author_changed_content" js="0">The content whose author changed</word>
+  <word key="rules_Content_event_content_author_changed_oldMember" js="0">The member who was the old author</word>
+  <word key="rules_Content_event_content_author_changed_newMember" js="0">The member who is the new author</word>
+  <word key="rules_Content_event_content_deleted" js="0">Any content has been deleted</word>
+  <word key="rules_Content_event_content_deleted_content" js="0">The deleted content</word>
+  <word key="rules_Content_event_content_item_published" js="0">Any content item has been published</word>
+  <word key="rules_Content_event_content_item_published_item" js="0">The content item</word>
+  <word key="rules_Content_event_content_item_published_member" js="0">The member who published the content</word>
+  <word key="rules_Content_event_content_item_unpublished" js="0">Any content item has been unpublished</word>
+  <word key="rules_Content_event_content_item_unpublished_item" js="0">The content item</word>
+  <word key="rules_Content_event_content_item_unpublished_member" js="0">The member who unpublished the content</word>
+  <word key="rules_Content_event_content_item_moved" js="0">Any content item has been moved</word>
+  <word key="rules_Content_event_content_item_moved_item" js="0">The content item</word>
+  <word key="rules_Content_event_content_item_moved_oldContainer" js="0">The content item's old container</word>
+  <word key="rules_Content_event_content_item_moved_container" js="0">The content item's new container</word>
+  <word key="rules_Content_event_content_item_moved_link" js="0">Boolean value indicating if a link was left in the old container</word>
+  <word key="rules_Content_event_content_item_merging" js="0">Any content item is being merged with others</word>
+  <word key="rules_Content_event_content_item_merging_item" js="0">The content item</word>
+  <word key="rules_Content_event_content_item_merging_items" js="0">Array of content items being merged in</word>
+  <word key="rules_Content_event_content_item_viewed" js="0">Any content item is being viewed</word>
+  <word key="rules_Content_event_content_item_viewed_item" js="0">The content item</word>
+  <word key="rules_Content_event_content_item_tags_set" js="0">Any content item's tags have been updated</word>
+  <word key="rules_Content_event_content_item_tags_set_item" js="0">The content item</word>
+  <word key="rules_Content_event_content_item_tags_set_tags" js="0">The content tags</word>
+  <word key="rules_Content_event_content_updated_" js="0">%s has been created or updated</word>
+  <word key="rules_Content_event_content_updated_content_" js="0">The created or updated %s</word>
+  <word key="rules_Content_event_content_updated_changed_" js="0">An array of any changed properties</word>
+  <word key="rules_Content_event_content_updated_new_" js="0">Boolean value indicating if content is new</word>
+  <word key="rules_Content_event_content_approved_" js="0">%s has been approved</word>
+  <word key="rules_Content_event_content_approved_content_" js="0">The %s</word>
+  <word key="rules_Content_event_content_approved_member_" js="0">The member who approved the %s</word>
+  <word key="rules_Content_event_content_pinned_" js="0">%s has been pinned</word>
+  <word key="rules_Content_event_content_pinned_content_" js="0">The pinned %s</word>
+  <word key="rules_Content_event_content_pinned_member_" js="0">The member who pinned the %s</word>
+  <word key="rules_Content_event_content_unpinned_" js="0">%s has been unpinned</word>
+  <word key="rules_Content_event_content_unpinned_content_" js="0">The unpinned %s</word>
+  <word key="rules_Content_event_content_unpinned_member_" js="0">The member who unpinned the %s</word>
+  <word key="rules_Content_event_content_featured_" js="0">%s has been featured</word>
+  <word key="rules_Content_event_content_featured_content_" js="0">The featured %s</word>
+  <word key="rules_Content_event_content_featured_member_" js="0">The member who featured the %s</word>
+  <word key="rules_Content_event_content_unfeatured_" js="0">%s has been unfeatured</word>
+  <word key="rules_Content_event_content_unfeatured_content_" js="0">The unfeatured %s</word>
+  <word key="rules_Content_event_content_unfeatured_member_" js="0">The member who unfeatured the %s</word>
+  <word key="rules_Content_event_content_locked_" js="0">%s has been locked</word>
+  <word key="rules_Content_event_content_locked_content_" js="0">The locked %s</word>
+  <word key="rules_Content_event_content_locked_member_" js="0">The member who locked the %s</word>
+  <word key="rules_Content_event_content_unlocked_" js="0">%s has been unlocked</word>
+  <word key="rules_Content_event_content_unlocked_content_" js="0">The unlocked %s</word>
+  <word key="rules_Content_event_content_unlocked_member_" js="0">The member who unlocked the %s</word>
+  <word key="rules_Content_event_content_hidden_" js="0">%s has been hidden</word>
+  <word key="rules_Content_event_content_hidden_content_" js="0">The hidden %s</word>
+  <word key="rules_Content_event_content_hidden_member_" js="0">The member who hid the %s</word>
+  <word key="rules_Content_event_content_hidden_reason_" js="0">Reason given for hiding the %s</word>
+  <word key="rules_Content_event_content_unhidden_" js="0">%s has been unhidden</word>
+  <word key="rules_Content_event_content_unhidden_content_" js="0">The unhidden %s</word>
+  <word key="rules_Content_event_content_unhidden_member_" js="0">The member who unhid the %s</word>
+  <word key="rules_Content_event_content_reported_" js="0">%s has been reported</word>
+  <word key="rules_Content_event_content_reported_content_" js="0">The reported %s</word>
+  <word key="rules_Content_event_content_reported_message_" js="0">The message provided by the reporting member</word>
+  <word key="rules_Content_event_content_author_changed_" js="0">%s author has changed</word>
+  <word key="rules_Content_event_content_author_changed_content_" js="0">The %s whose author changed</word>
+  <word key="rules_Content_event_content_author_changed_oldMember_" js="0">The member who was the old author</word>
+  <word key="rules_Content_event_content_author_changed_newMember_" js="0">The member who is the new author</word>
+  <word key="rules_Content_event_content_deleted_" js="0">%s has been deleted</word>
+  <word key="rules_Content_event_content_deleted_content_" js="0">The deleted %s</word>
+  <word key="rules_Content_event_content_item_published_" js="0">%s has been published</word>
+  <word key="rules_Content_event_content_item_published_item_" js="0">The %s</word>
+  <word key="rules_Content_event_content_item_published_member_" js="0">The member who published the %s</word>
+  <word key="rules_Content_event_content_item_unpublished_" js="0">%s has been unpublished</word>
+  <word key="rules_Content_event_content_item_unpublished_item_" js="0">The %s</word>
+  <word key="rules_Content_event_content_item_unpublished_member_" js="0">The member who unpublished the %s</word>
+  <word key="rules_Content_event_content_item_moved_" js="0">%s has been moved</word>
+  <word key="rules_Content_event_content_item_moved_item_" js="0">The %s</word>
+  <word key="rules_Content_event_content_item_moved_oldContainer_" js="0">The %s's old container</word>
+  <word key="rules_Content_event_content_item_moved_container_" js="0">The %s's new container</word>
+  <word key="rules_Content_event_content_item_moved_link_" js="0">Boolean value indicating if a link was left in the old container</word>
+  <word key="rules_Content_event_content_item_merging_" js="0">%s is being merged with others</word>
+  <word key="rules_Content_event_content_item_merging_item_" js="0">The %s</word>
+  <word key="rules_Content_event_content_item_merging_items_" js="0">Array of %s's being merged in</word>
+  <word key="rules_Content_event_content_item_viewed_" js="0">%s is being viewed</word>
+  <word key="rules_Content_event_content_item_viewed_item_" js="0">The %s</word>
+  <word key="rules_Content_event_content_item_tags_set_" js="0">%s tags have been updated</word>
+  <word key="rules_Content_event_content_item_tags_set_item_" js="0">The %s</word>
+  <word key="rules_Content_event_content_item_tags_set_tags_" js="0">The %s tags</word>
+  <word key="rules_Content_conditions_content_type" js="0">Content is of a certain type</word>
+  <word key="rules_Content_conditions_content_type_content" js="0">The Content to Check</word>
+  <word key="rules_Content_content_types" js="0">Content is one of these types</word>
+  <word key="rules_Content_conditions_content_status" js="0">Content has a particular status</word>
+  <word key="rules_Content_conditions_content_status_content" js="0">The Content to Check</word>
+  <word key="rules_Content_content_statuses" js="0">Content has the following statuses</word>
+  <word key="rules_Content_conditions_content_author" js="0">Content has a particular author</word>
+  <word key="rules_Content_conditions_content_author_content" js="0">The Content to Check</word>
+  <word key="rules_Content_conditions_content_author_member" js="0">The Member to Check</word>
+  <word key="rules_Content_author_members" js="0">Content has one of the following authors</word>
+  <word key="rules_Content_author_members_desc" js="0">Type the names of authors you want to check the content for</word>
+  <word key="rules_Content_conditions_content_tags" js="0">Content has specific tags</word>
+  <word key="rules_Content_conditions_content_tags_item" js="0">The Content Item to Check</word>
+  <word key="rules_Content_conditions_content_tags_tags" js="0">Tags</word>
+  <word key="rules_Content_check_tags_type" js="0">Check if content is tagged with</word>
+  <word key="rules_Content_conditions_content_attributes" js="0">Content attribute values</word>
+  <word key="rules_Content_conditions_content_attributes_content" js="0">The Content to Check</word>
+  <word key="rules_Content_content_attribute" js="0">Attribute to check</word>
+  <word key="rules_Content_attribute_compare_type_value" js="0">Is</word>
+  <word key="rules_Content_attribute_compare_type_date" js="0">Is</word>
+  <word key="rules_Content_attribute_compare_value" js="0">Value</word>
+  <word key="rules_Content_attribute_compare_date" js="0">Date</word>
+  <word key="rules_content_attribute_comments" js="0">Number of Comments</word>
+  <word key="rules_content_attribute_reviews" js="0">Number of Reviews</word>
+  <word key="rules_content_attribute_unapproved_comments" js="0">Number of Unapproved Comments</word>
+  <word key="rules_content_attribute_unapproved_reviews" js="0">Number of Unapproved Reviews</word>
+  <word key="rules_content_attribute_views" js="0">Number of Views</word>
+  <word key="rules_content_attribute_poll_votes" js="0">Number of Poll Votes</word>
+  <word key="rules_content_attribute_created" js="0">Created Date</word>
+  <word key="rules_content_attribute_updated" js="0">Last Updated Date</word>
+  <word key="rules_content_attribute_last_post" js="0">Last Post Date</word>
+  <word key="rules_Content_attribute_compare_minutes" js="0">Minutes</word>
+  <word key="rules_Content_attribute_compare_hours" js="0">Hours</word>
+  <word key="rules_Content_attribute_compare_days" js="0">Days</word>
+  <word key="rules_Content_attribute_compare_months" js="0">Months</word>
+  <word key="rules_Content_attribute_compare_years" js="0">Years</word>
+  <word key="rules_Content_conditions_content_container" js="0">%s is in certain %s</word>
+  <word key="rules_Content_conditions_content_container_content" js="0">The %s to Check</word>
+  <word key="rules_Content_conditions_content_container_container" js="0">%s</word>
+  <word key="rules_Content_content_containers" js="0">Select %s</word>
+  <word key="rules_Content_actions_set_content_tags" js="0">Modify content tags</word>
+  <word key="rules_Content_actions_set_content_tags_content" js="0">Content To Modify</word>
+  <word key="rules_Content_actions_set_content_tags_tags" js="0">Tags</word>
+  <word key="rules_Content_modify_tags_type" js="0">How to modify tags</word>
+  <word key="rules_Content_tags_stack" js="0">Tags</word>
+  <word key="rules_Content_member" js="0">Member to use</word>
+  <word key="rules_Content_member_desc" js="0">Leave empty to use the acting member</word>
+  <word key="rules_Content_reason" js="0">Reason for hiding content</word>
+  <word key="rules_Content_actions_pin_content" js="0">Pin content</word>
+  <word key="rules_Content_actions_pin_content_content" js="0">Content To Pin</word>
+  <word key="rules_Content_actions_unpin_content" js="0">Unpin content</word>
+  <word key="rules_Content_actions_unpin_content_content" js="0">Content To Unpin</word>
+  <word key="rules_Content_actions_feature_content" js="0">Feature content</word>
+  <word key="rules_Content_actions_feature_content_content" js="0">Content To Feature</word>
+  <word key="rules_Content_actions_unfeature_content" js="0">Unfeature content</word>
+  <word key="rules_Content_actions_unfeature_content_content" js="0">Content To Unfeature</word>
+  <word key="rules_Content_actions_lock_content" js="0">Lock content</word>
+  <word key="rules_Content_actions_lock_content_content" js="0">Content To Lock</word>
+  <word key="rules_Content_actions_unlock_content" js="0">Unlock content</word>
+  <word key="rules_Content_actions_unlock_content_content" js="0">Content To Unlock</word>
+  <word key="rules_Content_actions_hide_content" js="0">Hide content</word>
+  <word key="rules_Content_actions_hide_content_content" js="0">Content To Hide</word>
+  <word key="rules_Content_actions_hide_content_member" js="0">Member Responsible for Hiding Content</word>
+  <word key="rules_Content_actions_hide_content_reason" js="0">Reason For Hiding Content</word>
+  <word key="rules_Content_actions_unhide_content" js="0">Unhide content</word>
+  <word key="rules_Content_actions_unhide_content_content" js="0">Content to unhide</word>
+  <word key="rules_Content_actions_unhide_content_member" js="0">Member Responsible for Unhiding Content</word>
+  <word key="rules_Content_actions_delete_content" js="0">Delete content</word>
+  <word key="rules_Content_actions_delete_content_content" js="0">Content To Delete</word>
+  <word key="rules_Content_actions_change_author" js="0">Change content author</word>
+  <word key="rules_Content_actions_change_author_content" js="0">Content To Change Author Of</word>
+  <word key="rules_Content_actions_change_author_author" js="0">The New Author</word>
+  <word key="rules_Content_actions_move_content" js="0">Move %s to new %s</word>
+  <word key="rules_Content_actions_move_content_item" js="0">The %s to Move</word>
+  <word key="rules_Content_actions_move_content_container" js="0">New %s Container</word>
+  <word key="rules_Content_content_container" js="0">Select New Container</word>
+  <word key="rules_Content_move_content_link" js="0">Leave a link in the old container?</word>
+  <word key="rules_Content_actions_create_content" js="0">Create new %s</word>
+  <word key="rules_Content_actions_create_content_container" js="0">%s Container</word>
+  <word key="rules_Content_actions_create_content_author" js="0">%s Author</word>
+  <word key="rules_Content_actions_create_content_title" js="0">%s Title</word>
+  <word key="rules_Content_actions_create_content_content" js="0">%s Content</word>
+  <word key="rules_Content_actions_create_content_tags" js="0">%s Tags</word>
+  <word key="rules_Content_increase_posts" js="0">Increase post count of author?</word>
+  <word key="rules_Content_guest_name" js="0">Name to use if author is a guest</word>
+  <word key="rules_Content_content_body" js="0">Content Body</word>
+  <word key="rules_Content_content_title" js="0">Title</word>
+  <word key="rules_Content_actions_create_content_comment" js="0">Post new %s comment</word>
+  <word key="rules_Content_actions_create_content_comment_item" js="0">%s</word>
+  <word key="rules_Content_actions_create_content_comment_author" js="0">%s Comment Author</word>
+  <word key="rules_Content_actions_create_content_comment_content" js="0">%s Comment Content</word>
+  <word key="rules_Comments_event_content_comment_created" js="0">Content comment/review has been posted</word>
+  <word key="rules_Comments_event_content_comment_created_comment" js="0">The content comment/review item</word>
+  <word key="rules_Comments_event_content_comment_created_item" js="0">The content item the comment belongs to</word>
+  <word key="rules_Comments_event_content_comment_created_content" js="0">The comment content (text)</word>
+  <word key="rules_Comments_event_content_comment_created_first" js="0">Boolean value indicating if the comment is the first one</word>
+  <word key="rules_Comments_event_content_comment_created_guestName" js="0">Name to use for guest authors</word>
+  <word key="rules_Comments_event_content_comment_created_increment" js="0">Boolean value indicating if post count has increased</word>
+  <word key="rules_Comments_event_content_comment_created_member" js="0">The member who created the comment</word>
+  <word key="rules_Comments_event_content_comment_created_time" js="0">A Date/Time object for when the comment was created</word>
+  <word key="rules_Comments_event_content_comment_moved" js="0">Content comment has been moved</word>
+  <word key="rules_Comments_event_content_comment_moved_comment" js="0">The comment item</word>
+  <word key="rules_Comments_event_content_comment_moved_item" js="0">The content item the comment belongs to</word>
+  <word key="time" js="0">Time</word>
+  <word key="result" js="0">Result</word>
+  <word key="import" js="0">Import</word>
+ </app>
+</language>

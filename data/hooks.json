@@ -1,1 +1,34 @@
-[]
+{
+    "ipsMember": {
+        "type": "C",
+        "class": "\\IPS\\Member"
+    },
+    "ipsPatternsActiveRecord": {
+        "type": "C",
+        "class": "\\IPS\\Patterns\\ActiveRecord"
+    },
+    "ipsOutput": {
+        "type": "C",
+        "class": "\\IPS\\Output"
+    },
+    "ipsContent": {
+        "type": "C",
+        "class": "\\IPS\\Content"
+    },
+    "ipsContentItem": {
+        "type": "C",
+        "class": "\\IPS\\Content\\Item"
+    },
+    "ipsCoreWarningsWarning": {
+        "type": "C",
+        "class": "\\IPS\\core\\Warnings\\Warning"
+    },
+    "ipsContentController": {
+        "type": "C",
+        "class": "\\IPS\\Content\\Controller"
+    },
+    "ipsNodeModel": {
+        "type": "C",
+        "class": "\\IPS\\Node\\Model"
+    }
+}

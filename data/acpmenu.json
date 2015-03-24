@@ -12,6 +12,12 @@
             "do": "",
             "restriction": "rules_manage"
         },
+        "data": {
+            "tab": "core",
+            "controller": "data",
+            "do": "",
+            "restriction": "rules_manage"
+        },
         "schedule": {
             "tab": "core",
             "controller": "schedule",

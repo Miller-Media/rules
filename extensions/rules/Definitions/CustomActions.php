@@ -24,7 +24,7 @@ class _CustomActions
 	/**
 	 * @brief	Group events and actions in this extension with other extensions by group name
 	 */
-	public $group = 'Custom Actions';
+	public $defaultGroup = 'Custom Actions';
 
 	/**
 	 * Triggerable Events
@@ -46,7 +46,7 @@ class _CustomActions
 				$argClass = NULL;
 				if ( $argument->type == 'object' )
 				{
-					$argClass = $argument->class == 'custom' ? $argument->custom_class : $argument->class;
+					$argClass = $argument->class == 'custom' ? $argument->custom_class : str_replace( '-', '\\', $argument->class );
 				}
 			
 				$lang->words[ 'rules_CustomActions_event_custom_action_' . $action->key . '_' . $argument->varname ] = $argument->description;
@@ -58,7 +58,7 @@ class _CustomActions
 				);
 			}
 			
-			$lang->words[ 'rules_CustomActions_event_custom_action_' . $action->key ] = $action->title;
+			$lang->words[ 'rules_CustomActions_event_custom_action_' . $action->key ] = 'Action triggered: ' . $action->title;
 			$events[ 'custom_action_' . $action->key ] = array
 			(
 				'arguments' => $arguments,
@@ -104,7 +104,7 @@ class _CustomActions
 				$argClass = NULL;
 				if ( $argument->type == 'object' )
 				{
-					$argClass = $argument->class == 'custom' ? $argument->custom_class : $argument->class;
+					$argClass = $argument->class == 'custom' ? $argument->custom_class : str_replace( '-', '\\', $argument->class );
 				}
 			
 				$lang->words[ 'rules_CustomActions_actions_custom_action_' . $action->key . '_' . $argument->varname ] = $argument->name;

@@ -3,3 +3,32 @@
 	padding-left:0;
 	list-style:none;
  }
+ 
+ form.opformForm {
+	margin-bottom:250px;
+ }
+ 
+ form.opformForm ul.ipsForm {
+	padding-bottom:100px;
+ }
+ 
+ .tokens-toggle {
+	cursor:pointer;
+	display:inline-block;
+ }
+ 
+ .monospace {
+	font-family: "Courier New", Courier, monospace;
+ }
+ 
+ .ipsTree_row > .ipsTree_rowData h4 + div.ipsType_light {
+	margin-top: 5px;
+ }
+ 
+ /* Fix CSS Bug : IPS Core RC6 */
+ .ipsTree_row > .ipsTree_rowData span.ipsPos_right {
+	float: none;
+	position: absolute;
+	right: 5px;
+	z-index:99;
+ }

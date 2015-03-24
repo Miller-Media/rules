@@ -10,7 +10,7 @@ class rules_hook_ipsContentController extends _HOOK_CLASS_
 	 */
 	protected function manage()
 	{
-		$item = parent::manage() and \IPS\rules\Event::load( 'rules', 'ContentItems', 'content_item_viewed' )->trigger( $item );
+		$item = parent::manage() and \IPS\rules\Event::load( 'rules', 'Content', 'content_item_viewed' )->trigger( $item );
 		return $item;
 	}
 	

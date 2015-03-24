@@ -1,13 +1,19 @@
 <?php
 
 $lang = array(
+
 	'__app_rules'				=> "Rules",
 	'menu__rules_rules'			=> "Rules",
 	'menu__rules_rules_rulesets'		=> "Manage Rules",
 	'menu__rules_rules_logs'		=> "Rules Logs",
 	'menu__rules_rules_custom'		=> "Custom Actions",
+	'menu__rules_rules_data'		=> "Custom Data Fields",
 	'menu__rules_rules_schedule'		=> "Scheduled Actions",
 	'ext__Definitions'			=> "Events, Conditions, and Actions Definition Groups",
+	'ext__Conversions'			=> "Global Arguments and Object Conversion Mapping",
+	
+	'notifications__rules_notification'	=> "Rules Automated Notifications",
+	'member__rules_RulesMember'		=> "Rules Data",
 	
 	// Rules Restrictions
 	'r__rules'				=> "Rules Restrictions",
@@ -18,6 +24,10 @@ $lang = array(
 	'rules_flush_logs'			=> "Flush Logs",
 	'rules_export_all'			=> "Export All",
 	'rules_export_enabled'			=> "Export Enabled",
+	'rules_manage_all_rules'		=> "Manage Rules",
+	
+	'rules_overview'			=> "Rules Overview",
+	'rules_welcome'				=> "Welcome To Rules",
 	
 	'rules_logs_table_id'			=> "Log ID",
 	'rules_logs_table_app'			=> "Event",
@@ -27,16 +37,44 @@ $lang = array(
 	'rules_logs_table_result'		=> "Result",
 	'rules_logs_table_time'			=> "Time",
 	
+	'custom_data'				=> "Custom Data Fields",
+	'data_name'				=> "Custom Data Title",
+	'data_description'			=> "Description",
+	'data_column_name'			=> "Data Key",
+	'data_column_name_desc'			=> "<div class='ipsMessage ipsMessage_warning' >
+							The data key can only be lowercase alphanumerics (including underscores).<br>
+							It is used to access this data from the host object.<br> 
+							Example: \$value = \$object->getRulesData( 'key' );
+						   </div>",
+						   
+	'data_class'				=> "Data Associated With",
+	'data_type'				=> "Stored Data Type",
+	'data_type_class'			=> "Stored Object Class",
+	'data_custom_class'			=> "Custom Classname",
+	'data_use_mode'				=> "Field Editing Mode",
+	'data_tab'				=> "Form Tab Name",
+	'data_tab_desc'				=> "Enter the name of the tab that this field should appear under on editing forms",
+	'data_required'				=> "Is this data required?",
+	
+	'rules_numeric_math_operation'		=> "Value update method",
+	'rules_array_operation'			=> "Array update method",
+	
+	'rules_node_data_tab'			=> "Rules Data",
+	
+	'data_column_not_unique'		=> "This key is already being used for another field",
+	'rules_data_column_invalid'		=> "Your data key contains invalid characters. Only lowercase alphanumerics (including underscores) are allowed.",
+	
 	'rules_scheduled_actions'		=> "Scheduled Actions",
 	'custom_actions'			=> "Custom Actions",
 	'custom_action_title'			=> "Custom Action Name",
 	'custom_action_description'		=> "Description",
 	'custom_actions_add_child'		=> "Add Action Argument",
+	'rules_tokens_description'		=> "You can type the names of tokens (include the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.",
 	
 	'argument_name'				=> "Argument Name",
 	'argument_name_desc'			=> "Human Friendly Name (i.e. Email Recipient)",
 	'argument_varname'			=> "Machine Name",
-	'argument_varname_desc'			=> "The machine name can only be alphanumeric (including underscores). It needs to be unique to this action and will used as a variable name in action code.<br>( ex: member )",
+	'argument_varname_desc'			=> "The machine name can only be lowercase alphanumerics (including underscores). It needs to be unique to this action and will used as a variable name in action code.<br>( ex: member )",
 	'argument_type'				=> "Argument Type",
 	'argument_class'			=> "Object Type",
 	'argument_custom_class'			=> "Custom Object Classname",
@@ -47,18 +85,22 @@ $lang = array(
 	'argument_description_desc'		=> "Describe what this action argument is for. (ex: Member to send the email to )",
 	
 	'argument_not_unique'			=> "This machine name is already being used in this action",
+	'argument_name_invalid'			=> "This machine name contains invalid characters.  Only lowercase alphanumerics (including underscores) are allowed.",
 	
 	// Form Generic
 	'rulesets'				=> "Rules",
 	'ruleset_title'				=> "Ruleset Title",
-	'rulesets_add_child'			=> "Add New Rule",
+	'rulesets_add_child'			=> "Add Rule to Ruleset",
+	'rules_add_rule'			=> "Add New Rule",
 	'rulesets_add'				=> "Create New Rule Set",
 	'rule_ruleset_id'			=> "Associated Rule Set",
 	'rule_no_ruleset'			=> "Independent Rule (not part of a rule set)",
 	'ruleset_description'			=> "Rule Set Description",
-	'ruleset_creator'			=> "Created BY",
+	'ruleset_creator'			=> "Created By",
 	'action_schedule_mode'			=> "Action should be executed",
+	'action_schedule_mode_desc'		=> "Actions that are executed immediately can affect the conditions of other rules operating on the same event. In some cases this is desirable, but is generally not recommended as it can lead to unexpected rule results.",
 	'rules_action_execution_now'		=> "Immediately",
+	'rules_action_execution_defer'		=> "At the end of the event",
 	'rules_action_execution_future'		=> "Fixed amount of time in the future",
 	'rules_action_execution_date'		=> "A specific date in the future",
 	'rules_action_execution_custom'		=> "A calculated date and time",
@@ -69,6 +111,8 @@ $lang = array(
 	'action_schedule_date'			=> "Date / Time",
 	'action_schedule_customcode'		=> "PHP Code",
 	'action_schedule_customcode__desc'	=> "<ul><li><strong>object</strong>: An \IPS\DateTime Object</li><li><strong>int</strong>: A unix timestamp</li><li><strong>string</strong>: A date/time string</li></ul>",
+	'action_schedule_key'			=> "Unique Scheduling Keyphrase",
+	'action_schedule_key_desc'		=> "Optional. Only one action will remain scheduled for any given keyphrase at a time. If an action is rescheduled, any previously scheduled actions with the same keyphrase will be removed.<br><strong>Note:</strong> Token replacements can be used in your keyphrase.",
 
 	'rules_editing_scheduled_action'	=> "Editing Scheduled Action",
 	'rules_scheduled_date'			=> "Date / Time Scheduled",
@@ -87,9 +131,9 @@ $lang = array(
 	'phpcode_desc'				=> "<strong>Warning</strong>: PHP is for advanced users only. Your php code needs to return a value to use as the argument. Do not include a &lt;?php tag at the beginning of your code, or comment it out if you do.",
 	'phpcode_desc_details'			=> "The operation expects you to return one of the following argument types:",
 	'phpcode_desc_details_vars'		=> "The following variables are available to your php code:",
-	'use_event_argument'			=> "Event Data To Use",
+	'use_event_argument'			=> "Data To Use",
 	'use_event_argument_default'		=> "Use A Default Configuration?",
-	'use_event_argument_default_desc'	=> "The argument data may not be provided by the event in all cases. If it is not, would you like to provide a default configuration?",
+	'use_event_argument_default_desc'	=> "If the event data for this argument is empty, use a default configuration.",
 
 	// Node Form
 	'rule_debug'				=> "Debug This Rule",
@@ -117,7 +161,8 @@ $lang = array(
 							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>",
 	'condition_not'				=> "NOT",
 	'condition_not_desc'			=> "Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.",
-	
+	'rules_event_argument_optional_notice'	=> "The event has indicated that this data may sometimes be empty. And even though this data is not required for the operation, you may choose to use a default configuration if it is (empty).",
+	'rules_event_argument_required_notice'	=> "The event has indicated that this data may sometimes be empty. Since this argument is required by the operation, you must also provide a default configuration to use.",
 	'conditions_add_child'			=> "Add Sub Condition",
 	'or_group_badge'			=> "OR ANY SUBCONDITION",
 	'and_group_badge'			=> "AND ALL SUBCONDITIONS",
@@ -146,9 +191,14 @@ $lang = array(
 	
 	'rules_scheduled_schedule_time'		=> "Scheduled Date",
 	'rules_scheduled_schedule_action_id'	=> "Scheduled Action",
-	'rules_scheduled_schedule_unique_key'	=> "Unique Key",
+	'rules_scheduled_schedule_unique_key'	=> "Keyphrase",
 	'rules_scheduled_schedule_thread'	=> "Associated Rule",
 	'rules_scheduled_schedule_created'	=> "Created On",
+	
+	'rules_choose_member'			=> "Type A Member Name",
+	'rules_choose_member2'			=> "Type A Member Name",
+	'rules_choose_members'			=> "Type Member Names",
+	'rules_choose_members2'			=> "Type Member Names",
 	
 	// Conditions
 	'condition_title'			=> "Condition Name",
@@ -158,7 +208,7 @@ $lang = array(
 	'rule_actions_selection'		=> "Action to perform:",
 	'conditions_title'			=> "Condition Title",
 	'rule_conditions_selection'		=> "Condition to check",
-	'operation_arg_source_event'		=> "Event Data",
+	'operation_arg_source_event'		=> "Event / Global Data",
 	'operation_arg_source_manual'		=> "Manual Configuration",
 	'operation_arg_source_phpcode'		=> "PHP Code",
 	
@@ -168,6 +218,8 @@ $lang = array(
 	
 	// Global Arguments
 	'__global_logged_in_member'		=> "Global: Logged in member",
+	'__global_current_time'			=> "Global: Current time",
+	'__global_request_url'			=> "Global: Current page url",
 	
 	
 	/**
@@ -244,7 +296,6 @@ $lang = array(
 	'rules_Members_attribute_compare_months'		=> "Months",
 	'rules_Members_attribute_compare_years'			=> "Years",
 	
-	
 	'rules_Members_conditions_member_status'		=> "Member has a particular status",
 	'rules_Members_conditions_member_status_member'		=> "Member To Check",
 	'rules_Members_member_status'				=> "Member has the following status",
@@ -255,6 +306,15 @@ $lang = array(
 	'rules_member_warnlevel'				=> "Has Warnings",
 	'rules_member_online'					=> "Member is Online",
 	
+	'rules_Members_conditions_member_following'		=> "Member is following another member",
+	'rules_Members_conditions_member_following_member'	=> "Member Who Is Following",
+	'rules_Members_conditions_member_following_member2'	=> "Member Being Followed",
+	
+	'rules_Members_conditions_member_ignoring'		=> "Member is ignoring another member",
+	'rules_Members_conditions_member_ignoring_member'	=> "Member Who Is Ignoring",
+	'rules_Members_conditions_member_ignoring_member2'	=> "Member Being Ignored",
+	'rules_Members_ignore_type'				=> "Ignoring What?",
+		
 	/*** MEMBERS: Actions ***/
 	'rules_Members_actions_modify_posts'			=> "Modify the post count of a member",
 	'rules_Members_actions_modify_posts_member'		=> "Modify Posts For This Member",
@@ -311,14 +371,14 @@ $lang = array(
 	 * Rules Definitions 
 	 */
 
-	/*** SYSTEM: Events ***/
-	'rules_System_event_record_created'			=> "ActiveRecord: New Record Created",
-	'rules_System_event_record_created_record'		=> "Record that was just created",
-	'rules_System_event_record_being_updated'		=> "ActiveRecord: Record Being Updated",
-	'rules_System_event_record_being_updated_record'	=> "Record that is going to be saved",
-	'rules_System_event_record_being_updated_changed'	=> "An array of the values which have changed",
-	'rules_System_event_record_being_deleted'		=> "ActiveRecord: Record Being Deleted",
-	'rules_System_event_record_being_deleted_record'	=> "Record that is going to be deleted",
+	/*** SYSTEM: Events ***/	
+	'rules_System_event_record_updated'			=> "ActiveRecord: Record Created/Updated",
+	'rules_System_event_record_updated_record'		=> "Record that was created/updated",
+	'rules_System_event_record_updated_changed'		=> "An array of the values which have changed",
+	'rules_System_event_record_updated_new'			=> "A boolean value indicating if the record is new",
+	
+	'rules_System_event_record_deleted'			=> "ActiveRecord: Record Deleted",
+	'rules_System_event_record_deleted_record'		=> "Record that was deleted",
 	
 	'rules_System_event_browser_output'			=> "Output is being sent to browser",
 	'rules_System_event_browser_output_output'		=> "The content which is going to be output",
@@ -328,7 +388,39 @@ $lang = array(
 	'rules_System_event_browser_output_docache'		=> "Boolean value indicating of this page should be cached",
 	'rules_System_event_browser_output_iscache'		=> "Boolean value indicating if this page is from a cache",
 	
-	/*** SYSTEM: Conditions ***/
+	/*** SYSTEM: Conditions ***/	
+	'rules_System_conditions_compare_numbers'		=> "Number Value",
+	'rules_System_conditions_compare_numbers_number1'	=> "The First Number",
+	'rules_Comparisons_number1'				=> "Number Value",
+	'rules_System_conditions_compare_numbers_number2'	=> "The Second Number",
+	'rules_Comparisons_number2'				=> "Number Value",
+	
+	'rules_System_conditions_compare_strings'		=> "String Value",
+	'rules_System_conditions_compare_strings_string1'	=> "The First String",
+	'rules_Comparisons_string1'				=> "String Value",
+	'rules_System_conditions_compare_strings_string2'	=> "The Second String",
+	'rules_Comparisons_string2'				=> "String Value",
+	
+	'rules_System_conditions_compare_truth'			=> "Truth Value",
+	'rules_System_conditions_compare_truth_value'		=> "Value to Compare",
+	
+	'rules_System_conditions_compare_type'			=> "Value Type",
+	'rules_System_conditions_compare_type_value'		=> "Value to Compare",
+	
+	'rules_System_conditions_compare_dates'			=> "Compare Dates",
+	'rules_System_conditions_compare_dates_date1'		=> "The First Date",
+	'rules_System_conditions_compare_dates_date2'		=> "The Second Date",
+	'rules_Comparisons_date1'				=> "Date",
+	'rules_Comparisons_date2'				=> "Date",
+	
+	'rules_System_conditions_compare_objects'		=> "Compare Objects",
+	'rules_System_conditions_compare_objects_object'	=> "Object to Compare",
+	'rules_System_conditions_compare_objects_value'		=> "Value to Compare Object",
+	
+	'rules_System_conditions_compare_array'			=> "Array Value",
+	'rules_System_conditions_compare_array_array'		=> "Array to Compare",
+	'rules_System_conditions_compare_array_value'		=> "Value to Use",
+	
 	'rules_System_conditions_execute_php'			=> "Custom PHP Code",
 	'rules_System_custom_phpcode'				=> "PHP Code",
 	
@@ -339,12 +431,23 @@ $lang = array(
 	'rules_System_actions_send_email'			=> "Send an email",
 	'rules_System_actions_send_email_recipients'		=> "Recipients",
 	'rules_System_actions_send_email_recipients_desc'	=> "Members to send the email to",
-	'rules_System_member_recipients'			=> "Members",
+	'rules_System_actions_send_email_bcc_recipients'	=> "Blind Carbon Copy Recipients",
+	'rules_System_actions_send_email_bcc_recipients_desc'	=> "Choose additional members to recieve a bcc.",
+	'rules_System_actions_send_email_subject'		=> "Email Subject Line",
 	'rules_System_actions_send_email_message'		=> "Message Content",
 	'rules_System_actions_send_email_message_desc'		=> "The contents of the message you want to send",
 	'rules_System_email_message'				=> "Email Message",
+	'rules_System_email_message_desc'			=> "Enter the content for the email message. HTML is allowed.",
+	
+	'rules_System_message_subject'				=> "Subject",
+	'rules_System_message_body'				=> "Message Content",
 	
 	'rules_System_actions_execute_php'			=> "Execute PHP Code",
+	'rules_System_actions_unschedule_action'		=> "Delete a scheduled action",
+	'rules_System_actions_unschedule_action_key'		=> "Action To Unschedule",
+	'rules_System_unschedule_mode'				=> "Keyphrase Matching",
+	'rules_System_unschedule_key'				=> "Keyphrase",
+	'rules_System_unschedule_key_desc'			=> "Enter the unique keyphrase of the action you want to unschedule. If it is scheduled, it will be deleted. If it isn't already scheduled, then no action will be taken.",
 	
 	'rules_System_actions_display_message'			=> "Display Inline Message",
 	'rules_System_actions_display_message_message'		=> "Message",
@@ -355,41 +458,26 @@ $lang = array(
 	'rules_System_actions_url_redirect_url'			=> "URL of page to redirect to",
 	'rules_System_actions_url_redirect_message'		=> "The message to display upon redirect",
 
+	'rules_System_actions_create_conversation'		=> "Create a new private conversation",
+	'rules_System_actions_create_conversation_creator'	=> "Conversation Starter",
+	'rules_System_actions_create_conversation_participants' => "Conversation Participants",
+	'rules_System_actions_create_conversation_subject'	=> "Conversation Subject",
+	'rules_System_actions_create_conversation_message'	=> "Conversation Message Body",
+	
+	'rules_System_message_subject'				=> "Subject",
+	'rules_System_message_body'				=> "Content",
+	
+	'rules_System_actions_create_notification'		=> "Create a new member notification",
+	'rules_System_actions_create_notification_recipients'	=> "Notification Recipients",
+	'rules_System_actions_create_notification_title'	=> "Notification Title",
+	'rules_System_actions_create_notification_url'		=> "Notification Url",
+	'rules_System_actions_create_notification_content'	=> "Notification Content",
+	'rules_System_actions_create_notification_author'	=> "Notification Sponsor",
+	
+	'rules_System_url'					=> "Url",
 
-	/**
-	 * Comparisons 
-	 *
-	 * Rules Definitions
-	 */
 	'rules_Comparisons_type'				=> "Comparison Type",
 	'rules_Comparisons_value'				=> "Value",
-	
-	/*** COMPARISONS: Conditions ***/	
-	'rules_Comparisons_conditions_compare_numbers'		=> "Number Values",
-	'rules_Comparisons_conditions_compare_numbers_number1'	=> "The First Number",
-	'rules_Comparisons_number1'				=> "Number 1",
-	'rules_Comparisons_conditions_compare_numbers_number2'	=> "The Second Number",
-	'rules_Comparisons_number2'				=> "Number 2",
-	
-	'rules_Comparisons_conditions_compare_strings'		=> "String Values",
-	'rules_Comparisons_conditions_compare_strings_string1'	=> "The First String",
-	'rules_Comparisons_string1'				=> "String 1",
-	'rules_Comparisons_conditions_compare_strings_string2'	=> "The Second String",
-	'rules_Comparisons_string2'				=> "String 2",
-	
-	'rules_Comparisons_conditions_compare_truth'		=> "Truth Values",
-	'rules_Comparisons_conditions_compare_truth_value'	=> "Value to Compare",
-	
-	'rules_Comparisons_conditions_compare_type'		=> "Value Type",
-	'rules_Comparisons_conditions_compare_type_value'	=> "Value to Compare",
-	
-	'rules_Comparisons_conditions_compare_objects'		=> "Object Comparison",
-	'rules_Comparisons_conditions_compare_objects_object'	=> "Object to Compare",
-	'rules_Comparisons_conditions_compare_objects_value'	=> "Value to Compare Object",
-	
-	'rules_Comparisons_conditions_compare_array'		=> "Array Comparison",
-	'rules_Comparisons_conditions_compare_array_array'	=> "Array to Compare",
-	'rules_Comparisons_conditions_compare_array_value'	=> "Value to Use",
 	
 	/**
 	 * Content
@@ -398,58 +486,165 @@ $lang = array(
 	 */
 	 
 	/*** CONTENT: Events ***/
-	'rules_Content_event_content_created'		=> "Content has been posted",
-	'rules_Content_event_content_created_item'	=> "The content object",
+	'rules_Content_event_content_updated'			=> "Any content has been created or updated",
+	'rules_Content_event_content_updated_content'		=> "The updated content",
+	'rules_Content_event_content_updated_changed'		=> "An array of the properties being saved",
+	'rules_Content_event_content_updated_new'		=> "Boolean value indicating if content is new",
 
-	'rules_Content_event_content_updated'		=> "Content has been updated",
-	'rules_Content_event_content_updated_item'	=> "The content object",
-	'rules_Content_event_content_updated_changed'	=> "An array of the changed properties",
+	'rules_Content_event_content_approved'			=> "Any content has been approved",
+	'rules_Content_event_content_approved_content'		=> "The content",
+	'rules_Content_event_content_approved_member'		=> "The member who approved the content",
+	
+	'rules_Content_event_content_pinned'			=> "Any content has been pinned",
+	'rules_Content_event_content_pinned_content'		=> "The pinned content",
+	'rules_Content_event_content_pinned_member'		=> "The member who pinned the content",
+	
+	'rules_Content_event_content_unpinned'			=> "Any content has been unpinned",
+	'rules_Content_event_content_unpinned_content'		=> "The unpinned content",
+	'rules_Content_event_content_unpinned_member'		=> "The member who unpinned the content",
+	
+	'rules_Content_event_content_featured'			=> "Any content has been featured",
+	'rules_Content_event_content_featured_content'		=> "The featured content",
+	'rules_Content_event_content_featured_member'		=> "The member who featured the content",
+	
+	'rules_Content_event_content_unfeatured'		=> "Any content has been unfeatured",
+	'rules_Content_event_content_unfeatured_content'	=> "The unfeatured content",
+	'rules_Content_event_content_unfeatured_member'		=> "The member who unfeatured the content",
+	
+	'rules_Content_event_content_locked'			=> "Any content has been locked",
+	'rules_Content_event_content_locked_content'		=> "The locked content",
+	'rules_Content_event_content_locked_member'		=> "The member who locked the content",
+	
+	'rules_Content_event_content_unlocked'			=> "Any content has been unlocked",
+	'rules_Content_event_content_unlocked_content'		=> "The unlocked content",
+	'rules_Content_event_content_unlocked_member'		=> "The member who unlocked the content",
+	
+	'rules_Content_event_content_hidden'			=> "Any content has been hidden",
+	'rules_Content_event_content_hidden_content'		=> "The hidden content",
+	'rules_Content_event_content_hidden_member'		=> "The member who hid the content",
+	'rules_Content_event_content_hidden_reason'		=> "Reason given for hiding the content",
+	
+	'rules_Content_event_content_unhidden'			=> "Any content has been unhidden",
+	'rules_Content_event_content_unhidden_content'		=> "The unhidden content",
+	'rules_Content_event_content_unhidden_member'		=> "The member who unhid the content",
+	
+	'rules_Content_event_content_reported'			=> "Any content has been reported",
+	'rules_Content_event_content_reported_content'		=> "The reported content",
+	'rules_Content_event_content_reported_message'		=> "The message provided by the reporting member",
 
-	'rules_Content_event_content_pinned'		=> "Content has been pinned",
-	'rules_Content_event_content_pinned_item'	=> "The content object",
-	'rules_Content_event_content_pinned_member'	=> "The member who pinned the content",
-	
-	'rules_Content_event_content_unpinned'		=> "Content has been unpinned",
-	'rules_Content_event_content_unpinned_item'	=> "The content object",
-	'rules_Content_event_content_unpinned_member'	=> "The member who unpinned the content",
-	
-	'rules_Content_event_content_featured'		=> "Content has been featured",
-	'rules_Content_event_content_featured_item'	=> "The content object",
-	'rules_Content_event_content_featured_member'	=> "The member who featured the content",
-	
-	'rules_Content_event_content_unfeatured'	=> "Content has been unfeatured",
-	'rules_Content_event_content_unfeatured_item'	=> "The content object",
-	'rules_Content_event_content_unfeatured_member'	=> "The member who unfeatured the content",
-	
-	'rules_Content_event_content_locked'		=> "Content has been locked",
-	'rules_Content_event_content_locked_item'	=> "The content object",
-	'rules_Content_event_content_locked_member'	=> "The member who locked the content",
-	
-	'rules_Content_event_content_unlocked'		=> "Content has been unlocked",
-	'rules_Content_event_content_unlocked_item'	=> "The content object",
-	'rules_Content_event_content_unlocked_member'	=> "The member who unlocked the content",
-	
-	'rules_Content_event_content_hidden'		=> "Content has been hidden",
-	'rules_Content_event_content_hidden_item'	=> "The content object",
-	'rules_Content_event_content_hidden_member'	=> "The member who hid the content",
-	'rules_Content_event_content_hidden_reason'	=> "Reason given for hiding the content",
-	
-	'rules_Content_event_content_unhidden'		=> "Content has been unhidden",
-	'rules_Content_event_content_unhidden_item'	=> "The content object",
-	'rules_Content_event_content_unhidden_member'	=> "The member who unhid the content",
-	
-	'rules_Content_event_content_reported'		=> "Content has been reported",
-	'rules_Content_event_content_reported_item'	=> "The content object",
-	'rules_Content_event_content_reported_message'	=> "The member who reported the content",
-
-	'rules_Content_event_content_author_changed'		=> "Content author has changed",
-	'rules_Content_event_content_author_changed_item'	=> "The content object",
+	'rules_Content_event_content_author_changed'		=> "Any content author has changed",
+	'rules_Content_event_content_author_changed_content'	=> "The content whose author changed",
 	'rules_Content_event_content_author_changed_oldMember'	=> "The member who was the old author",
 	'rules_Content_event_content_author_changed_newMember'	=> "The member who is the new author",
 
-	'rules_Content_event_content_deleted'			=> "Content has been deleted",
-	'rules_Content_event_content_deleted_item'		=> "The content object",
+	'rules_Content_event_content_deleted'			=> "Any content has been deleted",
+	'rules_Content_event_content_deleted_content'		=> "The deleted content",
 	
+	'rules_Content_event_content_item_published'		=> "Any content item has been published",
+	'rules_Content_event_content_item_published_item'	=> "The content item",
+	'rules_Content_event_content_item_published_member'	=> "The member who published the content",
+	
+	'rules_Content_event_content_item_unpublished'		=> "Any content item has been unpublished",
+	'rules_Content_event_content_item_unpublished_item'	=> "The content item",
+	'rules_Content_event_content_item_unpublished_member'	=> "The member who unpublished the content",
+	
+	'rules_Content_event_content_item_moved'		=> "Any content item has been moved",
+	'rules_Content_event_content_item_moved_item'		=> "The content item",
+	'rules_Content_event_content_item_moved_oldContainer'	=> "The content item's old container",
+	'rules_Content_event_content_item_moved_container'	=> "The content item's new container",
+	'rules_Content_event_content_item_moved_link'		=> "Boolean value indicating if a link was left in the old container",
+	 
+	'rules_Content_event_content_item_merging'		=> "Any content item is being merged with others",
+	'rules_Content_event_content_item_merging_item'		=> "The content item",
+	'rules_Content_event_content_item_merging_items'	=> "Array of content items being merged in",
+	 
+	'rules_Content_event_content_item_viewed'		=> "Any content item is being viewed",
+	'rules_Content_event_content_item_viewed_item'		=> "The content item",
+
+	'rules_Content_event_content_item_tags_set'		=> "Any content item's tags have been updated",
+	'rules_Content_event_content_item_tags_set_item'	=> "The content item",
+	'rules_Content_event_content_item_tags_set_tags'	=> "The content tags",
+	
+	/*** CONTENT: App Events ***/
+	'rules_Content_event_content_updated_'			=> "%s has been created or updated",
+	'rules_Content_event_content_updated_content_'		=> "The created or updated %s",
+	'rules_Content_event_content_updated_changed_'		=> "An array of any changed properties",
+	'rules_Content_event_content_updated_new_'		=> "Boolean value indicating if content is new",
+
+	'rules_Content_event_content_approved_'			=> "%s has been approved",
+	'rules_Content_event_content_approved_content_'		=> "The %s",
+	'rules_Content_event_content_approved_member_'		=> "The member who approved the %s",
+	
+	'rules_Content_event_content_pinned_'			=> "%s has been pinned",
+	'rules_Content_event_content_pinned_content_'		=> "The pinned %s",
+	'rules_Content_event_content_pinned_member_'		=> "The member who pinned the %s",
+	
+	'rules_Content_event_content_unpinned_'			=> "%s has been unpinned",
+	'rules_Content_event_content_unpinned_content_'		=> "The unpinned %s",
+	'rules_Content_event_content_unpinned_member_'		=> "The member who unpinned the %s",
+	
+	'rules_Content_event_content_featured_'			=> "%s has been featured",
+	'rules_Content_event_content_featured_content_'		=> "The featured %s",
+	'rules_Content_event_content_featured_member_'		=> "The member who featured the %s",
+	
+	'rules_Content_event_content_unfeatured_'		=> "%s has been unfeatured",
+	'rules_Content_event_content_unfeatured_content_'	=> "The unfeatured %s",
+	'rules_Content_event_content_unfeatured_member_'		=> "The member who unfeatured the %s",
+	
+	'rules_Content_event_content_locked_'			=> "%s has been locked",
+	'rules_Content_event_content_locked_content_'		=> "The locked %s",
+	'rules_Content_event_content_locked_member_'		=> "The member who locked the %s",
+	
+	'rules_Content_event_content_unlocked_'			=> "%s has been unlocked",
+	'rules_Content_event_content_unlocked_content_'		=> "The unlocked %s",
+	'rules_Content_event_content_unlocked_member_'		=> "The member who unlocked the %s",
+	
+	'rules_Content_event_content_hidden_'			=> "%s has been hidden",
+	'rules_Content_event_content_hidden_content_'		=> "The hidden %s",
+	'rules_Content_event_content_hidden_member_'		=> "The member who hid the %s",
+	'rules_Content_event_content_hidden_reason_'		=> "Reason given for hiding the %s",
+	
+	'rules_Content_event_content_unhidden_'			=> "%s has been unhidden",
+	'rules_Content_event_content_unhidden_content_'		=> "The unhidden %s",
+	'rules_Content_event_content_unhidden_member_'		=> "The member who unhid the %s",
+	
+	'rules_Content_event_content_reported_'			=> "%s has been reported",
+	'rules_Content_event_content_reported_content_'		=> "The reported %s",
+	'rules_Content_event_content_reported_message_'		=> "The message provided by the reporting member",
+
+	'rules_Content_event_content_author_changed_'		=> "%s author has changed",
+	'rules_Content_event_content_author_changed_content_'	=> "The %s whose author changed",
+	'rules_Content_event_content_author_changed_oldMember_'	=> "The member who was the old author",
+	'rules_Content_event_content_author_changed_newMember_'	=> "The member who is the new author",
+
+	'rules_Content_event_content_deleted_'			=> "%s has been deleted",
+	'rules_Content_event_content_deleted_content_'		=> "The deleted %s",
+	
+	'rules_Content_event_content_item_published_'		=> "%s has been published",
+	'rules_Content_event_content_item_published_item_'	=> "The %s",
+	'rules_Content_event_content_item_published_member_'	=> "The member who published the %s",
+	
+	'rules_Content_event_content_item_unpublished_'		=> "%s has been unpublished",
+	'rules_Content_event_content_item_unpublished_item_'	=> "The %s",
+	'rules_Content_event_content_item_unpublished_member_'	=> "The member who unpublished the %s",
+	
+	'rules_Content_event_content_item_moved_'		=> "%s has been moved",
+	'rules_Content_event_content_item_moved_item_'		=> "The %s",
+	'rules_Content_event_content_item_moved_oldContainer_'	=> "The %s's old container",
+	'rules_Content_event_content_item_moved_container_'	=> "The %s's new container",
+	'rules_Content_event_content_item_moved_link_'		=> "Boolean value indicating if a link was left in the old container",
+	 
+	'rules_Content_event_content_item_merging_'		=> "%s is being merged with others",
+	'rules_Content_event_content_item_merging_item_'	=> "The %s",
+	'rules_Content_event_content_item_merging_items_'	=> "Array of %s's being merged in",
+	 
+	'rules_Content_event_content_item_viewed_'		=> "%s is being viewed",
+	'rules_Content_event_content_item_viewed_item_'		=> "The %s",
+
+	'rules_Content_event_content_item_tags_set_'		=> "%s tags have been updated",
+	'rules_Content_event_content_item_tags_set_item_'	=> "The %s",
+	'rules_Content_event_content_item_tags_set_tags_'	=> "The %s tags",
+
 	/*** CONTENT: Conditions ***/
 	'rules_Content_conditions_content_type'			=> "Content is of a certain type",
 	'rules_Content_conditions_content_type_content' 	=> "The Content to Check",
@@ -461,10 +656,51 @@ $lang = array(
 	
 	'rules_Content_conditions_content_author'		=> "Content has a particular author",
 	'rules_Content_conditions_content_author_content'	=> "The Content to Check",
+	'rules_Content_conditions_content_author_member'	=> "The Member to Check",
 	'rules_Content_author_members'				=> "Content has one of the following authors",
 	'rules_Content_author_members_desc'			=> "Type the names of authors you want to check the content for",
 	
+	'rules_Content_conditions_content_tags'			=> "Content has specific tags",
+	'rules_Content_conditions_content_tags_item'		=> "The Content Item to Check",
+	'rules_Content_conditions_content_tags_tags'		=> "Tags",
+	'rules_Content_check_tags_type'				=> "Check if content is tagged with",
+	
+	'rules_Content_conditions_content_attributes'		=> "Content attribute values",
+	'rules_Content_conditions_content_attributes_content'	=> "The Content to Check",
+	'rules_Content_content_attribute'			=> "Attribute to check",
+	'rules_Content_attribute_compare_type_value'		=> "Is",
+	'rules_Content_attribute_compare_type_date'		=> "Is",
+	'rules_Content_attribute_compare_value'			=> "Value",
+	'rules_Content_attribute_compare_date'			=> "Date",
+	'rules_content_attribute_comments'			=> "Number of Comments",
+	'rules_content_attribute_reviews'			=> "Number of Reviews",
+	'rules_content_attribute_unapproved_comments'		=> "Number of Unapproved Comments",
+	'rules_content_attribute_unapproved_reviews'		=> "Number of Unapproved Reviews",
+	'rules_content_attribute_views'				=> "Number of Views",
+	'rules_content_attribute_poll_votes'			=> "Number of Poll Votes",
+	'rules_content_attribute_created'			=> "Created Date",
+	'rules_content_attribute_updated'			=> "Last Updated Date",
+	'rules_content_attribute_last_post'			=> "Last Post Date",
+	'rules_Member_attribute_compare_type'			=> "Comparison type",
+	'rules_Content_attribute_compare_date'			=> "Date",
+	'rules_Content_attribute_compare_minutes'		=> "Minutes",
+	'rules_Content_attribute_compare_hours'			=> "Hours",
+	'rules_Content_attribute_compare_days'			=> "Days",
+	'rules_Content_attribute_compare_months'		=> "Months",
+	'rules_Content_attribute_compare_years'			=> "Years",
+	
+	'rules_Content_conditions_content_container'		=> "%s is in certain %s",
+	'rules_Content_conditions_content_container_content'	=> "The %s to Check",
+	'rules_Content_conditions_content_container_container'	=> "%s",
+	'rules_Content_content_containers'			=> "Select %s",
+	
 	/*** CONTENT: Actions ***/
+	'rules_Content_actions_set_content_tags'		=> "Modify content tags",
+	'rules_Content_actions_set_content_tags_content'	=> "Content To Modify",
+	'rules_Content_actions_set_content_tags_tags'		=> "Tags",
+	'rules_Content_modify_tags_type'			=> "How to modify tags",
+	'rules_Content_tags_stack'				=> "Tags",
+	
 	'rules_Content_member'					=> "Member to use",
 	'rules_Content_member_desc'				=> "Leave empty to use the acting member",
 	'rules_Content_reason'					=> "Reason for hiding content",
@@ -503,41 +739,29 @@ $lang = array(
 	'rules_Content_actions_change_author_content'		=> "Content To Change Author Of",
 	'rules_Content_actions_change_author_author'		=> "The New Author",
 	
-	/**
-	 * Content Item
-	 *
-	 * Rules Definitions
-	 */
-	 
-	/*** CONTENT ITEM: Events ***/
-	'rules_ContentItems_event_content_item_created'			=> "Content item has been created",
-	'rules_ContentItems_event_content_item_created_item'		=> "The content item",
-	'rules_ContentItems_event_content_item_created_values'		=> "An array of values used to create the content item",
-	'rules_ContentItems_event_content_item_created_container'	=> "The content item container",
-	'rules_ContentItems_event_content_item_created_notification'	=> "A boolean value indicating whether notifications were sent",
+	'rules_Content_actions_move_content'			=> "Move %s to new %s",
+	'rules_Content_actions_move_content_item'		=> "The %s to Move",
+	'rules_Content_actions_move_content_container'		=> "New %s Container",
+	'rules_Content_content_container'			=> "Select New Container",
+	'rules_Content_move_content_link'			=> "Leave a link in the old container?",
 	
-	'rules_ContentItems_event_content_item_approved'		=> "Content item has been approved",
-	'rules_ContentItems_event_content_item_approved_item'		=> "The content item",
-	'rules_ContentItems_event_content_item_approved_member'		=> "The member who approved the content",
+	'rules_Content_actions_create_content'			=> "Create new %s",
+	'rules_Content_actions_create_content_container'	=> "%s Container",
+	'rules_Content_actions_create_content_author'		=> "%s Author",
+	'rules_Content_actions_create_content_title'		=> "%s Title",
+	'rules_Content_actions_create_content_content'		=> "%s Content",
+	'rules_Content_actions_create_content_tags'		=> "%s Tags",
+	'rules_Content_increase_posts'				=> "Increase post count of author?",
+	'rules_Content_guest_name'				=> "Name to use if author is a guest",
+	'rules_Content_content_body'				=> "Content Body",
+	'rules_Content_content_title'				=> "Title",
 	
-	'rules_ContentItems_event_content_item_published'		=> "Content item has been published",
-	'rules_ContentItems_event_content_item_published_item'		=> "The content item",
-	'rules_ContentItems_event_content_item_published_member'	=> "The member who published the content",
+	'rules_Content_actions_create_content_comment'		=> "Post new %s comment",
+	'rules_Content_actions_create_content_comment_item'	=> "%s",
+	'rules_Content_actions_create_content_comment_author'	=> "%s Comment Author",
+	'rules_Content_actions_create_content_comment_content'	=> "%s Comment Content",
 	
-	'rules_ContentItems_event_content_item_unpublished'		=> "Content item has been unpublished",
-	'rules_ContentItems_event_content_item_unpublished_item'	=> "The content item",
-	'rules_ContentItems_event_content_item_unpublished_member'	=> "The member who unpublished the content",
 	
-	'rules_ContentItems_event_content_item_moved'			=> "Content item has been moved",
-	'rules_ContentItems_event_content_item_moved_item'		=> "The content item",
-	'rules_ContentItems_event_content_item_moved_oldContainer'	=> "The content item's old container",
-	'rules_ContentItems_event_content_item_moved_container'		=> "The content item's new container",
-	'rules_ContentItems_event_content_item_moved_link'		=> "Boolean value indicating if a link was left in the old container",
-	 
-	'rules_ContentItems_event_content_item_merging'			=> "Content item is being merged with others",
-	'rules_ContentItems_event_content_item_merging_item'		=> "The content item",
-	'rules_ContentItems_event_content_item_merging_items'		=> "Array of content items being merged in",
-	 
 	/**
 	 * Content Comment
 	 *
@@ -556,30 +780,6 @@ $lang = array(
 	'rules_Comments_event_content_comment_moved'			=> "Content comment has been moved",
 	'rules_Comments_event_content_comment_moved_comment'		=> "The comment item",
 	'rules_Comments_event_content_comment_moved_item'		=> "The content item the comment belongs to",
-	 
-	/**
-	 * Forums
-	 */
-	
-	/*** FORUMS: Conditions ***/
-	'rules_Forums_conditions_topic_in_forum'		=> "Topic is in a particular forum",
-	'rules_Forums_conditions_topic_in_forum_topic' 		=> "The Topic to Check",
-	'rules_Forums_topic_forums'				=> "Check if topic is in one of these forums",
-	
-	/*** FORUMS: Events ***/
-	'rules_Forums_event_saved_action'				=> "Saved Action: %s",
-	'rules_Forums_event_saved_action_action'			=> "The saved action",
-	'rules_Forums_event_saved_action_topic'				=> "The topic the saved action was used on",
-	'rules_Forums_event_saved_action_member'			=> "The member using the saved action",
-	
-	
-	/*** FORUMS: Actions ***/
-	'rules_Forums_actions_move_topic'			=> "Move topic to a new forum",
-	'rules_Forums_actions_move_topic_topic'			=> "The Topic to Move",
-	'rules_Forums_topic_forum'				=> "Move topic to this forum",
-	'rules_Forums_topic_link'				=> "Leave a link?",
-	'rules_Forums_topic_link_desc'				=> "If enabled, a link will be left in the old forum that points to the new topic location.",
-	
 	
 	'time' => "Time",
 	'result' => "Result",

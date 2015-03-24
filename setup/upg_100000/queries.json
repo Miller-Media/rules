@@ -1,5 +1,5 @@
-[
-    {
+{
+    "0": {
         "method": "createTable",
         "params": [
             {
@@ -189,7 +189,7 @@
             }
         ]
     },
-    {
+    "1": {
         "method": "createTable",
         "params": [
             {
@@ -379,7 +379,7 @@
             }
         ]
     },
-    {
+    "2": {
         "method": "createTable",
         "params": [
             {
@@ -403,20 +403,6 @@
                         "name": "action_title",
                         "type": "VARCHAR",
                         "length": 255,
-                        "decimals": null,
-                        "values": [],
-                        "allow_null": false,
-                        "default": null,
-                        "comment": "",
-                        "unsigned": false,
-                        "zerofill": false,
-                        "auto_increment": false,
-                        "binary": false
-                    },
-                    "action_rule_id": {
-                        "name": "action_rule_id",
-                        "type": "INT",
-                        "length": 11,
                         "decimals": null,
                         "values": [],
                         "allow_null": false,
@@ -622,6 +608,34 @@
                         "zerofill": false,
                         "auto_increment": false,
                         "binary": false
+                    },
+                    "action_rule_id": {
+                        "name": "action_rule_id",
+                        "type": "INT",
+                        "length": 11,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": null,
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "action_schedule_key": {
+                        "name": "action_schedule_key",
+                        "type": "VARCHAR",
+                        "length": 1028,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": true,
+                        "default": null,
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
                     }
                 },
                 "indexes": {
@@ -639,7 +653,7 @@
             }
         ]
     },
-    {
+    "3": {
         "method": "createTable",
         "params": [
             {
@@ -656,20 +670,6 @@
                         "default": null,
                         "auto_increment": true,
                         "comment": "ID Number"
-                    },
-                    "result": {
-                        "name": "result",
-                        "type": "VARCHAR",
-                        "length": 56,
-                        "decimals": null,
-                        "values": [],
-                        "allow_null": true,
-                        "default": null,
-                        "comment": "",
-                        "unsigned": false,
-                        "zerofill": false,
-                        "auto_increment": false,
-                        "binary": false
                     },
                     "message": {
                         "name": "message",
@@ -838,6 +838,20 @@
                         "zerofill": false,
                         "auto_increment": false,
                         "binary": false
+                    },
+                    "result": {
+                        "name": "result",
+                        "type": "TEXT",
+                        "length": 56,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": true,
+                        "default": null,
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
                     }
                 },
                 "indexes": {
@@ -855,7 +869,7 @@
             }
         ]
     },
-    {
+    "4": {
         "method": "createTable",
         "params": [
             {
@@ -1003,7 +1017,7 @@
             }
         ]
     },
-    {
+    "5": {
         "method": "createTable",
         "params": [
             {
@@ -1137,7 +1151,7 @@
             }
         ]
     },
-    {
+    "6": {
         "method": "createTable",
         "params": [
             {
@@ -1229,14 +1243,14 @@
             }
         ]
     },
-    {
+    "8": {
         "method": "createTable",
         "params": [
             {
-                "name": "rules_custom_action_arguments",
+                "name": "rules_data",
                 "columns": {
-                    "argument_id": {
-                        "name": "argument_id",
+                    "data_id": {
+                        "name": "data_id",
                         "type": "BIGINT",
                         "length": 20,
                         "decimals": null,
@@ -1249,8 +1263,22 @@
                         "auto_increment": true,
                         "binary": false
                     },
-                    "argument_name": {
-                        "name": "argument_name",
+                    "data_class": {
+                        "name": "data_class",
+                        "type": "VARCHAR",
+                        "length": 255,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "data_name": {
+                        "name": "data_name",
                         "type": "VARCHAR",
                         "length": 255,
                         "decimals": null,
@@ -1263,8 +1291,8 @@
                         "auto_increment": false,
                         "binary": false
                     },
-                    "argument_type": {
-                        "name": "argument_type",
+                    "data_type": {
+                        "name": "data_type",
                         "type": "VARCHAR",
                         "length": 56,
                         "decimals": null,
@@ -1277,8 +1305,8 @@
                         "auto_increment": false,
                         "binary": false
                     },
-                    "argument_class": {
-                        "name": "argument_class",
+                    "data_type_class": {
+                        "name": "data_type_class",
                         "type": "VARCHAR",
                         "length": 255,
                         "decimals": null,
@@ -1291,24 +1319,10 @@
                         "auto_increment": false,
                         "binary": false
                     },
-                    "argument_required": {
-                        "name": "argument_required",
-                        "type": "INT",
-                        "length": 1,
-                        "decimals": null,
-                        "values": [],
-                        "allow_null": false,
-                        "default": "1",
-                        "comment": "",
-                        "unsigned": false,
-                        "zerofill": false,
-                        "auto_increment": false,
-                        "binary": false
-                    },
-                    "argument_custom_action_id": {
-                        "name": "argument_custom_action_id",
-                        "type": "INT",
-                        "length": 11,
+                    "data_column_name": {
+                        "name": "data_column_name",
+                        "type": "VARCHAR",
+                        "length": 56,
                         "decimals": null,
                         "values": [],
                         "allow_null": false,
@@ -1319,13 +1333,13 @@
                         "auto_increment": false,
                         "binary": false
                     },
-                    "argument_weight": {
-                        "name": "argument_weight",
+                    "data_weight": {
+                        "name": "data_weight",
                         "type": "INT",
-                        "length": 11,
+                        "length": 5,
                         "decimals": null,
                         "values": [],
-                        "allow_null": true,
+                        "allow_null": false,
                         "default": "0",
                         "comment": "",
                         "unsigned": false,
@@ -1333,10 +1347,10 @@
                         "auto_increment": false,
                         "binary": false
                     },
-                    "argument_custom_class": {
-                        "name": "argument_custom_class",
+                    "data_tab": {
+                        "name": "data_tab",
                         "type": "VARCHAR",
-                        "length": 255,
+                        "length": 56,
                         "decimals": null,
                         "values": [],
                         "allow_null": true,
@@ -1347,27 +1361,41 @@
                         "auto_increment": false,
                         "binary": false
                     },
-                    "argument_description": {
-                        "name": "argument_description",
-                        "type": "VARCHAR",
-                        "length": 1028,
-                        "decimals": null,
-                        "values": [],
-                        "allow_null": true,
-                        "default": null,
-                        "comment": "",
-                        "unsigned": false,
-                        "zerofill": false,
-                        "auto_increment": false,
-                        "binary": false
-                    },
-                    "argument_varname": {
-                        "name": "argument_varname",
+                    "data_use_mode": {
+                        "name": "data_use_mode",
                         "type": "VARCHAR",
                         "length": 56,
                         "decimals": null,
                         "values": [],
                         "allow_null": false,
+                        "default": "internal",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "data_required": {
+                        "name": "data_required",
+                        "type": "INT",
+                        "length": 1,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "data_description": {
+                        "name": "data_description",
+                        "type": "VARCHAR",
+                        "length": 1028,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": true,
                         "default": null,
                         "comment": "",
                         "unsigned": false,
@@ -1391,4 +1419,4 @@
             }
         ]
     }
-]
+}

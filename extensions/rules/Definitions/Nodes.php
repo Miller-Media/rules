@@ -24,7 +24,7 @@ class _Nodes
 	/**
 	 * @brief	Group events and actions in this extension with other extensions by group name
 	 */
-	public $group = 'Nodes';
+	public $defaultGroup = 'Nodes';
 
 	/**
 	 * Triggerable Events
@@ -35,12 +35,66 @@ class _Nodes
 	 */
 	public function events()
 	{
-		$events = array
+		return array();
+		$lang = \IPS\Member::loggedIn()->language();
+	
+		$node_events = array
 		(
-
+			'node_created' => array
+			( 
+				'arguments' => array
+				( 
+					'node' 	=> array( 'argtype' => 'object', 'class' => '\IPS\Node\Model' ),
+				),		
+			),
+			'node_updated' => array
+			( 
+				'arguments' => array
+				( 
+					'node' 	=> array( 'argtype' => 'object', 'class' => '\IPS\Node\Model' ),
+					'changed'	=> array( 'argtype' => 'array' ),
+				),		
+			),
+			'node_deleted' => array
+			( 
+				'arguments' => array
+				( 
+					'node' 	=> array( 'argtype' => 'object', 'class' => '\IPS\Node\Model' ),
+				),		
+			),
 		);
 		
-		return $events;
+		$app_events = array();
+		$data = array
+		(
+			'node_events' => $node_events,
+			'lang' => $lang,
+		);
+		
+		foreach ( \IPS\Application::allExtensions( 'core', 'ContentRouter' ) as $router )
+		{
+			foreach ( $router->classes as $contentItemClass )
+			{
+				$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+				$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
+				
+				//$this->buildEvents( $app_events, $contentItemClass, $content_type, $group, $data );
+				
+				if ( isset ( $contentItemClass::$commentClass ) )
+				{
+					$commentClass = $contentItemClass::$commentClass;
+					//$this->buildEvents( $app_events, $commentClass, $content_type . ' Comment', $group, $data );
+				}
+				
+				if ( isset ( $contentItemClass::$reviewClass ) )
+				{
+					$reviewClass = $contentItemClass::$reviewClass;
+					//$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
+				}
+			}
+		}		
+		
+		return array_merge( $node_events, $app_events );
 	}
 	
 	/**

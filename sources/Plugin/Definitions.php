@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		Rules extension: Reviews
+ * @brief		Rules extension: Plugins
  * @package		Rules for IPS Social Suite
- * @since		26 Feb 2015
+ * @since		27 Feb 2015
  * @version		SVN_VERSION_NUMBER
  */
 
-namespace IPS\rules\extensions\rules\Definitions;
+namespace IPS\rules\Plugin;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -16,15 +16,20 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * @brief	Rules definitions extension: Reviews
+ * @brief	Rules definitions extension: Plugins
+ *
+ * Documentation and examples:
+ * 
+ * ./applications/rules/data/defaults/extensions/Definitions.txt
+ *
  */
-class _Reviews
+class _Definitions
 {
 
 	/**
 	 * @brief	Group events and actions in this extension with other extensions by group name
 	 */
-	public $group = 'Reviews';
+	public $defaultGroup = 'Plugins';
 
 	/**
 	 * Triggerable Events

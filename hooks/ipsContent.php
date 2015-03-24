@@ -13,7 +13,15 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function hide( \IPS\Member $member=NULL, $reason=NULL )
 	{
 		$result = call_user_func_array( 'parent::hide', func_get_args() );
+		
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_hidden' )->trigger( $this, $member ?: \IPS\Member::loggedIn(), $reason );
+		
+		$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_hidden_' . md5( get_class( $this ) ) );
+		if ( ! $classEvent->placeholder )
+		{
+			$classEvent->trigger( $this, $member ?: \IPS\Member::loggedIn(), $reason );
+		}
+
 		return $result;
 	}
 
@@ -26,7 +34,15 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function unhide( $member=NULL )
 	{
 		$result = call_user_func_array( 'parent::unhide', func_get_args() );
+		
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_unhidden' )->trigger( $this, $member ?: \IPS\Member::loggedIn() );
+		
+		$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_unhidden_' . md5( get_class( $this ) ) );
+		if ( ! $classEvent->placeholder )
+		{
+			$classEvent->trigger( $this, $member ?: \IPS\Member::loggedIn() );
+		}
+
 		return $result;
 	}
 
@@ -40,7 +56,15 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	{
 		$oldAuthor = $this->author();
 		$result = call_user_func_array( 'parent::changeAuthor', func_get_args() );
+		
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_author_changed' )->trigger( $this, $oldAuthor, $newAuthor );
+		
+		$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_author_changed_' . md5( get_class( $this ) ) );
+		if ( ! $classEvent->placeholder )
+		{
+			$classEvent->trigger( $this, $oldAuthor, $newAuthor );
+		}
+
 		return $result;
 	}
 
@@ -54,7 +78,15 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function report( $reportContent )
 	{
 		$result = call_user_func_array( 'parent::report', func_get_args() );
+		
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_reported' )->trigger( $this, $reportContent );
+		
+		$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_reported_' . md5( get_class( $this ) ) );
+		if ( ! $classEvent->placeholder )
+		{
+			$classEvent->trigger( $this, $reportContent );
+		}
+
 		return $result;
 	}
 
@@ -69,7 +101,9 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function giveReputation( $type, \IPS\Member $member=NULL )
 	{
 		$result = call_user_func_array( 'parent::giveReputation', func_get_args() );
+		
 		\IPS\rules\Event::load( 'rules', 'Members', 'reputation_given' )->trigger( $this->author(), $member ?: \IPS\Member::loggedIn(), $this, $type );
+		
 		return $result;
 	}
 	
@@ -98,7 +132,62 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 			case 'unlock'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_unlocked' 	)->trigger( $this, $member ); break;			
 		}
 		
+		switch ( $action )
+		{
+			case 'approve'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_approved_' . 	md5( get_class( $this ) ) ); break;
+			case 'pin'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_pinned_' . 	md5( get_class( $this ) ) ); break;
+			case 'unpin'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_unpinned_' . 	md5( get_class( $this ) ) ); break;
+			case 'feature'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_featured_' . 	md5( get_class( $this ) ) ); break;
+			case 'unfeature': $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_unfeatured_' . 	md5( get_class( $this ) ) ); break;
+			case 'lock'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_locked_' . 	md5( get_class( $this ) ) ); break;
+			case 'unlock'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_unlocked_' . 	md5( get_class( $this ) ) ); break;			
+		}
+
+		if ( isset( $classEvent ) and ! $classEvent->placeholder )
+		{
+			$classEvent->trigger( $this, $member );
+		}
+
 		return $result;
+	}
+	
+	/**
+	 * Save Changed Columns
+	 *
+	 * @return	void
+	 */
+	public function save()
+	{
+		if ( $this->_new )
+		{
+			call_user_func_array( 'parent::save', func_get_args() );
+			
+			\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $this->_data, TRUE );
+			
+			$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
+			if ( ! $classEvent->placeholder )
+			{
+				$classEvent->trigger( $this, $this->_data, TRUE );
+			}
+
+		}
+		else
+		{
+			$changed = $this->changed;
+			call_user_func_array( 'parent::save', func_get_args() );
+			
+			if ( $changed )
+			{
+				\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $changed, FALSE );
+				
+				$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
+				if ( ! $classEvent->placeholder )
+				{
+					$classEvent->trigger( $this, $changed, FALSE );
+				}
+
+			}
+		}
 	}
 	
 	/**
@@ -109,10 +198,16 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function delete()
 	{
 		$result = call_user_func_array( 'parent::delete', func_get_args() );
+		
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_deleted' )->trigger( $this );
+		
+		$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_deleted_' . md5( get_class( $this ) ) );
+		if ( ! $classEvent->placeholder )
+		{
+			$classEvent->trigger( $this );
+		}
+
 		return $result;
 	}
 
-
-	
 }

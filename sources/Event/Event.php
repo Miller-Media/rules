@@ -44,6 +44,11 @@ class _Event
 	public $data = NULL;
 	
 	/**
+	 * @brief	Deferred Action Stack
+	 */
+	public $actionStack = array();
+	
+	/**
 	 * Multiton Cache
 	 */
 	public static $multitons = array();
@@ -156,6 +161,7 @@ class _Event
 			 * Give each new event triggered a unique thread id so
 			 * logs can be tied back to the event that generated them
 			 */
+			$parentThread = $this->parentThread;
 			$this->parentThread = $this->thread;
 			$this->thread = md5( uniqid() . mt_rand() );
 			
@@ -188,11 +194,52 @@ class _Event
 					}				
 				}
 			}
-			
+				
 			$this->thread = $this->parentThread;
+			$this->parentThread = $parentThread;
+						
+			/** 
+			 * Deferred Actions
+			 *
+			 * Only execute deferred actions at the root thread level
+			 */
+			if ( $this->thread === NULL )
+			{
+				while ( $deferred = array_shift( $this->actionStack ) )
+				{
+					$action 		= $deferred[ 'action' ];
+					$this->thread 		= $deferred[ 'thread' ];
+					$this->parentThread 	= $deferred[ 'parentThread' ];
+					
+					/**
+					 * Execute the action
+					 */					
+					try
+					{
+						$result = call_user_func_array( $action->definition[ 'callback' ], array_merge( $deferred[ 'args' ], array( $action->data[ 'configuration' ][ 'data' ], $deferred[ 'event_args' ], $action ) ) );					
+						
+						if ( $rule = $action->rule() and $rule->debug )
+						{
+							\IPS\rules\Application::rulesLog( $this, $rule, $action, $result, 'Evaluated' );
+						}
+					}
+					catch( \Exception $e )
+					{
+						/**
+						 * Log Exceptions
+						 */
+						$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
+						$file = array_pop( $paths );
+						\IPS\rules\Application::rulesLog( $this, $action->rule(), $action, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
+					}
+				}
+				
+				/* Reset threads */
+				$this->thread = $this->parentThread = NULL;
+			}			
 		}
 	}
-
+	
 	/**
 	 * Get Event Title
 	 */
@@ -223,7 +270,17 @@ class _Event
 			return $this->rulesCache;
 		}
 		
-		return $this->rulesCache = \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_event_app=? AND rule_event_class=? AND rule_event_key=?', $this->app, $this->class, $this->key ) ) );
+		try
+		{
+			return $this->rulesCache = \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_event_app=? AND rule_event_class=? AND rule_event_key=?', $this->app, $this->class, $this->key ) ) );
+		}
+		catch ( \Exception $e )
+		{
+			/**
+			 * Uninstalled
+			 */
+			return $this->rulesCache = array();
+		}
 	}
 		
 }

@@ -1,9 +1,26 @@
-<ips:template parameters="$event" />
+<ips:template parameters="$event, $tokens" />
 
-<div class='ipsMessage ipsMessage_info rulesMessage'>
+<div class='ipsMessage ipsMessage_info rulesMessage' data-controller="rules.admin.ui.tokens">
 	<span style='font-size:1.8em'>
 		Event: {$event->title()}
 	</span>
-	<p><i class='fa fa-caret-down'></i> The following data is associated with this event:</p>
-	{expression="\IPS\rules\Application::eventArgInfo( $event, '' )" raw="true"}
+	<p>The following data is provided by this event:</p>
+	
+	<div class="monospace">
+		{expression="\IPS\rules\Application::eventArgInfo( $event, '' )" raw="true"}
+	</div>
+	
+	<div class="tokens-toggle monospace" style="margin-top:10px">
+		<strong><i class="fa fa-caret-right"></i> Replacement Tokens</strong> ({expression="count($tokens)"} tokens)
+	</div>
+	<div style="margin:3px 0;">
+		<i class="fa fa-info-circle"></i> {lang="rules_tokens_description"}
+	</div>
+	
+	<ul class="tokens-list monospace" style="display:none">
+	{{foreach $tokens as $token => $description}}
+		<li>{$token} - {$description}</li>
+	{{endforeach}}
+	</ul>
+		
 </div>

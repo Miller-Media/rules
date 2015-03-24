@@ -30,7 +30,7 @@ class _Argument extends \IPS\Node\Model
 	/**
 	 * @brief	[ActiveRecord] Database Table
 	 */
-	public static $databaseTable = 'rules_custom_action_arguments';
+	public static $databaseTable = 'rules_arguments';
 	
 	/**
 	 * @brief	[ActiveRecord] Database Prefix
@@ -203,14 +203,18 @@ class _Argument extends \IPS\Node\Model
 		
 		if ( $this->id )
 		{
-			$form->add( new \IPS\Helpers\Form\Text( 'argument_varname', $this->varname, FALSE, array(), function( $val ) use ( $self )
+			$form->add( new \IPS\Helpers\Form\Text( 'argument_varname', $this->varname, TRUE, array(), function( $val ) use ( $self )
 			{
-				$val = mb_strtolower( $val );
 				$val = str_replace( ' ', '_', $val );
-				$val = preg_replace( '/[^a-z0-9_]/', '', $val );
+				$val = preg_replace( '/[^A-Za-z0-9_]/', '', $val );
 				$val = preg_replace( '/_{2,}/', '_', $val );
 				$val = trim( $val, '_' );
 				$val = $val ?: 'arg';
+				
+				if ( $val != trim( \IPS\Request::i()->argument_varname ) )
+				{
+					throw new \InvalidArgumentException( 'argument_name_invalid' );
+				}
 				
 				if ( $self->id )
 				{
@@ -251,14 +255,15 @@ class _Argument extends \IPS\Node\Model
 		(
 			'General' => array
 			(
-				''				=> 'Any Object',
-				'\IPS\Member'			=> 'Any Member ( IPS\Member )',
-				'\IPS\Content'			=> 'Any Content ( IPS\Content )',
-				'\IPS\Content\Item'		=> 'Content Item ( IPS\Content\Item )',
-				'\IPS\Content\Comment'		=> 'Content Comment ( IPS\Content\Comment )',
-				'\IPS\Content\Review'		=> 'Content Review ( IPS\Content\Review )',
-				'\IPS\Node\Model'		=> 'Content Container ( IPS\Node\Model )',
-				'\IPS\Patterns\ActiveRecord'	=> 'Any Active Record ( IPS\Patterns\ActiveRecord )',
+				''				=> 'Arbitrary',
+				'-IPS-Member'			=> 'Any Member ( IPS\Member )',
+				'-IPS-Content'			=> 'Any Content ( IPS\Content )',
+				'-IPS-DateTime'			=> 'A Date/Time ( IPS\DateTime )',
+				'-IPS-Content-Item'		=> 'Content Item ( IPS\Content\Item )',
+				'-IPS-Content-Comment'		=> 'Content Comment ( IPS\Content\Comment )',
+				'-IPS-Content-Review'		=> 'Content Review ( IPS\Content\Review )',
+				'-IPS-Node-Model'		=> 'Content Container ( IPS\Node\Model )',
+				'-IPS-Patterns-ActiveRecord'	=> 'Any Active Record ( IPS\Patterns\ActiveRecord )',
 				'custom'			=> 'Custom Object Class',
 			),
 		);
@@ -276,22 +281,24 @@ class _Argument extends \IPS\Node\Model
 				$appname = $appname ?: $lang->addToStack( '__app_' . $contentItemClass::$application );
 				
 				/* Add the content class */
-				$_object_classes[ '\\' . $contentItemClass ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
+				$_object_classes[ '-' . str_replace( '\\', '-', $contentItemClass ) ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
 				
 				/* Add node class */
 				if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
 				{
-					$_object_classes[ $nodeClass ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
+					$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
 				}
 			}
 			
 			$object_classes[ $appname ] = $_object_classes;
 		}
 				
-		$form->add( new \IPS\Helpers\Form\Select( 'argument_type', $this->type, TRUE, array( 'options' => $argument_types, 'toggles' => array( 'object' => array( 'argument_class' ) ) ) ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'argument_type', $this->type, TRUE, array( 'options' => $argument_types, 'toggles' => array( 'object' => array( 'argument_class' ), 'array' => array( 'argument_class' ) ) ) ) );
 		$form->add( new \IPS\Helpers\Form\Select( 'argument_class', $this->class, FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'argument_custom_class' ) ) ), NULL, NULL, NULL, 'argument_class' ) );
 		$form->add( new \IPS\Helpers\Form\Text( 'argument_custom_class', $this->custom_class, FALSE, array(), NULL, NULL, NULL, 'argument_custom_class' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'argument_required', isset( $this->required ) ? $this->required : TRUE, FALSE ) );
+		
+		parent::form( $form );
 	}
 	
 	/**
@@ -330,6 +337,7 @@ class _Argument extends \IPS\Node\Model
 				$this_id = 0;
 			}
 			
+			$num = '';
 			while ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_custom_action_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $varname . $num, $custom_action_id, $this_id ) )->first() )
 			{
 				/* Start at 1 */

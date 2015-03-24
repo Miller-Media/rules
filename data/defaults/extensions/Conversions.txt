@@ -1,0 +1,196 @@
+<?php
+/**
+ * @brief		Rules conversions: {class}
+ * @package		Rules for IPS Social Suite
+ * @since		{date}
+ * @version		SVN_VERSION_NUMBER
+ */
+
+namespace IPS\{app}\extensions\rules\Conversions;
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * @brief	Rules conversions extension: {class}
+ */
+class _{class}
+{
+
+	/**
+	 * Global Arguments
+	 *
+	 * Let rules know about any global arguments that your app may have. Global arguments
+	 * are made available to all rule configurations (conditions/actions), and can also
+	 * be used as token replacements on rules forms.
+	 *
+	 * @return 	array		Array of global arguments
+	 */
+	public function globalArguments()
+	{
+		$globals = array
+		(
+			/**
+			 * Global Argument Name
+			 *
+			 * Note: You may only use alphanumerics and underscores for keys.
+			 *
+			 * The human readable name for your argument needs to be defined as a 
+			 * language string. The key for the language string is your argument
+			 * name prepended with "__global_". For example, the argument in the 
+			 * example below would require a langauge string to be defined for:
+			 * __global_logged_in_member = "Global: Logged in member";
+			 */
+			'logged_in_member' => array
+			(
+				/**
+				 * If you provide a "token" name, then this argument ( or conversions of
+				 * this argument ) can be used as token replacements on rules editing 
+				 * forms.
+				 */
+				'token' => 'user',
+				
+				/**
+				 * A description of what this argument is
+				 */
+				'description' => 'the currently logged in user',
+				
+				/**
+				 * Indicate the type of this global argument
+				 *
+				 * string: the global argument is a string ( or possibly null )
+				 * int: the global argument is an integer ( or possibly null )
+				 * bool: the global argument is a boolean ( or possibly null )
+				 * float: the global argument is a floating point number ( or possibly null )
+				 * array: the global argument is an array ( or possibly null )
+				 * object: the global argument is an object ( or possibly null )
+				 * mixed: the global argument is of mixed values ( or possibly null )
+				 */
+				'argtype' => 'object',
+				
+				/**
+				 * NULLABLE
+				 *
+				 * If this global argument has the possibility of having a NULL value, 
+				 * then set the nullable setting to TRUE.
+				 */
+				'nullable' => FALSE,
+				
+				/**
+				 * If this global argument is an object, specify it's classname
+				 */
+				'class' => '\IPS\Member',
+				
+				/**
+				 * Argument Getter
+				 *
+				 * This function is called to get the global argument
+				 */
+				'getArg' => function()
+				{
+					return \IPS\Member::loggedIn();
+				},
+			),
+		);
+		
+		return array(); // $globals;
+	}
+
+	/**
+	 * Conversion Map
+	 *
+	 * Let rules know how to convert objects into different types of arguments.
+	 * For example, if an event provides an \IPS\Content object, a conversion map
+	 * will tell rules how to derive another possible argument from it (such as the 
+	 * content title).
+	 *
+	 * @return 	array		Conversion map
+	 */
+	public function conversionMap()
+	{
+		$map = array
+		(
+			/**
+			 * Object Class
+			 *
+			 * Array keys that you use in your map should be names of real object classes.
+			 * Use the most generic classname needed to perform your conversion, as any 
+			 * subclasses of this class will also qualify to use your converter.
+			 */
+			'\IPS\Content' => array
+			(
+				/**
+				 * For each conversion that can be made on the object class, provide a title 
+				 * for the converted argument. This title will be used to indicated on rules
+				 * forms the name of the additional argument which can be used.
+				 */
+				'Title' => array
+				(
+					/**
+					 * If you provide a "token" name, then this argument can
+					 * be used as a token replacement on rules editing forms.
+					 *
+					 * Note: only values of type 'string', 'int', or 'float'
+					 * are able to be used as token replacements.
+					 */
+					'token' => 'title',
+					
+					/**
+					 * If you have provided a "token" name, then you should 
+					 * also provide a description of what the replaced value
+					 * will be.
+					 */
+					'description' => 'The content title',
+					
+					/**
+					 * Indicate the returned argument type of your conversion
+					 *
+					 * string: the conversion results in a string ( or possibly null )
+					 * int: the conversion results in an integer ( or possibly null )
+					 * bool: the conversion results in boolean ( or possibly null )
+					 * float: the conversion results in a floating point number ( or possibly null )
+					 * array: the conversion results in an array ( or possibly null )
+					 * object: the conversion results in an object ( or possibly null )
+					 * mixed: the conversion results in mixed values ( or possibly null )
+					 */
+					'argtype' => 'string',
+					
+					/**
+					 * If you are returning another object from this conversion, then 
+					 * specify the class of that object, otherwise you can simply omit
+					 * this value or set it to NULL.
+					 */
+					'class' => '\IPS\Member',
+					
+					/**
+					 * If it's possible that your conversion will result in a null
+					 * value, then set the "nullable" property to TRUE.
+					 */
+					'nullable' => TRUE,
+					
+					/**
+					 * Converter Function
+					 *
+					 * Your converter function will recieve a single argument which is
+					 * an object with the same class ( or a subclass of ) the object which
+					 * this converter has been defined for.
+					 *
+					 * @param 	object	$object		The object to be converted
+					 * @return	mixed			The converted argument
+					 */
+					'converter' => function( $object )
+					{
+						return $object->mapped( 'title' );
+					},
+				),
+			),
+		);
+		
+		return array(); // $map;		
+	}
+	
+}

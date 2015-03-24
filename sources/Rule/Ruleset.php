@@ -139,6 +139,8 @@ class _Ruleset extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Text( 'ruleset_title', $this->title, TRUE ) );
 		$form->add( new \IPS\Helpers\Form\TextArea( 'ruleset_description', $this->description, FALSE ) );
 		$form->add( new \IPS\Helpers\Form\Text( 'ruleset_creator', $this->creator, FALSE ) );
+		
+		parent::form( $form );
 	}
 	
 	/**
@@ -175,8 +177,19 @@ class _Ruleset extends \IPS\Node\Model
 		return $buttons;
 	}
 	 
-
-
+	/**
+	 * Form to delete or move content
+	 *
+	 * @param	bool	$showMoveToChildren	If TRUE, will show "move to children" even if there are no children
+	 * @return	\IPS\Helpers\Form
+	 */
+	public function deleteOrMoveForm( $showMoveToChildren=FALSE )
+	{
+		$form = new \IPS\Helpers\Form( 'delete_custom_action', 'rules_confirm_delete' );
+		$form->hiddenValues[ 'node_move_children' ] = 0;
+		return $form;
+	}
+	
 	/**
 	 * [ActiveRecord] Save Changed Columns
 	 *
@@ -198,12 +211,7 @@ class _Ruleset extends \IPS\Node\Model
 	 * @return	void
 	 */
 	public function delete()
-	{
-		foreach ( $this->children() as $child )
-		{
-			$child->delete();
-		}
-		
+	{		
 		return parent::delete();
 	}
 

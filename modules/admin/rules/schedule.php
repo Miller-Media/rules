@@ -78,7 +78,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			{
 				if ( ! $val )
 				{
-					return "No key associated";
+					return "--";
 				}
 				
 				return $val;

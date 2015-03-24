@@ -25,7 +25,7 @@ class _Application extends \IPS\Application
 	/**
 	 * Preset Operation Argument Types
 	 */
-	public static $converterMap = NULL;
+	public static $classMap = NULL;
 	
 	/**
 	 * Global Arguments
@@ -38,7 +38,7 @@ class _Application extends \IPS\Application
 	 * @param	string	$key	The preset key to retrieve
 	 * @return	array		The argument preset definition
 	 */
-	public static function getPreset( $key )
+	public static function argPreset( $key )
 	{
 		if ( isset ( static::$argPresets ) )
 		{
@@ -56,16 +56,18 @@ class _Application extends \IPS\Application
 				(
 					'description' => 'Member ID',
 					'class' => '\IPS\Member',
-					'converter' => function( $id ) {
+					'converter' => function( $id ) 
+					{
 						try { return array( \IPS\Member::load( $id ) );	}
 						catch ( \Exception $e ) { return NULL; }
 					},								
 				),
 				'object' => array
 				(
-					'description'	=> 'Member Object',
+					'description'	=> 'An \IPS\Member Object',
 					'class' => '\IPS\Member',
-					'converter' => function( $member ) {
+					'converter' => function( $member ) 
+					{
 						return ( $member instanceof \IPS\Member ) ? array( $member ) : NULL;
 					},
 				),
@@ -73,7 +75,8 @@ class _Application extends \IPS\Application
 				(
 					'description' => "Array of member ID's or member objects",
 					'class' => '\IPS\Member',
-					'converter' => function( $args ) {
+					'converter' => function( $args ) 
+					{
 						$_members = array();
 						foreach( $args as $arg ) 
 						{
@@ -101,23 +104,233 @@ class _Application extends \IPS\Application
 				(
 					'description' => 'Member ID',
 					'class' => '\IPS\Member',
-					'converter' => function( $id ) {
+					'converter' => function( $id ) 
+					{
 						try { return \IPS\Member::load( $id );	}
 						catch ( \Exception $e ) { return array(); }
 					},								
 				),
 				'object' => array
 				(
-					'description' => 'Member Object',
+					'description' => 'An \IPS\Member Object',
 					'class' => '\IPS\Member',
 				),
-			),		
+			),
+			
+			/**
+			 * Date
+			 */
+			'date' => array
+			(
+				'object' => array
+				(
+					'description' => 'An \IPS\DateTime object',
+					'class' => '\IPS\DateTime',
+				),
+			),
+
+			/**
+			 * Tags
+			 */
+			'tags' => array
+			(
+				'array' => array
+				(
+					'description' => 'Array Of Tags',
+				),
+				'string' => array
+				( 
+					'description' => 'Tag',
+					'converter' => function( $string )
+					{
+						return array( $string );
+					},
+				),
+			),
+			
+			/**
+			 * Url
+			 */
+			'url' => array
+			(
+				'object' => array
+				(
+					'description' => 'An \IPS\Http\Url object',
+					'class' => '\IPS\Http\Url',
+				),			
+			),
 			
 		);
 		
-		return static::getPreset( $key );
+		return static::argPreset( $key );
 	}
 	
+	/**
+	 * Configuration Form Presets
+	 *
+	 * @param	string	$key		The key for the configuration preset to retrieve
+	 * @param	string	$field_name	The name of the field
+	 * @param	bool	$required	Indicate if the field should be required or not
+	 * @param	array	$options	Additional config options
+	 * @return	array			The argument preset definition
+	 */
+	public static function configPreset( $key, $field_name, $required=TRUE, $options=array() )
+	{
+		switch ( $key )
+		{
+			/**
+			 * Multiple Members
+			 */
+			case 'members' :
+			
+				return array
+				(
+					'form' => function( $form, $values, $operation ) use ( $field_name, $required )
+					{
+						$members = array();
+						foreach( (array) $values[ $field_name ] as $member_id )
+						{
+							try
+							{
+								$members[] = \IPS\Member::load( $member_id );
+							}
+							catch ( \Exception $e ) {}
+						}
+						
+						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, array( 'multiple' => NULL ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values, $operation ) use ( $field_name )
+					{	
+						$members = array();
+						foreach ( (array) $values[ $field_name ] as $member )
+						{
+							$members[] = $member->member_id;
+						}
+						$values[ $field_name ] = $members;
+					},
+					'getArg' => function( $values, $operation ) use ( $field_name )
+					{
+						$members = array();
+						foreach( (array) $values[ $field_name ] as $member_id )
+						{
+							try { $members[] = \IPS\Member::load( $member_id ); }
+							catch( \Exception $e ) {}
+						}
+						return $members;
+					},
+				);
+			
+			/**
+			 * Single Member
+			 */
+			case 'member':
+			
+				return array
+				(
+					'form' => function( $form, $values, $action ) use ( $field_name )
+					{
+						$members = array();
+						foreach( (array) $values[ $field_name ] as $member_id )
+						{
+							try
+							{
+								$members[] = \IPS\Member::load( $member_id );
+							}
+							catch ( \Exception $e ) {}
+						}
+						
+						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, TRUE, array( 'multiple' => 1 ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values, $action ) use ( $field_name )
+					{
+						if ( $values[ $field_name ] instanceof \IPS\Member )
+						{
+							$values[ $field_name ] = array( $values[ $field_name ]->member_id );
+						}
+					},
+					'getArg' => function( $values, $action ) use ( $field_name )
+					{
+						$members = array();
+						foreach( (array) $values[ $field_name ] as $member_id )
+						{
+							try { $members[] = \IPS\Member::load( $member_id ); }
+							catch( \Exception $e ) {}
+						}
+						return array_shift( $members );
+					},
+				);
+				
+			/**
+			 * Date
+			 */
+			case 'date':
+			
+				return array
+				(
+					'form' => function( $form, $values, $operation ) use ( $field_name, $required, $options )
+					{
+						$values[ $field_name ] = $values[ $field_name ] ?: time();
+						$form->add( new \IPS\Helpers\Form\Date( $field_name, \IPS\DateTime::ts( $values[ $field_name ] ), $required, array( 'time' => $options[ 'time' ] ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values, $operation ) use ( $field_name )
+					{	
+						if ( $values[ $field_name ] instanceof \IPS\DateTime )
+						{
+							$values[ $field_name ] = $values[ $field_name ]->getTimestamp();
+						}
+					},
+					'getArg' => function( $values, $operation ) use ( $field_name )
+					{
+						return \IPS\DateTime::ts( $values[ $field_name ] );
+					},
+				);
+				
+			/**
+			 * Tags
+			 */
+			case 'tags':
+
+				return array
+				(
+					'form' => function( $form, $values ) use ( $field_name, $required )
+					{
+						$form->add( new \IPS\Helpers\Form\Stack( $field_name, $values[ $field_name ] ?: array(), $required, array(), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'getArg' => function( $values ) use ( $field_name )
+					{
+						return (array) $values[ $field_name ];
+					},
+				);
+				
+			/**
+			 * Url
+			 */
+			case 'url':
+
+				return array
+				(
+					'form' => function( $form, $values, $action ) use ( $field_name, $required )
+					{
+						$form->add( new \IPS\Helpers\Form\Url( $field_name, $values[ $field_name ], $required, array(), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'getArg' => function( $values, $action ) use ( $field_name )
+					{
+						return new \IPS\Http\Url( $values[ $field_name ] );
+					},
+				);
+
+			default:
+			
+				return array();
+			
+		}
+	}
+
 	/**
 	 * Build Operation Form ( Condition / Action )
 	 *
@@ -127,8 +340,11 @@ class _Application extends \IPS\Application
 	 */
 	public static function opform( $form, $operation, $optype )
 	{
-		$_operations 	= array();
-		$lang		= \IPS\Member::loggedIn()->language();
+		$_operations 		= array();
+		$lang			= \IPS\Member::loggedIn()->language();
+		$wrap_chosen_prefix	= "<div data-controller='rules.admin.ui.chosen'>";
+		$wrap_chosen_suffix	= "</div>";
+		$form->class 		.= " opformForm"; 
 		
 		/**
 		 * Select options for new operations
@@ -140,7 +356,8 @@ class _Application extends \IPS\Application
 			{
 				foreach ( $definition[ $optype ] as $operation_key => $operation_data )
 				{				
-					$_operations[ $definition[ 'group' ] ][ $definition_key . '_' . $operation_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_' . $optype . '_' . $operation_key;
+					$group = $operation_data[ 'group' ] ?: $definition[ 'group' ];
+					$_operations[ $group ][ $definition_key . '_' . $operation_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_' . $optype . '_' . $operation_key;
 				}
 			}
 		}
@@ -151,7 +368,7 @@ class _Application extends \IPS\Application
 		
 		$lang->words[ 'operation_title' ] = $lang->get( $optype . '_title' );	
 		$lang->words[ 'rule_operation_selection' ] = $lang->get( 'rule_' . $optype . '_selection' );
-		$form->add( new \IPS\Helpers\Form\Select( 'rule_operation_selection', $operation->id ? md5( $operation->app . $operation->class ) . '_' . $operation->key : NULL, TRUE, array( 'options' => $_operations, 'noDefault' => TRUE ), NULL, NULL, NULL, 'rule_operation_selection' ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'rule_operation_selection', $operation->id ? md5( $operation->app . $operation->class ) . '_' . $operation->key : NULL, TRUE, array( 'options' => $_operations, 'noDefault' => TRUE ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'rule_operation_selection' ) );
 		$form->add( new \IPS\Helpers\Form\Text( 'operation_title', $operation->title, TRUE ) );
 		
 		if ( $operation->definition )
@@ -176,13 +393,26 @@ class _Application extends \IPS\Application
 					
 					$form->addHeader( $argNameKey );
 								
+					/* Add the "event argument optional" notice in case it needs to be shown */
+					$noticeLang = $arg[ 'required' ] ? $lang->addToStack( 'rules_event_argument_required_notice' ) : $lang->addToStack( 'rules_event_argument_optional_notice' );
+					$noticeHtml = 
+						"<div id='{$argNameKey}_optional_notice' class='ipsHide' style='margin:10px 0 -30px 0; max-width:550px;'>
+							<div class='ipsMessage ipsMessage_warning'>
+								{$noticeLang}
+							</div>
+							<div>
+								<strong>Default Configuration:</strong>
+							</div>
+						</div>
+						";
+							
 					/**
 					 * Argument source selection
 					 *
 					 * IPS does a validate on input creation, WHY? WHY? WHY?
 					 */
 					$lang->words[ $argNameKey . '_source' ] = $lang->get( 'source' );
-					$form->add( $source_select = new \IPS\Helpers\Form\Select( $argNameKey . '_source', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ], TRUE, array( 'options' => array( 'event' => '', 'manual' => '', 'phpcode' => '', 'template' => '' ) ), NULL, NULL, NULL, $argNameKey . '_source' ) );
+					$form->add( $source_select = new \IPS\Helpers\Form\Select( $argNameKey . '_source', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] ?: $arg[ 'default' ], TRUE, array( 'options' => array( 'event' => '', 'manual' => '', 'phpcode' => '' ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, $argNameKey . '_source' ) );
 					$source_select->options[ 'options' ] = array();
 					
 					/**
@@ -199,15 +429,27 @@ class _Application extends \IPS\Application
 						$_added = call_user_func_array( $arg[ 'configuration' ][ 'form' ], array( $form, $operation->data[ 'configuration' ][ 'data' ], $operation ) );
 						
 						$source 		= $argNameKey . '_source';
+						$eventArg		= $argNameKey . '_eventArg';
+						$eventArgNullable	= md5( \IPS\Request::i()->$eventArg ) . '_nullable';
 						$useDefault 		= $argNameKey . '_eventArg_useDefault';
-						$bypass_validation 	= ! ( \IPS\Request::i()->$source == 'manual' or ( \IPS\Request::i()->$source == 'event' and \IPS\Request::i()->$useDefault ) );
+						$enforce_validation 	=  
+						( 
+							\IPS\Request::i()->$source == 'manual' or 
+							( 
+								\IPS\Request::i()->$source == 'event' and 
+								(
+									\IPS\Request::i()->$useDefault and
+									\IPS\Request::i()->$eventArgNullable
+								)
+							) 
+						);
 						
 						/**
 						 * Bypass validation errors on form fields that aren't actually required by our configuration
 						 */
-						if ( $bypass_validation )
+						if ( ! $enforce_validation )
 						{
-							foreach( $_added as $el )
+							foreach( (array) $_added as $el )
 							{
 								/* Pick the element from the form */
 								$formElement = NULL;
@@ -220,7 +462,10 @@ class _Application extends \IPS\Application
 									}
 								}
 								
-								$formElement->error = NULL;
+								if ( $formElement )
+								{
+									$formElement->error = NULL;
+								}
 							}
 						}
 						
@@ -246,6 +491,7 @@ class _Application extends \IPS\Application
 										
 						$usable_arguments 	= array();
 						$usable_toggles		= array();
+						$default_toggle_needed	= FALSE;
 						
 						/**
 						 * Add usable event arguments to our list
@@ -283,21 +529,31 @@ class _Application extends \IPS\Application
 							
 							if ( isset( $event_argument[ 'nullable' ] ) and $event_argument[ 'nullable' ] )
 							{
+								$form->hiddenValues[ md5( $event_arg_name ) . '_nullable' ] = TRUE;
+							
 								/* Toggle on manual settings to use in case the event argument is empty */
 								if ( $arg[ 'required' ] )
 								{
 									/* toggle the manual configuration form by necessity because it's required */
-									$usable_toggles[ $event_arg_name ] = $source_select->options[ 'toggles' ][ 'manual' ];
+									$usable_toggles[ $event_arg_name ] = array_merge( (array) $source_select->options[ 'toggles' ][ 'manual' ], array( $argNameKey . '_optional_notice' ) );
 									$form->hiddenValues[ $argNameKey . '_eventArg_useDefault' ] = TRUE;
 								}
 								else
 								{
+									/* The default config YesNo option will be needed */
+									$default_toggle_needed = TRUE;
+									
 									/* a yes/no option will be given to allow the user to choose a default configuration, so just toggle that */
-									$usable_toggles[ $event_arg_name ][] = $argNameKey . '_eventArg_useDefault';
+									$usable_toggles[ $event_arg_name ] = array( $argNameKey . '_eventArg_useDefault', $argNameKey . '_optional_notice' );
 								}
 							}
+							else
+							{
+								$form->hiddenValues[ md5( $event_arg_name ) . '_nullable' ] = FALSE;
+							}
+
 						}
-																		
+					
 						/**
 						 * Add event argument select box if we have usable arguments
 						 */
@@ -306,19 +562,19 @@ class _Application extends \IPS\Application
 							$lang->words[ $argNameKey . '_eventArg' ] 		= $lang->get( 'use_event_argument' );
 							$lang->words[ $argNameKey . '_eventArg_useDefault' ] 	= $lang->get( 'use_event_argument_default' );
 							$lang->words[ $argNameKey . '_eventArg_useDefault_desc']= $lang->get( 'use_event_argument_default_desc' );
-							
+														
 							/* Event arg selector */
-							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, NULL, NULL, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
+							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix . $noticeHtml, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
 							
 							/**
-							 * Add option to use a default configuration if this argument is not required
+							 * Make using a manual configuration optional if the argument is also optional
 							 */
-							if ( ! $arg[ 'required' ] )
+							if ( ! $arg[ 'required' ] and $default_toggle_needed )
 							{
 								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $source_select->options[ 'toggles' ][ 'manual' ] ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
 							}
 							
-							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg' );
+							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg', $argNameKey . '_eventArg_useDefault' );
 						}
 					}
 					
@@ -453,17 +709,25 @@ class _Application extends \IPS\Application
 				
 				if ( is_array( $all_arguments ) and count( $all_arguments ) )
 				{
-					/* What types of arguments are acceptable? */
+					/**
+					 * Create an array of argtypes that are acceptable as an
+					 * operation argument
+					 */
 					$_types = array();
 					foreach ( $arg[ 'argtypes' ] as $type => $typedata )
 					{
 						$_types[] = is_array( $typedata ) ? $type : $typedata;
 					}
-									
-					/* For each event argument, see if we can use it */
+						
+					/**
+					 * For every available event/global argument, see if we can use it
+					 * by comparing it to the acceptable argtypes
+					 */
 					foreach( $all_arguments as $event_arg_name => $event_argument )
 					{
-						/* Check if the argtype is supported */
+						/**
+						 * Check if the event argument itself is supported
+						 */
 						if ( in_array( 'mixed', $_types ) or in_array( $event_argument[ 'argtype' ], $_types ) )
 						{
 							$can_use = TRUE;
@@ -489,21 +753,24 @@ class _Application extends \IPS\Application
 							{
 								$_usable_arguments[ $event_arg_name ] = $event_argument;
 							}
+						}
 							
-							/**
-							 * Add in any other objects that we can derive from the event argument as options also
-							 */
-							if ( $event_argument[ 'argtype' ] == 'object' and isset( $event_argument[ 'class' ] ) )
+						/**
+						 * Add in any other arguments that we can derive from the event argument as options also
+						 */
+						if ( $event_argument[ 'argtype' ] == 'object' and isset( $event_argument[ 'class' ] ) )
+						{
+							if ( $derivative_arguments = static::classConverters( $event_argument, $type_def ) )
 							{
-								if ( $derivative_arguments = static::classConverters( $event_argument, $type_def ) )
+								foreach ( $derivative_arguments as $map_key => $derivative_argument )
 								{
-									foreach ( $derivative_arguments as $map_key => $derivative_argument )
+									if ( in_array( 'mixed', $_types ) or in_array( $derivative_argument[ 'argtype' ], $_types ) )
 									{
 										$_usable_arguments[ $event_arg_name . ":" . $map_key ] = $derivative_argument;
 									}
-								}						
+								}
 							}						
-						}					
+						}				
 					}
 				}
 			}
@@ -512,147 +779,6 @@ class _Application extends \IPS\Application
 		return $_usable_arguments;
 	}
 	
-	/**
-	 * Get Global Arguments
-	 */
-	public static function getGlobalArguments()
-	{
-		if ( isset ( static::$globalArguments ) )
-		{
-			return static::$globalArguments;
-		}
-		
-		return static::$globalArguments = array
-		(
-			'__global_logged_in_member' => array
-			(
-				'argtype' => 'object',
-				'class' => '\IPS\Member',
-				'getArg' => function()
-				{
-					return \IPS\Member::loggedIn();
-				},
-			),
-		);
-	}
-	
-	/**
-	 * Check For Class Compliance
-	 *
-	 * @param	string 		$class		Class to check compliance
-	 * @param	string|array	$classes	A classname or array of classnames to validate against
-	 * @return	bool				Will return TRUE if $class is the same as or is a subclass of any $classes
-	 */
-	public static function classCompliant( $class, $classes )
-	{
-		$compliant = FALSE;
-		
-		foreach ( (array) $classes as $_class )
-		{
-			if ( $_class === $class )
-			{
-				$compliant = TRUE;
-				break;
-			}
-			
-			if ( is_subclass_of( $class, $_class ) )
-			{
-				$compliant = TRUE;
-				break;
-			}
-		}
-		
-		return $compliant;
-	}
-	
-	/**
-	 * Class Converters
-	 *
-	 * @param	array	$event_argument		The argument definition provided by the event
-	 * @param	array	$type_def		The argument definition required by the operation
-	 * @return	array				Class converter methods
-	 */
-	public static function classConverters( $event_argument, $type_def )
-	{
-		if ( $event_argument[ 'argtype' ] !== 'object' )
-		{
-			return array();
-		}
-		
-		$conversion_arguments	= array();
-		$mappings		= array();
-		$current_class 		= $event_argument[ 'class' ]; 
-		$acceptable_classes 	= (array) $type_def[ 'class' ];
-		
-		if ( empty ( $acceptable_classes ) )
-		{
-			$acceptable_classes = array( '*' );
-		}
-
-		/**
-		 * Build a map of all the classes in our converter map that are compliant 
-		 * with our event argument, meaning our event argument is the same as or a
-		 * subclass of the convertable class
-		 */
-		foreach ( static::getConversions() as $base_class => $conversions )
-		{
-			if ( static::classCompliant( $current_class, $base_class ) )
-			{
-				$mappings[ $base_class ] = $conversions;
-			}
-		}
-		
-		/**
-		 * For every class that has conversions available and that our event argument is compliant with,
-		 * we look at each of the conversion options available and see if any of them convert into a class
-		 * that can then be used as an operation arugment. 
-		 */
-		foreach ( $mappings as $base_class => $conversions )
-		{
-			foreach ( $conversions as $conversion_key => $argument )
-			{
-				foreach ( $acceptable_classes as $acceptable_class )
-				{
-					if ( $acceptable_class === '*' or static::classCompliant( $argument[ 'class' ], $acceptable_class ) )
-					{
-						$conversion_arguments[ $base_class . ':' . $conversion_key ] = $argument;
-					}
-				}
-			}
-		}
-		
-		return $conversion_arguments;
-	}
-	
-	/**
-	 * Get Converter Mappings
-	 */
-	public static function getConversions( $class=NULL )
-	{
-		if ( isset ( static::$converterMap ) )
-		{
-			return isset( $class ) ? static::$converterMap[ $class ] : static::$converterMap;
-		}
-		
-		static::$converterMap = array
-		(
-			'\IPS\Content' => array
-			(
-				'Author' => array
-				(
-					'argtype' => 'object',
-					'class' => '\IPS\Member',
-					'converter' => function( $content )
-					{
-						return $content->author();
-					},
-				),
-			),
-		);
-		
-		return static::getConversions( $class );		
-	}
-
 	/**
 	 * Invoke An Operation
 	 *
@@ -752,7 +878,7 @@ class _Application extends \IPS\Application
 										isset ( $classConverters[ $converter_class ][ $converter_key ] ) and 
 										is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ] ) 
 									)
-									{
+									{									
 										$event_arg 	= call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
 										$event_arg_type	= $classConverters[ $converter_class ][ $converter_key ][ 'argtype' ];
 									}
@@ -937,7 +1063,8 @@ class _Application extends \IPS\Application
 					{
 						if ( $arg[ 'required' ] )
 						{
-							/* operation cannot be invoked because we're missing required arguments */
+							/* Operation cannot be invoked because we're missing required arguments */
+							static::rulesLog( $event, $operation->rule(), $operation, "No argument available for: " . $arg_name, 'Action not taken (missing argument)', 1 );
 							return NULL;
 						}
 						else
@@ -945,12 +1072,23 @@ class _Application extends \IPS\Application
 							$operation_args[] = NULL;
 						}
 					}
-					
 				}
 			}
-						
+			
 			if ( isset ( $operation->definition[ 'callback' ] ) and is_callable( $operation->definition[ 'callback' ] ) )
 			{
+				/**
+				 * Token Replacements on Operation Args
+				 */
+				$tokens = static::getTokens( $event, $arg_map );
+				foreach ( $operation_args as &$_operation_arg )
+				{
+					if ( in_array( gettype( $_operation_arg ), array( 'string' ) ) )
+					{
+						$_operation_arg = static::replaceTokens( $_operation_arg, $tokens );
+					}
+				}
+				
 				try
 				{
 					/**
@@ -961,8 +1099,26 @@ class _Application extends \IPS\Application
 						$future_time = time();
 						switch ( $operation->schedule_mode )
 						{
-							/* Set amount of time in the future */
+							/**
+							 * Defer to end of rule processing
+							 */
 							case 1:
+								$future_time = -1;
+								$result = '__suppress__';
+								$event->actionStack[] = array
+								(
+									'action' 	=> $operation,
+									'args' 	 	=> $operation_args,
+									'event_args' 	=> $args,
+									'thread' 	=> $event->thread,
+									'parent' 	=> $event->parentThread,
+								);
+								break;
+								
+							/**
+							 * Set amount of time in the future 
+							 */
+							case 2:
 								$future_time = \strtotime
 								( 
 									'+' . intval( $operation->schedule_months ) . ' months ' . 
@@ -971,10 +1127,18 @@ class _Application extends \IPS\Application
 									'+' . intval( $operation->schedule_minutes ) . ' minutes '
 								);
 								break;
-							case 2:
+								
+							/**
+							 * On a specific date/time
+							 */
+							case 3:
 								$future_time = $operation->schedule_date;
 								break;
-							case 3:
+								
+							/**
+							 * On a calculated date
+							 */
+							case 4:
 								$evaluate = function( $phpcode ) use ( $arg_map )
 								{
 									extract( $arg_map );
@@ -1000,6 +1164,7 @@ class _Application extends \IPS\Application
 									$future_time = strtotime( $custom_time );
 								}
 								break;
+								
 						}
 						
 						if ( $future_time > time() )
@@ -1012,7 +1177,8 @@ class _Application extends \IPS\Application
 								$parentThread 	= $rule->event()->parentThread;
 							}
 							
-							$result = static::scheduleAction( $operation, $future_time, $operation_args, $arg_map, $thread, $parentThread );
+							$unique_key = $operation->schedule_key ? static::replaceTokens( $operation->schedule_key, $tokens ) : NULL;
+							$result = static::scheduleAction( $operation, $future_time, $operation_args, $arg_map, $thread, $parentThread, $unique_key );
 						}
 						
 					}
@@ -1033,9 +1199,9 @@ class _Application extends \IPS\Application
 						$result = ! $result;
 					}
 					
-					if ( $rule = $operation->rule() and $rule->debug )
+					if ( $rule = $operation->rule() and $rule->debug and $result !== '__suppress__' )
 					{
-						static::rulesLog( $rule->event(), $rule, $operation, $result, 'Evaluated'  );
+						static::rulesLog( $rule->event(), $rule, $operation, $result, 'Evaluated' );
 					}
 					
 					return $result;
@@ -1046,7 +1212,9 @@ class _Application extends \IPS\Application
 					 * Log Exceptions
 					 */
 					$event = $operation->rule() ? $operation->rule()->event() : NULL;
-					static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage(), 'Error Exception', 1 );
+					$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
+					$file = array_pop( $paths );
+					static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
 				}
 			}
 			else
@@ -1058,7 +1226,318 @@ class _Application extends \IPS\Application
 			}
 		}
 	}
+
+	/**
+	 * Cache Tokens
+	 */
+	public static $tokensCache = array();
 	
+	/**
+	 * Build Event Tokens
+	 *
+	 * @param 	\IPS\rules\Event 	$event 		The rules event
+	 * @param	array|NULL		$arg_map	An associative array of the event arguments, if NULL then token/descriptions will be generated
+	 * @return	array					An associative array of token/var replacements
+	 */
+	public static function getTokens( $event, $arg_map=NULL )
+	{
+		$cache_key = isset ( $arg_map ) ? $event->thread : 'descriptions';
+		
+		if ( isset ( static::$tokensCache[ $cache_key ] ) )
+		{
+			return static::$tokensCache[ $cache_key ];
+		}
+		
+		$global_args 		= static::getGlobalArguments();
+		$classConverters 	= static::getConversions();
+		$replacements 		= array();		
+		$_types 		= array( 'string', 'int', 'float' );
+				
+		$arg_groups = array
+		(
+			'event' => $event->data[ 'arguments' ] ?: array(),
+			'global' => $global_args,
+		);
+				
+		foreach ( $arg_groups as $group => $all_arguments )
+		{
+			foreach( $all_arguments as $arg_name => $argument )
+			{
+				/**
+				 * Check if the event argument is string replaceable
+				 */
+				if ( in_array( $argument[ 'argtype' ], $_types ) )
+				{
+					if ( isset ( $arg_map ) )
+					{
+						$replacements[ '[' . $arg_name . ']' ] = $arg_map[ $arg_name ];
+					}
+					else
+					{
+						$replacements[ '[' . $arg_name . ']' ] = "The value of the '" . $arg_name . "' argument";
+					}
+				}
+
+				/**
+				 * Add in any other arguments that we can derive from the event argument as options also
+				 */
+				if ( $argument[ 'argtype' ] == 'object' and isset( $argument[ 'class' ] ) )
+				{				
+					if ( $derivative_arguments = static::classConverters( $argument ) )
+					{
+						foreach ( $derivative_arguments as $map_key => $derivative_argument )
+						{
+							if ( in_array( $derivative_argument[ 'argtype' ], $_types ) )
+							{
+								list( $converter_class, $converter_key ) = explode( ':', $map_key );
+								if 
+								( 
+									isset ( $classConverters[ $converter_class ][ $converter_key ][ 'token' ] ) and 
+									is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ] ) 
+								)
+								{
+									$input_arg = NULL;
+									$arg_name_token = NULL;
+									$arg_name_description = NULL;
+									
+									/**
+									 * Building Token Values
+									 */
+									if ( isset ( $arg_map ) )
+									{
+										switch( $group )
+										{
+											case 'event':
+											
+												$input_arg = $arg_map[ $arg_name ];
+												$arg_name_token = $arg_name;
+												break;
+												
+											case 'global':
+										
+												if 
+												( 
+													isset( $global_args[ $arg_name ] ) and 
+													isset( $global_args[ $arg_name ][ 'token' ] ) and
+													is_callable( $global_args[ $arg_name ][ 'getArg' ] ) )
+												{
+													$arg_name_token = 'global:' . $global_args[ $arg_name ][ 'token' ];
+													$input_arg = call_user_func( $global_args[ $arg_name ][ 'getArg' ] );
+												}
+												break;
+										}
+										
+										if ( isset( $arg_name_token ) and isset( $input_arg ) )
+										{
+											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
+										}
+									}
+									
+									/**
+									 * Building Token Descriptions
+									 */
+									else
+									{
+										switch ( $group )
+										{
+											case 'event':
+												$arg_name_token = $arg_name;
+												break;
+											
+											case 'global':
+												if ( 
+													isset( $global_args[ $arg_name ] ) and 
+													isset( $global_args[ $arg_name ][ 'token' ] )
+												)
+												{
+													$arg_name_token = 'global:' . $global_args[ $arg_name ][ 'token' ];
+													$arg_name_description = ' for ' . $global_args[ $arg_name ][ 'description' ];
+												}
+												break;
+										}
+										
+										if ( isset( $arg_name_token ) )
+										{
+											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $classConverters[ $converter_class ][ $converter_key ][ 'description' ] . $arg_name_description;
+										}
+									}
+								}
+							}
+						}
+					}						
+				}				
+			}
+		}
+				
+		return static::$tokensCache[ $cache_key ] = $replacements;
+	}
+	
+	/**
+	 * Replace Tokens
+	 */
+	public static function replaceTokens( $string, $replacements )
+	{
+		if ( empty( $replacements ) or ! is_array( $replacements ) )
+		{
+			return $string;
+		}
+		
+		return strtr( $string, $replacements );
+	}
+
+	/**
+	 * Get Global Arguments
+	 */
+	public static function getGlobalArguments()
+	{
+		if ( isset ( static::$globalArguments ) )
+		{
+			return static::$globalArguments;
+		}
+		
+		static::$globalArguments = array();
+		
+		foreach ( static::rulesExtensions( 'Conversions' ) as $app => $classes )
+		{
+			foreach ( $classes as $class => $ext )
+			{
+				/**
+				 * Global arguments have a special prefix added to their name
+				 * so that we can identify them as global arguments later on.
+				 */
+				$_globalArguments = array();
+				foreach ( $ext->globalArguments() as $arg_name => $arg )
+				{
+					$_globalArguments[ '__global_' . $arg_name ] = $arg;
+				}
+				static::$globalArguments = array_replace_recursive( static::$globalArguments, $_globalArguments );
+			}
+		}
+		
+		return static::$globalArguments;
+	}
+	
+	/**
+	 * Check For Class Compliance
+	 *
+	 * @param	string 		$class		Class to check compliance
+	 * @param	string|array	$classes	A classname or array of classnames to validate against
+	 * @return	bool				Will return TRUE if $class is the same as or is a subclass of any $classes
+	 */
+	public static function classCompliant( $class, $classes )
+	{
+		$compliant = FALSE;
+		
+		foreach ( (array) $classes as $_class )
+		{
+			if ( $_class === $class )
+			{
+				$compliant = TRUE;
+				break;
+			}
+			
+			if ( is_subclass_of( $class, $_class ) )
+			{
+				$compliant = TRUE;
+				break;
+			}
+		}
+		
+		return $compliant;
+	}
+	
+	/**
+	 * Class Converters
+	 *
+	 * Based on the argument provided, returns an array map of alternative arguments that it can
+	 * be converted into
+	 *
+	 * @param	array	$event_argument		The argument definition provided by the event
+	 * @param	array	$type_def		The argument definition required by the operation
+	 * @return	array				Class converter methods
+	 */
+	public static function classConverters( $event_argument, $type_def=array() )
+	{
+		if ( $event_argument[ 'argtype' ] !== 'object' )
+		{
+			return array();
+		}
+		
+		$conversion_arguments	= array();
+		$mappings		= array();
+		$current_class 		= $event_argument[ 'class' ]; 
+		$acceptable_classes 	= (array) $type_def[ 'class' ];
+		
+		/**
+		 * If the operation argument does not require any specific
+		 * class(es) of object, then any class is acceptable
+		 */
+		if ( empty ( $acceptable_classes ) )
+		{
+			$acceptable_classes = array( '*' );
+		}
+
+		/**
+		 * Build a map of all the classes in our converter map that are compliant 
+		 * with our event argument, meaning our event argument is the same as or a
+		 * subclass of the convertable class
+		 */
+		foreach ( static::getConversions() as $base_class => $conversions )
+		{
+			if ( static::classCompliant( $current_class, $base_class ) )
+			{
+				$mappings[ $base_class ] = $conversions;
+			}
+		}
+		
+		/**
+		 * For every class that has conversions available and that our event argument is compliant with,
+		 * we look at each of the conversion options available and see if any of them convert into a class
+		 * that can then be used as an operation arugment. 
+		 */
+		foreach ( $mappings as $base_class => $conversions )
+		{
+			foreach ( $conversions as $conversion_key => $argument )
+			{
+				foreach ( $acceptable_classes as $acceptable_class )
+				{
+					if ( $acceptable_class === '*' or static::classCompliant( $argument[ 'class' ], $acceptable_class ) )
+					{
+						$conversion_arguments[ $base_class . ':' . $conversion_key ] = $argument;
+					}
+				}
+			}
+		}
+		
+		return $conversion_arguments;
+	}
+	
+	/**
+	 * Get Class Conversion Mappings
+	 * 
+	 * @param 	string|NULL	$class		A specific class to return conversions for, NULL for all
+	 * @return	array				Class conversion definitions
+	 */
+	public static function getConversions( $class=NULL )
+	{
+		if ( isset ( static::$classMap ) )
+		{
+			return isset( $class ) ? static::$classMap[ $class ] : static::$classMap;
+		}
+		
+		static::$classMap = array();
+		
+		foreach ( static::rulesExtensions( 'Conversions' ) as $app => $classes )
+		{
+			foreach ( $classes as $_class => $ext )
+			{
+				static::$classMap = array_replace_recursive( static::$classMap, $ext->conversionMap() );
+			}
+		}
+						
+		return static::getConversions( $class );		
+	}
+
 	/**
 	 * Schedule An Action
 	 *
@@ -1068,16 +1547,26 @@ class _Application extends \IPS\Application
 	 * @param	array			$event_args	The arguments from the event
 	 * @param	string			$thread		The event thread to tie the action back to (for debugging)
 	 * @param	string			$parentThread	The events parent thread to tie the action back to (for debugging)
+	 * @param	string|NULL		$unique_key	A unique key to identify the action for later updating/removal
 	 * @return	mixed					A message to log to the database if debugging is on
 	 */
-	public static function scheduleAction( $action, $time, $args, $event_args, $thread, $parentThread )
+	public static function scheduleAction( $action, $time, $args, $event_args, $thread, $parentThread, $unique_key=NULL )
 	{
-		$scheduled_action 		= new \IPS\rules\Action\Scheduled;
+		/**
+		 * Delete existing actions with the same unique key
+		 */
+		if ( isset( $unique_key ) and trim( $unique_key ) != '' )
+		{
+			\IPS\Db::i()->delete( 'rules_scheduled_actions', array( 'schedule_unique_key=?', trim( $unique_key ) ) );
+		}
+		
+		$scheduled_action 		= new \IPS\rules\Action\Scheduled;		
 		$scheduled_action->time 	= $time;
 		$scheduled_action->action_id	= $action->id;
 		$scheduled_action->thread	= $thread;
 		$scheduled_action->parent_thread = $parentThread;
 		$scheduled_action->created 	= time();
+		$scheduled_action->unique_key	= $unique_key;
 		
 		$db_args = array();
 		foreach ( $args as $arg )
@@ -1091,7 +1580,8 @@ class _Application extends \IPS\Application
 			$db_event_args[ $key ] = static::storeArg( $arg );
 		}
 		
-		$scheduled_action->data = json_encode( array(
+		$scheduled_action->data = json_encode( array
+		(
 			'args' => $db_args,
 			'event_args' => $db_event_args,
 		) );
@@ -1104,7 +1594,11 @@ class _Application extends \IPS\Application
 	/**
 	 * Prepare an argument for database storage
 	 *
+	 * Known objects are stored in a way that they can be easily reconstructed
+	 * into original form. All other objects will be cast into stdClass when restored.
+	 *
 	 * @param 	mixed		$arg		The argument to store
+	 * @return	mixed				An argument which can be json encoded
 	 */
 	public static function storeArg( $arg )
 	{
@@ -1118,6 +1612,10 @@ class _Application extends \IPS\Application
 			$idColumn = $arg::$databaseColumnId;
 			$dbstore = array( '_obj_class' => '\\' . get_class( $arg ), 'id' => $arg->$idColumn );
 		}
+		else if ( $arg instanceof \IPS\DateTime )
+		{
+			$dbstore = array( '_obj_class' => '\IPS\DateTime', 'timestamp' => $arg->getTimestamp() );
+		}
 		else
 		{
 			$dbstore = array( '_obj_class' => 'stdClass', 'data' => (array) $arg );
@@ -1130,6 +1628,7 @@ class _Application extends \IPS\Application
 	 * Restore an argument from database storage
 	 *
 	 * @param 	object		$arg		The argument to restore
+	 * @return	mixed				The restored argument
 	 */
 	public static function restoreArg( $arg )
 	{
@@ -1140,7 +1639,11 @@ class _Application extends \IPS\Application
 		
 		if ( $arg[ '_obj_class' ] == 'stdClass' )
 		{
-			return (object) $arg;
+			return (object) $arg[ 'data' ];
+		}
+		else if ( $arg[ '_obj_class' ] == '\IPS\DateTime' )
+		{
+			return \IPS\DateTime::ts( $arg[ 'timestamp' ] );
 		}
 		else
 		{
@@ -1149,7 +1652,7 @@ class _Application extends \IPS\Application
 			{
 				return $class::load( $arg[ 'id' ] );
 			}
-			catch ( \OutOfRangeException $e )
+			catch ( \Exception $e )
 			{
 				return NULL;
 			}
@@ -1202,6 +1705,10 @@ class _Application extends \IPS\Application
 	
 	/**
 	 * Get Event Argument Info
+	 *
+	 * @param 	\IPS\rules\Event	$event		The constructed event object
+	 * @param	string			$_p		Display prefix for the argument names
+	 * @return	string					Html info about the event
 	 */
 	public static function eventArgInfo( $event, $_p='$' )
 	{
@@ -1218,7 +1725,7 @@ class _Application extends \IPS\Application
 			foreach ( $event->data[ 'arguments' ] as $_event_arg_name => $_event_arg )
 			{
 				$eventArgNameKey = $event->app . '_' . $event->class . '_event_' . $event->key . '_' . $_event_arg_name;
-				$_event_arg_list[] = "<strong>{$_p}{$_event_arg_name}</strong> - " . $lang->get( $eventArgNameKey ) . ( ( isset( $_event_arg[ 'nullable' ] ) and $_event_arg[ 'nullable' ] ) ? " ( may be NULL )" : "" );
+				$_event_arg_list[] = "<strong>{$_p}{$_event_arg_name}</strong> - " . \ucfirst( mb_strtolower( $lang->get( $eventArgNameKey ) ) ) . ( ( isset( $_event_arg[ 'nullable' ] ) and $_event_arg[ 'nullable' ] ) ? " ( may be NULL )" : "" );
 			}
 		}
 		
@@ -1233,21 +1740,34 @@ class _Application extends \IPS\Application
 	}
 	
 	/**
-	 * Rule HTML Header
+	 * Event HTML Header
+	 * 
+	 * @param 	\IPS\rules\Event	$event		The event to display the header for
+	 * @return	string					The template html
 	 */
 	public static function eventHeader( $event )
-	{	
-		return \IPS\Theme::i()->getTemplate( 'components' )->eventHeader( $event );
+	{
+		$tokens = static::getTokens( $event );
+		return \IPS\Theme::i()->getTemplate( 'components' )->eventHeader( $event, $tokens );
 	}
 	
 	/**
 	 * Rule HTML Header
+	 *
+	 * @param 	\IPS\rules\Rule		$rule		The rule to display the header for
+	 * @return	string					The template html
 	 */
 	public static function ruleHeader( $rule )
 	{
 		return \IPS\Theme::i()->getTemplate( 'components' )->ruleHeader( $rule );
 	}
 	
+	/**
+	 * Rule Child HTML Notice
+	 *
+	 * @param 	\IPS\rules\Rule		$rule		The rule parent
+	 * @return	string					The template html
+	 */
 	public static function ruleChild( $rule )
 	{
 		return \IPS\Theme::i()->getTemplate( 'components' )->ruleChild( $rule );
@@ -1256,15 +1776,16 @@ class _Application extends \IPS\Application
 	/**
 	 * Retrieve All Rules Definitions
 	 *
+	 * @param	string	$type	The type of extension to return
 	 * @return 	array		Keyed array of rules extensions objects
 	 */
-	public static function rulesExtensions()
+	public static function rulesExtensions( $type )
 	{
 		static $extensions;
 		
 		if ( isset ( $extensions ) )
 		{
-			return $extensions;
+			return $extensions[ $type ];
 		}
 		
 		$apps 		= \IPS\Application::applications();
@@ -1274,21 +1795,31 @@ class _Application extends \IPS\Application
 		{
 			foreach ( $application->extensions( 'rules', 'Definitions' ) as $key => $ext )
 			{
-				$extensions[ $application->directory ][ $key ] = $ext;
+				$extensions[ 'Definitions' ][ $application->directory ][ $key ] = $ext;
+			}
+			
+			foreach ( $application->extensions( 'rules', 'Conversions' ) as $key => $ext )
+			{
+				$extensions[ 'Conversions' ][ $application->directory ][ $key ] = $ext;
 			}
 		}
+		
+		/**
+		 * Provide hook points for plugins since they can't have their own extensions 
+		 */
+		$extensions[ 'Definitions' ][ 'rules' ][ 'Plugins' ] = new \IPS\rules\Plugin\Definitions;
+		$extensions[ 'Conversions' ][ 'rules' ][ 'Plugins' ] = new \IPS\rules\Plugin\Conversions;
 
-		return $extensions;
+		return $extensions[ $type ];
 	}
 	
 	/**
 	 * Get Map of Rules Definitions
 	 *
 	 * @param	string		$definition_key		The key of a specific definition to return
-	 * @param	string		$property		A property to return for the given event_key
 	 * @return	mixed					Returns specific definitions, or all if no parameters are given
 	 */
-	public static function rulesDefinitions( $definition_key=NULL, $property=NULL )
+	public static function rulesDefinitions( $definition_key=NULL )
 	{
 		static $definitions;
 		
@@ -1298,14 +1829,7 @@ class _Application extends \IPS\Application
 			{
 				if ( isset ( $definitions[ $definition_key ] ) )
 				{
-					if ( isset ( $property ) )
-					{
-						return $definitions[ $definition_key ][ $property ];
-					}
-					else
-					{
-						return $definitions[ $definition_key ];
-					}
+					return $definitions[ $definition_key ];
 				}
 				else
 				{
@@ -1318,22 +1842,32 @@ class _Application extends \IPS\Application
 		
 		$definitions = array();
 		
-		foreach ( static::rulesExtensions() as $app => $classes )
+		foreach ( static::rulesExtensions( 'Definitions' ) as $app => $classes )
 		{
 			foreach ( $classes as $class => $ext )
 			{
-				$definitions[ md5( $app . $class ) ] = array( 
-					'group'		=> $ext->group,
+				$definitions[ md5( $app . $class ) ] = array
+				( 
+					'group'		=> $ext->defaultGroup,
 					'app' 		=> $app,
 					'class' 	=> $class,
 					'events' 	=> $ext->events(),
-					'actions' 	=> $ext->actions(),
 					'conditions'	=> $ext->conditions(),
+					'actions' 	=> $ext->actions(),
 				);
 			}
 		}
 		
-		return static::rulesDefinitions( $definition_key, $property );
+		return static::rulesDefinitions( $definition_key );
 	}
 
 }
+
+if ( defined( '\IPS\rules\LITE' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	print "Rules license error.";
+	exit;
+}
+
+const LITE = FALSE;
