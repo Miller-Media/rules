@@ -436,7 +436,89 @@ class _Core
 			),
 			'\IPS\DateTime' => array
 			(
-			
+				'Date/Time' => array
+				(
+					'token' => 'datetime',
+					'argtype' => 'string',
+					'converter' => function( $date )
+					{
+						return (string) $date;
+					},
+				),
+				'Timestamp' => array
+				(
+					'token' => 'timestamp',
+					'argtype' => 'int',
+					'converter' => function( $date )
+					{
+						return $date->getTimestamp();
+					},
+				),
+				'Year' => array
+				(
+					'token' => 'year',
+					'argtype' => 'int',
+					'converter' => function( $date )
+					{
+						return $date->format( 'Y' );
+					},
+				),
+				'Month' => array
+				(
+					'token' => 'month',
+					'argtype' => 'int',
+					'converter' => function( $date )
+					{
+						return $date->format( 'n' );
+					},
+				),
+				'Day' => array
+				(
+					'token' => 'day',
+					'argtype' => 'int',
+					'converter' => function( $date )
+					{
+						return $date->format( 'j' );
+					},
+				),
+				'Hour' => array
+				(
+					'token' => 'hour',
+					'argtype' => 'int',
+					'converter' => function( $date )
+					{
+						return $date->format( 'G' );
+					},
+				),
+				'Minute' => array
+				(
+					'token' => 'minute',
+					'argtype' => 'int',
+					'converter' => function( $date )
+					{
+						return $date->format( 'i' );
+					},
+				),
+			),
+			'\IPS\Http\Url' => array
+			(
+				'Url' => array
+				(
+					'token' => 'url',
+					'argtype' => 'string',
+					'converter' => function( $url )
+					{
+						return (string) $url;
+					},
+				),
+				'Params' => array
+				(
+					'argtype' => 'array',
+					'converter' => function( $url )
+					{
+						return $url->queryString;
+					},
+				),
 			),
 		);
 	}
