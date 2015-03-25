@@ -1256,7 +1256,9 @@ class _rulesets extends \IPS\Node\Controller
 		$ruleset->title 	= (string) 	$rulesetXML[ 'title' ];
 		$ruleset->weight 	= (int) 	$rulesetXML[ 'weight' ];
 		$ruleset->enabled	= (int) 	$rulesetXML[ 'enabled' ];
+		$ruleset->creator	= (string) 	$rulesetXML[ 'creator' ];
 		$ruleset->created_time	= (int)		$rulesetXML[ 'created' ];
+		$ruleset->description	= (string)	$rulesetXML->description;
 		$ruleset->imported_time	= time();
 		$ruleset->save();
 		
