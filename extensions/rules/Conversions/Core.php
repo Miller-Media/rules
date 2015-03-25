@@ -91,7 +91,7 @@ class _Core
 						return $member->name;
 					},
 				),
-				'Title' => array
+				'Member Title' => array
 				(
 					'token' => 'title',
 					'description' => 'User title',
@@ -185,15 +185,6 @@ class _Core
 						return \IPS\DateTime::ts( $member->last_activity );
 					},
 				),
-				'Last Activity' => array
-				(
-					'argtype' => 'object',
-					'class' => '\IPS\DateTime',
-					'converter' => function( $member )
-					{
-						return \IPS\DateTime::ts( $member->last_activity );
-					},
-				),
 			),
 			'\IPS\Content' => array
 			(
@@ -206,6 +197,17 @@ class _Core
 					'converter' => function( $content )
 					{
 						return $content->mapped( 'title' );
+					},
+				),
+				'Content' => array
+				(
+					'token' => 'content',
+					'description' => 'The content body',
+					'argtype' => 'string',
+					'nullable' => TRUE,
+					'converter' => function( $content )
+					{
+						return $content->mapped( 'content' );
 					},
 				),
 				'Created Date' => array
