@@ -35,7 +35,6 @@ class _Core
 			'site_settings' => array
 			(
 				'token' => 'site',
-				'description' => 'the site settings',
 				'argtype' => 'object',
 				'class' => '\IPS\Settings',
 				'getArg' => function()
@@ -460,6 +459,7 @@ class _Core
 				'Timestamp' => array
 				(
 					'token' => 'timestamp',
+					'description' => 'The unix timestamp',
 					'argtype' => 'int',
 					'converter' => function( $date )
 					{
@@ -469,6 +469,7 @@ class _Core
 				'Year' => array
 				(
 					'token' => 'year',
+					'description' => 'The full year',
 					'argtype' => 'int',
 					'converter' => function( $date )
 					{
@@ -478,6 +479,7 @@ class _Core
 				'Month' => array
 				(
 					'token' => 'month',
+					'description' => 'The month number',
 					'argtype' => 'int',
 					'converter' => function( $date )
 					{
@@ -487,6 +489,7 @@ class _Core
 				'Day' => array
 				(
 					'token' => 'day',
+					'description' => 'The day of the month',
 					'argtype' => 'int',
 					'converter' => function( $date )
 					{
@@ -496,6 +499,7 @@ class _Core
 				'Hour' => array
 				(
 					'token' => 'hour',
+					'description' => 'The hour of day',
 					'argtype' => 'int',
 					'converter' => function( $date )
 					{
@@ -505,6 +509,7 @@ class _Core
 				'Minute' => array
 				(
 					'token' => 'minute',
+					'description' => 'The minute of hour',
 					'argtype' => 'int',
 					'converter' => function( $date )
 					{
@@ -517,6 +522,7 @@ class _Core
 				'Url' => array
 				(
 					'token' => 'url',
+					'description' => 'The url address',
 					'argtype' => 'string',
 					'converter' => function( $url )
 					{
@@ -537,6 +543,7 @@ class _Core
 				'Site Name' => array
 				(
 					'token' => 'name',
+					'description' => 'The site name',
 					'argtype' => 'string',
 					'converter' => function( $settings )
 					{
@@ -546,6 +553,7 @@ class _Core
 				'Site Url' => array
 				(
 					'token' => 'url',
+					'description' => 'The site url',
 					'argtype' => 'string',
 					'converter' => function( $settings )
 					{

@@ -1351,7 +1351,7 @@ class _Application extends \IPS\Application
 												)
 												{
 													$arg_name_token = 'global:' . $global_args[ $arg_name ][ 'token' ];
-													$arg_name_description = ' for ' . $global_args[ $arg_name ][ 'description' ];
+													$arg_name_description = $global_args[ $arg_name ][ 'description' ] ? ' for ' . $global_args[ $arg_name ][ 'description' ] : '';
 												}
 												break;
 										}
