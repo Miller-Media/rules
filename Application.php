@@ -190,11 +190,14 @@ class _Application extends \IPS\Application
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
 						{
-							try
+							if ( $member_id )
 							{
-								$members[] = \IPS\Member::load( $member_id );
+								try
+								{
+									$members[] = \IPS\Member::load( $member_id );
+								}
+								catch ( \Exception $e ) {}
 							}
-							catch ( \Exception $e ) {}
 						}
 						
 						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, array( 'multiple' => NULL ), NULL, NULL, NULL, $field_name ) );
@@ -233,11 +236,14 @@ class _Application extends \IPS\Application
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
 						{
-							try
+							if ( $member_id )
 							{
-								$members[] = \IPS\Member::load( $member_id );
+								try
+								{
+									$members[] = \IPS\Member::load( $member_id );
+								}
+								catch ( \Exception $e ) {}
 							}
-							catch ( \Exception $e ) {}
 						}
 						
 						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, TRUE, array( 'multiple' => 1 ), NULL, NULL, NULL, $field_name ) );
