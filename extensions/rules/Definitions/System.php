@@ -1142,9 +1142,9 @@ class _System
 				
 			case '=':
 				return (
-					$date1->y == $date2->y and
-					$date1->m == $date2->m and
-					$date1->d == $date2->d
+					$date1->format( 'Y' ) == $date2->format( 'Y' ) and
+					$date1->format( 'm' ) == $date2->format( 'm' ) and
+					$date1->format( 'd' ) == $date2->format( 'd' )
 				);
 		}
 	}
