@@ -516,91 +516,120 @@ class _Rule extends \IPS\Node\Model
 	}
 
 	/**
+	 * Recursion Protection
+	 */
+	public $locked = FALSE;
+	
+	/**
 	 * Invoke Rule
 	 */
 	public function invoke()
 	{
 		if ( $this->enabled )
 		{
-			$compareMode 		= $this->compareMode();
-			$conditions		= $this->conditions();
-			$conditionsCount	= 0;
-			
-			/**
-			 * For 'or' operations, starting condition is FALSE
-			 * For 'and' operations, starting condition is TRUE
-			 */
-			$conditionsValid = $compareMode != 'or';
-			
-			foreach ( $conditions as $condition )
+			if ( ! $this->locked )
 			{
-				if ( $condition->enabled )
+				try
 				{
-					$conditionsCount++;
-					$result = call_user_func_array( array( $condition, 'invoke' ), func_get_args() );
+					$this->locked = TRUE;
+				
+					$compareMode 		= $this->compareMode();
+					$conditions		= $this->conditions();
+					$conditionsCount	= 0;
 					
-					if ( $result and $compareMode == 'or' ) 
+					/**
+					 * For 'or' operations, starting condition is FALSE
+					 * For 'and' operations, starting condition is TRUE
+					 */
+					$conditionsValid = $compareMode != 'or';
+					
+					foreach ( $conditions as $condition )
 					{
-						$conditionsValid = TRUE;
-						break;
-					}
+						if ( $condition->enabled )
+						{
+							$conditionsCount++;
+							$result = call_user_func_array( array( $condition, 'invoke' ), func_get_args() );
+							
+							if ( $result and $compareMode == 'or' ) 
+							{
+								$conditionsValid = TRUE;
+								break;
+							}
 
-					if ( ! $result and $compareMode == 'and' )
-					{
-						$conditionsValid = FALSE;
-						break;
-					}
-				}
-				else
-				{
-					if ( $this->debug )
-					{
-						\IPS\rules\Application::rulesLog( $this->event(), $this, $condition, '--', 'Condition not evaluated (disabled)' );
-					}
-				}
-			}
-			
-			if ( $conditionsValid or $conditionsCount === 0 )
-			{
-				foreach ( $this->actions() as $action )
-				{
-					if ( $action->enabled )
-					{
-						call_user_func_array( array( $action, 'invoke' ), func_get_args() );
-					}
-					else
-					{
-						if ( $this->debug )
+							if ( ! $result and $compareMode == 'and' )
+							{
+								$conditionsValid = FALSE;
+								break;
+							}
+						}
+						else
 						{
-							\IPS\rules\Application::rulesLog( $this->event(), $this, $action, '--', 'Action not taken (disabled)' );
+							if ( $this->debug )
+							{
+								\IPS\rules\Application::rulesLog( $this->event(), $this, $condition, '--', 'Condition not evaluated (disabled)' );
+							}
 						}
 					}
-				}
-				
-				foreach ( $this->children() as $_rule )
-				{
-					if ( $_rule->enabled )
+					
+					if ( $conditionsValid or $conditionsCount === 0 )
 					{
-						$result = call_user_func_array( array( $_rule, 'invoke' ), func_get_args() );
+						foreach ( $this->actions() as $action )
+						{
+							if ( $action->enabled )
+							{
+								call_user_func_array( array( $action, 'invoke' ), func_get_args() );
+							}
+							else
+							{
+								if ( $this->debug )
+								{
+									\IPS\rules\Application::rulesLog( $this->event(), $this, $action, '--', 'Action not taken (disabled)' );
+								}
+							}
+						}
 						
-						if ( $this->debug )
+						foreach ( $this->children() as $_rule )
 						{
-							\IPS\rules\Application::rulesLog( $this->event(), $_rule, NULL, $result, 'Rule evaluated' );
-						}						
-					}
-					else
-					{
-						if ( $this->debug )
-						{
-							\IPS\rules\Application::rulesLog( $this->event(), $_rule, NULL, '--', 'Rule not evaluated (disabled)' );
+							if ( $_rule->enabled )
+							{
+								$result = call_user_func_array( array( $_rule, 'invoke' ), func_get_args() );
+								
+								if ( $this->debug )
+								{
+									\IPS\rules\Application::rulesLog( $this->event(), $_rule, NULL, $result, 'Rule evaluated' );
+								}						
+							}
+							else
+							{
+								if ( $this->debug )
+								{
+									\IPS\rules\Application::rulesLog( $this->event(), $_rule, NULL, '--', 'Rule not evaluated (disabled)' );
+								}
+							}
 						}
+						
+						$this->locked = FALSE;
+						
+						return 'conditions met';
 					}
+					
+					$this->locked = FALSE;
+					
+					return 'conditions not met';
 				}
-				
-				return 'conditions met';
+				catch( \Exception $e )
+				{
+					$this->locked = FALSE;
+					throw $e;
+				}
 			}
-			
-			return 'conditions not met';
+			else
+			{
+				if ( $this->debug )
+				{
+					\IPS\rules\Application::rulesLog( $this->event(), $this, NULL, '--', 'Rule recursion (not evaluated)' );
+				}
+			}
 		}
 		else
 		{

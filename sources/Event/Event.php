@@ -205,6 +205,9 @@ class _Event
 			 */
 			if ( $this->thread === NULL )
 			{
+			
+				$this->locked = TRUE;
+				
 				while ( $deferred = array_shift( $this->actionStack ) )
 				{
 					$action 		= $deferred[ 'action' ];
@@ -216,7 +219,11 @@ class _Event
 					 */					
 					try
 					{
+						$action->locked = TRUE;
+						
 						$result = call_user_func_array( $action->definition[ 'callback' ], array_merge( $deferred[ 'args' ], array( $action->data[ 'configuration' ][ 'data' ], $deferred[ 'event_args' ], $action ) ) );					
+						
+						$action->locked = FALSE;
 						
 						if ( $rule = $action->rule() and $rule->debug )
 						{
@@ -233,6 +240,8 @@ class _Event
 						\IPS\rules\Application::rulesLog( $this, $action->rule(), $action, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
 					}
 				}
+				
+				$this->locked = FALSE;
 				
 				/* Reset threads */
 				$this->thread = $this->parentThread = NULL;

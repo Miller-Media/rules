@@ -330,11 +330,6 @@ class _Action extends \IPS\Node\Model
 	public $locked = FALSE;
 	
 	/**
-	 * Skip Deferral
-	 */
-	public $skipDeferral = FALSE;
-	
-	/**
 	 * Invoke Action
 	 */
 	public function invoke()
