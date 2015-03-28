@@ -1804,12 +1804,6 @@ class _Application extends \IPS\Application
 			}
 		}
 		
-		/**
-		 * Provide hook points for plugins since they can't have their own extensions 
-		 */
-		$extensions[ 'Definitions' ][ 'rules' ][ 'Plugins' ] = new \IPS\rules\Plugin\Definitions;
-		$extensions[ 'Conversions' ][ 'rules' ][ 'Plugins' ] = new \IPS\rules\Plugin\Conversions;
-
 		return $extensions[ $type ];
 	}
 	
