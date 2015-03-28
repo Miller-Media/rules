@@ -32,6 +32,17 @@ class _Core
 	{
 		return array
 		(
+			'site_settings' => array
+			(
+				'token' => 'site',
+				'description' => 'the site settings',
+				'argtype' => 'object',
+				'class' => '\IPS\Settings',
+				'getArg' => function()
+				{
+					return \IPS\Settings::i();
+				},
+			),
 			'logged_in_member' => array
 			(
 				'token' => 'user',
@@ -439,6 +450,7 @@ class _Core
 				'Date/Time' => array
 				(
 					'token' => 'datetime',
+					'description' => 'The formatted date/time',
 					'argtype' => 'string',
 					'converter' => function( $date )
 					{
@@ -517,6 +529,27 @@ class _Core
 					'converter' => function( $url )
 					{
 						return $url->queryString;
+					},
+				),
+			),
+			'\IPS\Settings' => array
+			(
+				'Site Name' => array
+				(
+					'token' => 'name',
+					'argtype' => 'string',
+					'converter' => function( $settings )
+					{
+						return $settings->board_name;
+					},
+				),
+				'Site Url' => array
+				(
+					'token' => 'url',
+					'argtype' => 'string',
+					'converter' => function( $settings )
+					{
+						return $settings->base_url;
 					},
 				),
 			),

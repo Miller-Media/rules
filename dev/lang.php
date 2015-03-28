@@ -222,6 +222,7 @@ $lang = array(
 	'rules_event_not_found'			=> "Rules Event Not Found",
 	
 	// Global Arguments
+	'__global_site_settings'		=> "Global: Site Settings",
 	'__global_logged_in_member'		=> "Global: Logged in member",
 	'__global_current_time'			=> "Global: Current time",
 	'__global_request_url'			=> "Global: Current page url",
