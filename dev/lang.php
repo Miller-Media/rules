@@ -259,7 +259,7 @@ $lang = array(
 	'rules_Members_event_memberSync_onMerge_mergedMember'	=> "Member that is being kept",
 	
 	'rules_Members_event_memberSync_onDelete'		=> "Member account is deleted",
-	'rules_Members_event_memberSync_onDelete_member'	=> "Member flagged as spammer",
+	'rules_Members_event_memberSync_onDelete_member'	=> "Member whose account was deleted",
 	
 	'rules_Members_event_reputation_given'			=> "Member receives reputation points",
 	'rules_Members_event_reputation_given_member'		=> "Member that received the reputation",
@@ -433,6 +433,12 @@ $lang = array(
 	'rules_System_conditions_board_status'			=> "Board Status (Online/Offline)",
 	'rules_System_board_online_status'			=> "Check that the board is:",
 	
+	'rules_System_conditions_scheduled_action'		=> "Check if action is scheduled",
+	'rules_System_conditions_scheduled_action_key'		=> "Action Keyphrase To Check",
+	'rules_System_schedule_mode'				=> "Keyphrase Matching",
+	'rules_System_schedule_key'				=> "Keyphrase",
+	'rules_System_schedule_key_desc'			=> "Enter a keyphrase that you want to check has an existing scheduled action.",
+	
 	/*** SYSTEM: Actions ***/
 	'rules_System_actions_send_email'			=> "Send an email",
 	'rules_System_actions_send_email_recipients'		=> "Recipients",
@@ -450,7 +456,7 @@ $lang = array(
 	
 	'rules_System_actions_execute_php'			=> "Execute PHP Code",
 	'rules_System_actions_unschedule_action'		=> "Delete a scheduled action",
-	'rules_System_actions_unschedule_action_key'		=> "Action To Unschedule",
+	'rules_System_actions_unschedule_action_key'		=> "Action Keyphrase To Unschedule",
 	'rules_System_unschedule_mode'				=> "Keyphrase Matching",
 	'rules_System_unschedule_key'				=> "Keyphrase",
 	'rules_System_unschedule_key_desc'			=> "Enter the unique keyphrase of the action you want to unschedule. If it is scheduled, it will be deleted. If it isn't already scheduled, then no action will be taken.",

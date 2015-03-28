@@ -461,6 +461,49 @@ class _System
 				),
 				'callback' 	=> array( $this, 'executePHP' ),
 			),
+			'scheduled_action' => array
+			(
+				'callback' 	=> array( $this, 'checkActionSchedule' ),
+				'configuration' => array
+				(
+					'form' => function( $form, $values )
+					{
+						$schedule_options = array
+						(
+							'exact' 	=> 'Exact',
+							'contains' 	=> 'Contains',
+						);
+						
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_System_schedule_mode', $values[ 'rules_System_schedule_mode' ] ?: 'exact', TRUE, array( 'options' => $schedule_options ) ) );
+					},
+				),
+				'arguments' 	=> array
+				(
+					'key' => array
+					(
+						'default' => 'manual',
+						'configuration' => array
+						(
+							'form' => function( $form, $values, $action )
+							{
+								$form->add( new \IPS\Helpers\Form\Text( 'rules_System_schedule_key', $values[ 'rules_System_schedule_key' ], FALSE, array(), NULL, NULL, NULL, 'rules_System_schedule_key' ) );
+								return array( 'rules_System_schedule_key' );
+							},
+							'getArg' => function( $values, $action )
+							{
+								return $values[ 'rules_System_schedule_key' ];
+							},
+						),
+						'argtypes' => array
+						(
+							'string' => array
+							(
+								'description' => "Unschedule actions assigned to this keyphrase",
+							),
+						),
+					),
+				),
+			),
 			'board_status' => array
 			(
 				'configuration' => array
@@ -1019,6 +1062,37 @@ class _System
 	
 	/*** CONDITIONS ***/
 	
+	/**
+	 * Check if an action is scheduled
+	 */
+	public function checkActionSchedule( $unique_key, $values )
+	{
+		if ( isset ( $unique_key ) and trim( $unique_key ) != '' )
+		{
+			switch ( $values[ 'rules_System_schedule_mode' ] )
+			{
+				case 'contains':
+				
+					if ( $count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_scheduled_actions', array( 'schedule_unique_key LIKE ?', '%' . trim( $unique_key ) . '%' ) )->first() )
+					{
+						return TRUE;
+					}
+					break;
+				
+				case 'exact':
+				default:
+				
+					if ( $count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_scheduled_actions', array( 'schedule_unique_key=?', trim( $unique_key ) ) )->first() )
+					{
+						return TRUE;
+					}
+					break;
+			}
+		}
+
+		return FALSE;
+	}
+
 	/**
 	 * Check Board Status (Online/Offline)
 	 */
