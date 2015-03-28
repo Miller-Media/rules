@@ -189,6 +189,7 @@
   <word key="operation_arg_source_phpcode" js="0">PHP Code</word>
   <word key="invalid_rule" js="0">Invalid Rule</word>
   <word key="rules_event_not_found" js="0">Rules Event Not Found</word>
+  <word key="__global_site_settings" js="0">Global: Site Settings</word>
   <word key="__global_logged_in_member" js="0">Global: Logged in member</word>
   <word key="__global_current_time" js="0">Global: Current time</word>
   <word key="__global_request_url" js="0">Global: Current page url</word>
