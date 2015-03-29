@@ -1863,7 +1863,7 @@ class _Application extends \IPS\Application
 
 }
 
-if ( defined( '\IPS\rules\LITE' ) )
+if ( defined( '\IPS\rules\LITE' ) or defined( '\IPS\rules\LIMIT' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	print "Rules license error.";

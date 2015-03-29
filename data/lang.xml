@@ -210,7 +210,7 @@
   <word key="rules_Members_event_memberSync_onMerge_member" js="0">Member that is being deleted</word>
   <word key="rules_Members_event_memberSync_onMerge_mergedMember" js="0">Member that is being kept</word>
   <word key="rules_Members_event_memberSync_onDelete" js="0">Member account is deleted</word>
-  <word key="rules_Members_event_memberSync_onDelete_member" js="0">Member flagged as spammer</word>
+  <word key="rules_Members_event_memberSync_onDelete_member" js="0">Member whose account was deleted</word>
   <word key="rules_Members_event_reputation_given" js="0">Member receives reputation points</word>
   <word key="rules_Members_event_reputation_given_member" js="0">Member that received the reputation</word>
   <word key="rules_Members_event_reputation_given_giver" js="0">Member that gave the reputation</word>
@@ -342,6 +342,11 @@
   <word key="rules_System_custom_phpcode" js="0">PHP Code</word>
   <word key="rules_System_conditions_board_status" js="0">Board Status (Online/Offline)</word>
   <word key="rules_System_board_online_status" js="0">Check that the board is:</word>
+  <word key="rules_System_conditions_scheduled_action" js="0">Check if action is scheduled</word>
+  <word key="rules_System_conditions_scheduled_action_key" js="0">Action Keyphrase To Check</word>
+  <word key="rules_System_schedule_mode" js="0">Keyphrase Matching</word>
+  <word key="rules_System_schedule_key" js="0">Keyphrase</word>
+  <word key="rules_System_schedule_key_desc" js="0">Enter a keyphrase that you want to check has an existing scheduled action.</word>
   <word key="rules_System_actions_send_email" js="0">Send an email</word>
   <word key="rules_System_actions_send_email_recipients" js="0">Recipients</word>
   <word key="rules_System_actions_send_email_recipients_desc" js="0">Members to send the email to</word>
@@ -356,7 +361,7 @@
   <word key="rules_System_message_body" js="0">Content</word>
   <word key="rules_System_actions_execute_php" js="0">Execute PHP Code</word>
   <word key="rules_System_actions_unschedule_action" js="0">Delete a scheduled action</word>
-  <word key="rules_System_actions_unschedule_action_key" js="0">Action To Unschedule</word>
+  <word key="rules_System_actions_unschedule_action_key" js="0">Action Keyphrase To Unschedule</word>
   <word key="rules_System_unschedule_mode" js="0">Keyphrase Matching</word>
   <word key="rules_System_unschedule_key" js="0">Keyphrase</word>
   <word key="rules_System_unschedule_key_desc" js="0">Enter the unique keyphrase of the action you want to unschedule. If it is scheduled, it will be deleted. If it isn't already scheduled, then no action will be taken.</word>
@@ -382,7 +387,7 @@
   <word key="rules_Comparisons_type" js="0">Comparison Type</word>
   <word key="rules_Comparisons_value" js="0">Value</word>
   <word key="rules_Content_event_content_updated" js="0">Any content has been created or updated</word>
-  <word key="rules_Content_event_content_updated_content" js="0">The updated content</word>
+  <word key="rules_Content_event_content_updated_content" js="0">The created/updated content</word>
   <word key="rules_Content_event_content_updated_changed" js="0">An array of the properties being saved</word>
   <word key="rules_Content_event_content_updated_new" js="0">Boolean value indicating if content is new</word>
   <word key="rules_Content_event_content_approved" js="0">Any content has been approved</word>
@@ -442,7 +447,7 @@
   <word key="rules_Content_event_content_item_tags_set_item" js="0">The content item</word>
   <word key="rules_Content_event_content_item_tags_set_tags" js="0">The content tags</word>
   <word key="rules_Content_event_content_updated_" js="0">%s has been created or updated</word>
-  <word key="rules_Content_event_content_updated_content_" js="0">The created or updated %s</word>
+  <word key="rules_Content_event_content_updated_content_" js="0">The created/updated %s</word>
   <word key="rules_Content_event_content_updated_changed_" js="0">An array of any changed properties</word>
   <word key="rules_Content_event_content_updated_new_" js="0">Boolean value indicating if content is new</word>
   <word key="rules_Content_event_content_approved_" js="0">%s has been approved</word>
