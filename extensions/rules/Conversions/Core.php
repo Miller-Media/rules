@@ -98,7 +98,7 @@ class _Core
 					'argtype' => 'string',
 					'converter' => function( $member )
 					{
-						return $member->name;
+						return (string) $member->name;
 					},
 				),
 				'Member Title' => array
@@ -108,7 +108,7 @@ class _Core
 					'argtype' => 'string',
 					'converter' => function( $member )
 					{
-						return $member->member_title;
+						return (string) $member->member_title;
 					},
 				),
 				'Content Count' => array
@@ -118,7 +118,17 @@ class _Core
 					'argtype' => 'int',
 					'converter' => function( $member )
 					{
-						return $member->member_posts;
+						return (int) $member->member_posts;
+					},
+				),
+				'Reputation' => array
+				(
+					'token' => 'reputation',
+					'description' => 'Reputation points',
+					'argtype' => 'int',
+					'converter' => function( $member )
+					{
+						return (int) $member->pp_reputation_points;
 					},
 				),
 				'Joined Date' => array
