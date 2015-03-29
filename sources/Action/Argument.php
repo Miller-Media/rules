@@ -227,7 +227,7 @@ class _Argument extends \IPS\Node\Model
 					$this_id = 0;
 				}
 				
-				if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_custom_action_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $val, $custom_action_id, $this_id ) )->first() )
+				if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $val, $custom_action_id, $this_id ) )->first() )
 				{
 					throw new \InvalidArgumentException( 'argument_not_unique' );
 				}
@@ -338,7 +338,7 @@ class _Argument extends \IPS\Node\Model
 			}
 			
 			$num = '';
-			while ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_custom_action_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $varname . $num, $custom_action_id, $this_id ) )->first() )
+			while ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $varname . $num, $custom_action_id, $this_id ) )->first() )
 			{
 				/* Start at 1 */
 				if ( $num === '' ) { $num = 1; }
