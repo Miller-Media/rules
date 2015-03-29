@@ -499,7 +499,7 @@ $lang = array(
 	 
 	/*** CONTENT: Events ***/
 	'rules_Content_event_content_updated'			=> "Any content has been created or updated",
-	'rules_Content_event_content_updated_content'		=> "The updated content",
+	'rules_Content_event_content_updated_content'		=> "The created/updated content",
 	'rules_Content_event_content_updated_changed'		=> "An array of the properties being saved",
 	'rules_Content_event_content_updated_new'		=> "Boolean value indicating if content is new",
 
@@ -579,7 +579,7 @@ $lang = array(
 	
 	/*** CONTENT: App Events ***/
 	'rules_Content_event_content_updated_'			=> "%s has been created or updated",
-	'rules_Content_event_content_updated_content_'		=> "The created or updated %s",
+	'rules_Content_event_content_updated_content_'		=> "The created/updated %s",
 	'rules_Content_event_content_updated_changed_'		=> "An array of any changed properties",
 	'rules_Content_event_content_updated_new_'		=> "Boolean value indicating if content is new",
 
