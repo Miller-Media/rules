@@ -1115,7 +1115,7 @@ class _Application extends \IPS\Application
 								(
 									'action' 	=> $operation,
 									'args' 	 	=> $operation_args,
-									'event_args' 	=> $args,
+									'event_args' 	=> $arg_map,
 									'thread' 	=> $event->thread,
 									'parent' 	=> $event->parentThread,
 								);
