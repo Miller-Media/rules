@@ -1871,3 +1871,4 @@ if ( defined( '\IPS\rules\LITE' ) )
 }
 
 const LITE = FALSE;
+const LIMIT = 10;

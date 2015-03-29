@@ -186,9 +186,9 @@ class _Rule extends \IPS\Node\Model
 		 */
 		if ( \IPS\rules\LITE and ! $this->id )
 		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= 10 )
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= \IPS\rules\LIMIT )
 			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of 10 rules.', 'RULES', 200, '' );
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules.', 'RULES', 200, '' );
 				exit;
 			}
 		}
@@ -734,9 +734,9 @@ class _Rule extends \IPS\Node\Model
 		 */
 		if ( \IPS\rules\LITE )
 		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= 10 )
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= \IPS\rules\LIMIT )
 			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of 10 rules.', 'RULES', 200, '' );
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules.', 'RULES', 200, '' );
 				exit;
 			}
 		}
@@ -772,9 +772,9 @@ class _Rule extends \IPS\Node\Model
 		 */
 		if ( \IPS\rules\LITE and $this->_new )
 		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= 10 )
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= \IPS\rules\LIMIT )
 			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of 10 rules.', 'RULES', 200, '' );
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules.', 'RULES', 200, '' );
 				exit;
 			}
 		}

@@ -1198,6 +1198,15 @@ class _rulesets extends \IPS\Node\Controller
 			\IPS\Output::i()->error( 'xml_upload_invalid', '2RI00/C', 403, '' );
 		}
 		
+		if ( \IPS\rules\LITE )
+		{
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() + ( $importCount = $this->_importRulesCount( $import ) ) > \IPS\rules\LIMIT )
+			{
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules. This import contains ' . $importCount . ' rules.', 'RULES', 200, '' );
+				exit;
+			}
+		}
+			
 		/**
 		 * Import Rulesets
 		 */
@@ -1244,6 +1253,55 @@ class _rulesets extends \IPS\Node\Controller
 		
 		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'rules_imported' );
 		
+	}
+	
+	/**
+	 * Count total import rules
+	 */
+	protected function _importRulesCount( $import )
+	{
+		$count = 0;
+		
+		if ( $import->rulesets->ruleset )
+		{
+			foreach ( $import->rulesets->ruleset as $ruleset )
+			{
+				if ( $ruleset->rules->rule )
+				{
+					foreach ( $ruleset->rules->rule as $rule )
+					{
+						$count += $this->_rulesCountRecursive( $rule );
+					}
+				}
+			}
+		}
+		
+		if ( $import->rules->rule )
+		{
+			foreach ( $import->rules->rule as $rule )
+			{
+				$count += $this->_rulesCountRecursive( $rule );
+			}
+		}
+		
+		return $count;
+	}
+	
+	/**
+	 * Count rule and sub-rules
+	 */
+	protected function _rulesCountRecursive( $rule )
+	{
+		$count = 1;
+		if ( $rule->rules->rule )
+		{
+			foreach ( $rule->rules->rule as $_rule )
+			{
+				$count += $this->rulesCountRecursive( $_rule );
+			}
+		}
+		
+		return $count;
 	}
 	
 	/**
