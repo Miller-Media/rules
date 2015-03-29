@@ -252,7 +252,8 @@ class _Condition extends \IPS\Node\Model
 		
 		if ( $this->id and $this->hasChildren() )
 		{
-			$compare_options = array(
+			$compare_options = array
+			(
 				'and' 	=> 'AND',
 				'or'	=> 'OR',
 			);

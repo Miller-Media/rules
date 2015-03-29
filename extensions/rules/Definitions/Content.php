@@ -656,7 +656,7 @@ class _Content
 										return array( 'rules_Content_content_containers_' . $class_key );
 									},
 									'saveValues' => function( &$values ) use ( $class_key )
-									{	
+									{
 										if ( is_array ( $values[ 'rules_Content_content_containers_' . $class_key ] ) )
 										{
 											$values[ 'rules_Content_content_containers_' . $class_key ] = array_keys( $values[ 'rules_Content_content_containers_' . $class_key ] );

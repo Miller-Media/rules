@@ -896,6 +896,9 @@ class _System
 		$conversation->is_system = TRUE;
 		$conversation->save();
 		
+		$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
+		$conversation->first_msg_id = $_message->id;
+		
 		if ( ! is_array( $participants ) )
 		{
 			$participants = array( $participants );
@@ -906,8 +909,6 @@ class _System
 			$conversation->authorize( $participant );
 		}
 		
-		$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
-		$conversation->first_msg_id = $_message->id;
 		$conversation->save();
 		
 		return "conversation started with " . $conversation->activeParticipants . " participants";
