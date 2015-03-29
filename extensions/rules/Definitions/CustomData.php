@@ -156,6 +156,7 @@ class _CustomData
 					),
 					'value' => array
 					(
+						'default' => 'manual',
 						'argtypes' => array
 						(
 							$data_field->type => array
