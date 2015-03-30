@@ -1841,7 +1841,7 @@ class _Application extends \IPS\Application
 		}
 		
 		$definitions = array();
-		
+
 		foreach ( static::rulesExtensions( 'Definitions' ) as $app => $classes )
 		{
 			foreach ( $classes as $class => $ext )

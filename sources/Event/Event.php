@@ -149,7 +149,7 @@ class _Event
 	 */
 	public function trigger()
 	{
-		if ( ! $this->locked )
+		if ( ! $this->locked and \IPS\Application::appIsEnabled( 'rules', FALSE, \IPS\Member::loggedIn() )  )
 		{
 			/* Don't do this during an upgrade */
 			if( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation === 'setup' )
