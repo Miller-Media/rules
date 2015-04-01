@@ -32,7 +32,9 @@ class _schedule extends \IPS\Dispatcher\Controller
 	 * @return	void
 	 */
 	protected function manage()
-	{		
+	{
+		$self = $this;
+		
 		/* Create the table */
 		$table = new \IPS\Helpers\Table\Db( 'rules_scheduled_actions', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=schedule' ) );
 		$table->include 	= array( 'schedule_time', 'schedule_action_id', 'schedule_thread', 'schedule_unique_key', 'schedule_created' );
@@ -90,7 +92,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			$table->sortDirection = 'asc';
 		}	
 		
-		$table->rowButtons = function( $row )
+		$table->rowButtons = function( $row ) use ( $self )
 		{	
 			$buttons = array();
 			$action = NULL;
@@ -107,14 +109,14 @@ class _schedule extends \IPS\Dispatcher\Controller
 			(
 				'icon' => 'pencil',
 				'title' => 'edit',
-				'link' => $this->url->setQueryString( array( 'do' => 'edit', 'id' => $row[ 'schedule_id' ] ) ),
+				'link' => $self->url->setQueryString( array( 'do' => 'edit', 'id' => $row[ 'schedule_id' ] ) ),
 			);
 						
 			$buttons[ 'execute' ] = array
 			(
 				'icon' => 'caret-square-o-right',
 				'title' => 'Execute Now',
-				'link' => $this->url->setQueryString( array( 'do' => 'executeAction', 'id' => $row[ 'schedule_id' ] ) ),
+				'link' => $self->url->setQueryString( array( 'do' => 'executeAction', 'id' => $row[ 'schedule_id' ] ) ),
 				'data' => array( 'confirm' => '' ),
 			);
 			
@@ -122,7 +124,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			(
 				'icon' => 'trash',
 				'title' => 'Delete Action',
-				'link' => $this->url->setQueryString( array( 'do' => 'delete', 'id' => $row[ 'schedule_id' ] ) ),
+				'link' => $self->url->setQueryString( array( 'do' => 'delete', 'id' => $row[ 'schedule_id' ] ) ),
 				'data' => array( 'confirm' => '' ),
 			);
 						
