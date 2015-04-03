@@ -224,7 +224,7 @@ class _Content
 					$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
 				}
 			}
-		}		
+		}
 		
 		return array_merge( $content_events, $app_events );
 	}
