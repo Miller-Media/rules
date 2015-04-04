@@ -12,6 +12,7 @@ $lang = array(
 	'ext__Definitions'			=> "Events, Conditions, and Actions Definition Groups",
 	'ext__Conversions'			=> "Global Arguments and Object Conversion Mapping",
 	
+	'notifications__rules_Notification'	=> "Rules",
 	'notifications__rules_notification'	=> "Rules Automated Notifications",
 	'member__rules_RulesMember'		=> "Rules Data",
 	'rules_perm__label'			=> "Data Permissions",
