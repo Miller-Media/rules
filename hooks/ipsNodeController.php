@@ -19,7 +19,7 @@ class rules_hook_ipsNodeController extends _HOOK_CLASS_
 			foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $node::rulesDataClass() ) ) as $row )
 			{
 				$data_field = \IPS\rules\Data::constructFromData( $row );
-				foreach( $data_field->formElements( $this ) as $name => $element )
+				foreach( $data_field->formElements( $node ) as $name => $element )
 				{
 					$form->add( $element );
 				}
