@@ -1380,6 +1380,10 @@ class _Application extends \IPS\Application
 	
 	/**
 	 * Replace Tokens
+	 * 
+	 * @param 	string	$string		The string with possible tokens to replace
+	 * @param	array	$replacements	An array of string replacement values
+	 * @return	string			The string with tokens replaced
 	 */
 	public static function replaceTokens( $string, $replacements )
 	{
@@ -1393,6 +1397,8 @@ class _Application extends \IPS\Application
 
 	/**
 	 * Get Global Arguments
+	 *
+	 * @return 	array		Keyed array of global arguments
 	 */
 	public static function getGlobalArguments()
 	{

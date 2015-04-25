@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100000">
+ <app key="rules" version="100007">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -10,6 +10,7 @@
   <word key="menu__rules_rules_schedule" js="0">Scheduled Actions</word>
   <word key="ext__Definitions" js="0">Events, Conditions, and Actions Definition Groups</word>
   <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
+  <word key="notifications__rules_Notification" js="0">Rules</word>
   <word key="notifications__rules_notification" js="0">Rules Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
   <word key="rules_perm__label" js="0">Data Permissions</word>
@@ -220,6 +221,9 @@
   <word key="rules_Members_event_member_warned_warning" js="0">The warning content item</word>
   <word key="rules_Members_event_member_warned_member" js="0">Member that was warned</word>
   <word key="rules_Members_event_member_warned_moderator" js="0">Member that issued the warning</word>
+  <word key="rules_Members_event_content_recounted" js="0">Member content has been re-counted</word>
+  <word key="rules_Members_event_content_recounted_member" js="0">Member whose content has been re-counted</word>
+  <word key="rules_Members_event_content_recounted_count" js="0">The updated content count</word>
   <word key="rules_Members_conditions_member_has_group" js="0">Member is in a certain member group</word>
   <word key="rules_Members_conditions_member_has_group_member" js="0">Member To Check</word>
   <word key="rules_Members_member_groups" js="0">Check if member is in any of these groups</word>
@@ -372,6 +376,7 @@
   <word key="rules_System_actions_url_redirect" js="0">Redirect to another page</word>
   <word key="rules_System_actions_url_redirect_url" js="0">URL of page to redirect to</word>
   <word key="rules_System_actions_url_redirect_message" js="0">The message to display upon redirect</word>
+  <word key="rules_System_redirect_message" js="0">Message</word>
   <word key="rules_System_actions_create_conversation" js="0">Create a new private conversation</word>
   <word key="rules_System_actions_create_conversation_creator" js="0">Conversation Starter</word>
   <word key="rules_System_actions_create_conversation_participants" js="0">Conversation Participants</word>
