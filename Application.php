@@ -1572,7 +1572,7 @@ class _Application extends \IPS\Application
 		$scheduled_action->thread	= $thread;
 		$scheduled_action->parent_thread = $parentThread;
 		$scheduled_action->created 	= time();
-		$scheduled_action->unique_key	= $unique_key;
+		$scheduled_action->unique_key	= trim( $unique_key );
 		
 		$db_args = array();
 		foreach ( $args as $arg )

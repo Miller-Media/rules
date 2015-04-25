@@ -115,6 +115,14 @@ class _Members
 					'moderator' 	=> $memberArg,
 				),
 			),
+			'content_recounted' => array
+			(
+				'arguments' => array
+				(
+					'member'	=> $memberArg,
+					'count'		=> array( 'argtype' => 'int' ),
+				),
+			),
 		);
 		
 		return $events;

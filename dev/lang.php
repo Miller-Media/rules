@@ -273,6 +273,10 @@ $lang = array(
 	'rules_Members_event_member_warned_member'		=> "Member that was warned",
 	'rules_Members_event_member_warned_moderator'		=> "Member that issued the warning",
 	
+	'rules_Members_event_content_recounted'			=> "Member content has been re-counted",
+	'rules_Members_event_content_recounted_member'		=> "Member whose content has been re-counted",
+	'rules_Members_event_content_recounted_count'		=> "The updated content count",
+	
 	/*** MEMBERS: Conditions ***/
 	'rules_Members_conditions_member_has_group'		=> "Member is in a certain member group",
 	'rules_Members_conditions_member_has_group_member'	=> "Member To Check",
@@ -470,6 +474,7 @@ $lang = array(
 	'rules_System_actions_url_redirect'			=> "Redirect to another page",
 	'rules_System_actions_url_redirect_url'			=> "URL of page to redirect to",
 	'rules_System_actions_url_redirect_message'		=> "The message to display upon redirect",
+	'rules_System_redirect_message'				=> "Message",
 
 	'rules_System_actions_create_conversation'		=> "Create a new private conversation",
 	'rules_System_actions_create_conversation_creator'	=> "Conversation Starter",

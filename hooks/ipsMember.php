@@ -17,5 +17,17 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 		
 		return call_user_func_array( 'parent::memberSync', func_get_args() );
 	}
+	
+	/**
+	 * Recounts content for this member
+	 *
+	 * @return void
+	 */
+	public function recountContent()
+	{
+		parent::recountContent();
+		
+		\IPS\rules\Event::load( 'rules', 'Members', 'content_recounted' )->trigger( $this, $this->member_posts );
+	}
 
 }
