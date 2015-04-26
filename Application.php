@@ -812,423 +812,436 @@ class _Application extends \IPS\Application
 				}
 			}
 			
-			if ( isset( $operation->definition[ 'arguments' ] ) and is_array( $operation->definition[ 'arguments' ] ) )
+			try
 			{
-				foreach ( $operation->definition[ 'arguments' ] as $arg_name => $arg )
+				if ( isset( $operation->definition[ 'arguments' ] ) and is_array( $operation->definition[ 'arguments' ] ) )
 				{
-					$argument_missing 	= FALSE;
-					$argNameKey 		= $operation->app . '_' . $operation->class . '_' . $optype . '_' . $operation->key . '_' . $arg_name;
-					
-					switch ( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] )
+					foreach ( $operation->definition[ 'arguments' ] as $arg_name => $arg )
 					{
-						case 'event':
+						$argument_missing 	= FALSE;
+						$argNameKey 		= $operation->app . '_' . $operation->class . '_' . $optype . '_' . $operation->key . '_' . $arg_name;
 						
-							/**
-							 * Determine which argument index to use and if the argument
-							 * needs class conversion or not
-							 */
-							list
-							( 
-								$event_arg_name, 
-								$converter_class, 
-								$converter_key 
-							) 	
-								= explode( ':', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] );
-									
-							$_operation_arg	= NULL;
-							$input_arg 	= NULL;
-							$input_arg_type	= NULL;
+						switch ( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] )
+						{
+							case 'event':
 							
-							/**
-							 * Get input argument from global arguments
-							 */
-							if ( mb_substr( $event_arg_name, 0, 9 ) === '__global_' )
-							{
-								$global_arguments = static::getGlobalArguments();
-								if ( isset ( $global_arguments[ $event_arg_name ] ) )
-								{
-									if ( is_callable( $global_arguments[ $event_arg_name ][ 'getArg' ] ) )
-									{
-										$input_arg = call_user_func_array( $global_arguments[ $event_arg_name ][ 'getArg' ], array() );
-									}
-									$input_arg_type = $global_arguments[ $event_arg_name ][ 'argtype' ];
-								}
-							}
-							
-							/**
-							 * Get input argument from event arguments
-							 */
-							else
-							{
-								$_i = $event_arg_index[ $event_arg_name ];
-								if ( isset( $_i ) )
-								{
-									$input_arg = $args[ $_i ];
-									$input_arg_type = $event->data[ 'arguments' ][ $event_arg_name ][ 'argtype' ];
-								}
-							}
-							
-							/**
-							 * Check if argument is present in the event
-							 */
-							if ( isset ( $input_arg ) )
-							{
 								/**
-								 * Convert the event argument if necessary
+								 * Determine which argument index to use and if the argument
+								 * needs class conversion or not
 								 */
-								if ( $converter_class and $converter_key )
+								list
+								( 
+									$event_arg_name, 
+									$converter_class, 
+									$converter_key 
+								) 	
+									= explode( ':', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] );
+										
+								$_operation_arg	= NULL;
+								$input_arg 	= NULL;
+								$input_arg_type	= NULL;
+								
+								/**
+								 * Get input argument from global arguments
+								 */
+								if ( mb_substr( $event_arg_name, 0, 9 ) === '__global_' )
 								{
-									$classConverters = static::getConversions();
-									if 
-									( 
-										isset ( $classConverters[ $converter_class ][ $converter_key ] ) and 
-										is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ] ) 
-									)
-									{									
-										$event_arg 	= call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
-										$event_arg_type	= $classConverters[ $converter_class ][ $converter_key ][ 'argtype' ];
-									}
-									else
+									$global_arguments = static::getGlobalArguments();
+									if ( isset ( $global_arguments[ $event_arg_name ] ) )
 									{
-										$event_arg 	= NULL;
-										$event_arg_type = NULL;
+										if ( is_callable( $global_arguments[ $event_arg_name ][ 'getArg' ] ) )
+										{
+											$input_arg = call_user_func_array( $global_arguments[ $event_arg_name ][ 'getArg' ], array() );
+										}
+										$input_arg_type = $global_arguments[ $event_arg_name ][ 'argtype' ];
 									}
-								}
-								else
-								{
-									$event_arg 	= $input_arg;
-									$event_arg_type = $input_arg_type;
 								}
 								
 								/**
-								 * Argtypes must be set to use event arguments
+								 * Get input argument from event arguments
 								 */
-								if ( is_array( $arg[ 'argtypes' ] ) )
-								{
-									/* Simple definitions with no converters */
-									if ( in_array( $event_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
-									{
-										$_operation_arg = $event_arg;
-									}
-									
-									/* Complex definitions, check for converters */
-									else if ( isset( $arg[ 'argtypes' ][ $event_arg_type ] ) )
-									{
-										if ( isset ( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ] ) )
-										{
-											$_operation_arg = call_user_func_array( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ], array( $event_arg, $operation->data[ 'configuration' ][ 'data' ] ) );
-										}
-										else
-										{
-											$_operation_arg = $event_arg;
-										}
-									}
-									else if ( isset( $arg[ 'argtypes' ][ 'mixed' ] ) )
-									{
-										if ( isset ( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) )
-										{
-											$_operation_arg = call_user_func_array( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ], array( $event_arg, $operation->data[ 'configuration' ][ 'data' ] ) );
-										}
-										else
-										{
-											$_operation_arg = $event_arg;
-										}
-									
-									}
-								}
-							}
-							
-							/**
-							 * After all that, check if we have an argument to pass
-							 */
-							if ( isset( $_operation_arg ) )
-							{
-								$operation_args[] = $_operation_arg;
-							}
-							else
-							{
-								$argument_missing = TRUE;
-							}			
-							break;
-						
-						case 'manual':
-						
-							if ( isset ( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) )
-							{
-								$operation_args[] = call_user_func_array( $arg[ 'configuration' ][ 'getArg' ], array( $operation->data[ 'configuration' ][ 'data' ], $operation ) );
-							}
-							else
-							{
-								$argument_missing = TRUE;
-							}
-							break;
-							
-						case 'phpcode':
-						
-							$evaluate = function( $phpcode ) use ( $arg_map )
-							{
-								extract( $arg_map );								
-								return @eval( $phpcode );
-							};
-							
-							$argVal = $evaluate( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] );
-							
-							if ( isset( $argVal ) )
-							{
-								if ( is_array( $arg[ 'argtypes' ] ) )
-								{
-									$type_map = array( 
-										'integer' 	=> 'int',
-										'double'	=> 'float',
-										'boolean' 	=> 'bool',
-										'string' 	=> 'string',
-										'array'		=> 'array',
-										'object'	=> 'object',
-									);
-									
-									$php_arg_type = $type_map[ gettype( $argVal ) ];
-									
-									/* Simple definitions with no converters */
-									if ( in_array( $php_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
-									{
-										$operation_args[] = $argVal;
-									}
-									
-									/* Complex definitions, check for converters */
-									else if ( isset( $arg[ 'argtypes' ][ $php_arg_type ] ) )
-									{
-										if ( isset ( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) )
-										{
-											$operation_args[] = call_user_func_array( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ], array( $argVal, $operation->data[ 'configuration' ][ 'data' ] ) );
-										}
-										else
-										{
-											$operation_args[] = $argVal;
-										}
-									}
-									else if ( isset( $arg[ 'argtypes' ][ 'mixed' ] ) )
-									{
-										if ( isset ( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) )
-										{
-											$operation_args[] = call_user_func_array( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ], array( $argVal, $operation->data[ 'configuration' ][ 'data' ] ) );
-										}
-										else
-										{
-											$operation_args[] = $argVal;
-										}
-									
-									}
-									else
-									{
-										$argument_missing = TRUE;
-									}
-								}
 								else
+								{
+									$_i = $event_arg_index[ $event_arg_name ];
+									if ( isset( $_i ) )
+									{
+										$input_arg = $args[ $_i ];
+										$input_arg_type = $event->data[ 'arguments' ][ $event_arg_name ][ 'argtype' ];
+									}
+								}
+								
+								/**
+								 * Check if argument is present in the event
+								 */
+								if ( isset ( $input_arg ) )
 								{
 									/**
-									 * The argument cannot be processed because argtypes aren't supported
+									 * Convert the event argument if necessary
 									 */
-									$argument_missing = TRUE;
+									if ( $converter_class and $converter_key )
+									{
+										$classConverters = static::getConversions();
+										if 
+										( 
+											isset ( $classConverters[ $converter_class ][ $converter_key ] ) and 
+											is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ] ) 
+										)
+										{									
+											$event_arg 	= call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
+											$event_arg_type	= $classConverters[ $converter_class ][ $converter_key ][ 'argtype' ];
+										}
+										else
+										{
+											$event_arg 	= NULL;
+											$event_arg_type = NULL;
+										}
+									}
+									else
+									{
+										$event_arg 	= $input_arg;
+										$event_arg_type = $input_arg_type;
+									}
+									
+									/**
+									 * Argtypes must be set to use event arguments
+									 */
+									if ( is_array( $arg[ 'argtypes' ] ) )
+									{
+										/* Simple definitions with no converters */
+										if ( in_array( $event_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
+										{
+											$_operation_arg = $event_arg;
+										}
+										
+										/* Complex definitions, check for converters */
+										else if ( isset( $arg[ 'argtypes' ][ $event_arg_type ] ) )
+										{
+											if ( isset ( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ] ) )
+											{
+												$_operation_arg = call_user_func_array( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ], array( $event_arg, $operation->data[ 'configuration' ][ 'data' ] ) );
+											}
+											else
+											{
+												$_operation_arg = $event_arg;
+											}
+										}
+										else if ( isset( $arg[ 'argtypes' ][ 'mixed' ] ) )
+										{
+											if ( isset ( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) )
+											{
+												$_operation_arg = call_user_func_array( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ], array( $event_arg, $operation->data[ 'configuration' ][ 'data' ] ) );
+											}
+											else
+											{
+												$_operation_arg = $event_arg;
+											}
+										
+										}
+									}
 								}
 								
-							}
-							else
-							{
-								$argument_missing = TRUE;
-							}
-							break;
+								/**
+								 * After all that, check if we have an argument to pass
+								 */
+								if ( isset( $_operation_arg ) )
+								{
+									$operation_args[] = $_operation_arg;
+								}
+								else
+								{
+									$argument_missing = TRUE;
+								}			
+								break;
 							
-						default:
-						
-							$argument_missing = TRUE;
-					}
-					
-					/**
-					 * If we haven't obtained a usable argument, use the manual default configuration if applicable
-					 */
-					if 
-					( 
-						$argument_missing and 
-						$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] !== 'manual' and
-						isset ( $arg[ 'configuration' ][ 'getArg' ] ) and 
-						is_callable( $arg[ 'configuration' ][ 'getArg' ] )
-					)
-					{
-						if ( $arg[ 'required' ] or $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ] )
-						{
-							$argVal = call_user_func_array( $arg[ 'configuration' ][ 'getArg' ], array( $operation->data[ 'configuration' ][ 'data' ], $operation ) );
-							if ( isset( $argVal ) )
-							{
-								$argument_missing = FALSE;
-								$operation_args[] = $argVal;
-							}
-						}
-					}
-
-					if ( $argument_missing )
-					{
-						if ( $arg[ 'required' ] )
-						{
-							/* Operation cannot be invoked because we're missing required arguments */
-							static::rulesLog( $event, $operation->rule(), $operation, "No argument available for: " . $arg_name, 'Action not taken (missing argument)', 1 );
-							return NULL;
-						}
-						else
-						{
-							$operation_args[] = NULL;
-						}
-					}
-				}
-			}
-			
-			if ( isset ( $operation->definition[ 'callback' ] ) and is_callable( $operation->definition[ 'callback' ] ) )
-			{
-				/**
-				 * Token Replacements on Operation Args
-				 */
-				$tokens = static::getTokens( $event, $arg_map );
-				foreach ( $operation_args as &$_operation_arg )
-				{
-					if ( in_array( gettype( $_operation_arg ), array( 'string' ) ) )
-					{
-						$_operation_arg = static::replaceTokens( $_operation_arg, $tokens );
-					}
-				}
-				
-				try
-				{
-					/**
-					 * Check to see if actions have a future scheduling
-					 */
-					if ( $operation instanceof \IPS\rules\Action and $operation->schedule_mode )
-					{
-						$future_time = time();
-						switch ( $operation->schedule_mode )
-						{
-							/**
-							 * Defer to end of rule processing
-							 */
-							case 1:
-								$future_time = -1;
-								$result = '__suppress__';
-								$event->actionStack[] = array
-								(
-									'action' 	=> $operation,
-									'args' 	 	=> $operation_args,
-									'event_args' 	=> $arg_map,
-									'thread' 	=> $event->thread,
-									'parent' 	=> $event->parentThread,
-								);
+							case 'manual':
+							
+								if ( isset ( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) )
+								{
+									$operation_args[] = call_user_func_array( $arg[ 'configuration' ][ 'getArg' ], array( $operation->data[ 'configuration' ][ 'data' ], $operation ) );
+								}
+								else
+								{
+									$argument_missing = TRUE;
+								}
 								break;
 								
-							/**
-							 * Set amount of time in the future 
-							 */
-							case 2:
-								$future_time = \strtotime
-								( 
-									'+' . intval( $operation->schedule_months ) . ' months ' . 
-									'+' . intval( $operation->schedule_days ) . ' days ' .
-									'+' . intval( $operation->schedule_hours ) . ' hours ' .
-									'+' . intval( $operation->schedule_minutes ) . ' minutes '
-								);
-								break;
-								
-							/**
-							 * On a specific date/time
-							 */
-							case 3:
-								$future_time = $operation->schedule_date;
-								break;
-								
-							/**
-							 * On a calculated date
-							 */
-							case 4:
+							case 'phpcode':
+							
 								$evaluate = function( $phpcode ) use ( $arg_map )
 								{
-									extract( $arg_map );
+									extract( $arg_map );								
 									return @eval( $phpcode );
 								};
 								
-								$future_time = 0;
-								$custom_time = $evaluate( $operation->schedule_customcode );
+								$argVal = $evaluate( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] );
 								
-								if ( is_numeric( $custom_time ) )
+								if ( isset( $argVal ) )
 								{
-									$future_time = intval( $custom_time );
-								}
-								else if ( is_object( $custom_time ) )
-								{
-									if ( $custom_time instanceof \IPS\DateTime )
+									if ( is_array( $arg[ 'argtypes' ] ) )
 									{
-										$future_time = $custom_time->getTimestamp();
+										$type_map = array( 
+											'integer' 	=> 'int',
+											'double'	=> 'float',
+											'boolean' 	=> 'bool',
+											'string' 	=> 'string',
+											'array'		=> 'array',
+											'object'	=> 'object',
+										);
+										
+										$php_arg_type = $type_map[ gettype( $argVal ) ];
+										
+										/* Simple definitions with no converters */
+										if ( in_array( $php_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
+										{
+											$operation_args[] = $argVal;
+										}
+										
+										/* Complex definitions, check for converters */
+										else if ( isset( $arg[ 'argtypes' ][ $php_arg_type ] ) )
+										{
+											if ( isset ( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) )
+											{
+												$operation_args[] = call_user_func_array( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ], array( $argVal, $operation->data[ 'configuration' ][ 'data' ] ) );
+											}
+											else
+											{
+												$operation_args[] = $argVal;
+											}
+										}
+										else if ( isset( $arg[ 'argtypes' ][ 'mixed' ] ) )
+										{
+											if ( isset ( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) )
+											{
+												$operation_args[] = call_user_func_array( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ], array( $argVal, $operation->data[ 'configuration' ][ 'data' ] ) );
+											}
+											else
+											{
+												$operation_args[] = $argVal;
+											}
+										
+										}
+										else
+										{
+											$argument_missing = TRUE;
+										}
 									}
+									else
+									{
+										/**
+										 * The argument cannot be processed because argtypes aren't supported
+										 */
+										$argument_missing = TRUE;
+									}
+									
 								}
-								else if ( is_string( $custom_time ) )
+								else
 								{
-									$future_time = strtotime( $custom_time );
+									$argument_missing = TRUE;
 								}
 								break;
 								
+							default:
+							
+								$argument_missing = TRUE;
 						}
 						
-						if ( $future_time > time() )
+						/**
+						 * If we haven't obtained a usable argument, use the manual default configuration if applicable
+						 */
+						if 
+						( 
+							$argument_missing and 
+							$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] !== 'manual' and
+							isset ( $arg[ 'configuration' ][ 'getArg' ] ) and 
+							is_callable( $arg[ 'configuration' ][ 'getArg' ] )
+						)
 						{
-							$thread = $parentThread = NULL;
-							
-							if ( $rule = $operation->rule() )
+							if ( $arg[ 'required' ] or $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ] )
 							{
-								$thread 	= $rule->event()->thread;
-								$parentThread 	= $rule->event()->parentThread;
+								$argVal = call_user_func_array( $arg[ 'configuration' ][ 'getArg' ], array( $operation->data[ 'configuration' ][ 'data' ], $operation ) );
+								if ( isset( $argVal ) )
+								{
+									$argument_missing = FALSE;
+									$operation_args[] = $argVal;
+								}
+							}
+						}
+
+						if ( $argument_missing )
+						{
+							if ( $arg[ 'required' ] )
+							{
+								/* Operation cannot be invoked because we're missing required arguments */
+								static::rulesLog( $event, $operation->rule(), $operation, "No argument available for: " . $arg_name, 'Action not taken (missing argument)', 1 );
+								return NULL;
+							}
+							else
+							{
+								$operation_args[] = NULL;
+							}
+						}
+					}
+				}
+				
+				if ( isset ( $operation->definition[ 'callback' ] ) and is_callable( $operation->definition[ 'callback' ] ) )
+				{
+					/**
+					 * Token Replacements on Operation Args
+					 */
+					$tokens = static::getTokens( $event, $arg_map );
+					foreach ( $operation_args as &$_operation_arg )
+					{
+						if ( in_array( gettype( $_operation_arg ), array( 'string' ) ) )
+						{
+							$_operation_arg = static::replaceTokens( $_operation_arg, $tokens );
+						}
+					}
+					
+					try
+					{
+						/**
+						 * Check to see if actions have a future scheduling
+						 */
+						if ( $operation instanceof \IPS\rules\Action and $operation->schedule_mode )
+						{
+							$future_time = time();
+							switch ( $operation->schedule_mode )
+							{
+								/**
+								 * Defer to end of rule processing
+								 */
+								case 1:
+									$future_time = -1;
+									$result = '__suppress__';
+									$event->actionStack[] = array
+									(
+										'action' 	=> $operation,
+										'args' 	 	=> $operation_args,
+										'event_args' 	=> $arg_map,
+										'thread' 	=> $event->thread,
+										'parent' 	=> $event->parentThread,
+									);
+									break;
+									
+								/**
+								 * Set amount of time in the future 
+								 */
+								case 2:
+									$future_time = \strtotime
+									( 
+										'+' . intval( $operation->schedule_months ) . ' months ' . 
+										'+' . intval( $operation->schedule_days ) . ' days ' .
+										'+' . intval( $operation->schedule_hours ) . ' hours ' .
+										'+' . intval( $operation->schedule_minutes ) . ' minutes '
+									);
+									break;
+									
+								/**
+								 * On a specific date/time
+								 */
+								case 3:
+									$future_time = $operation->schedule_date;
+									break;
+									
+								/**
+								 * On a calculated date
+								 */
+								case 4:
+									$evaluate = function( $phpcode ) use ( $arg_map )
+									{
+										extract( $arg_map );
+										return @eval( $phpcode );
+									};
+									
+									$future_time = 0;
+									$custom_time = $evaluate( $operation->schedule_customcode );
+									
+									if ( is_numeric( $custom_time ) )
+									{
+										$future_time = intval( $custom_time );
+									}
+									else if ( is_object( $custom_time ) )
+									{
+										if ( $custom_time instanceof \IPS\DateTime )
+										{
+											$future_time = $custom_time->getTimestamp();
+										}
+									}
+									else if ( is_string( $custom_time ) )
+									{
+										$future_time = strtotime( $custom_time );
+									}
+									break;
+									
 							}
 							
-							$unique_key = $operation->schedule_key ? static::replaceTokens( $operation->schedule_key, $tokens ) : NULL;
-							$result = static::scheduleAction( $operation, $future_time, $operation_args, $arg_map, $thread, $parentThread, $unique_key );
+							if ( $future_time > time() )
+							{
+								$thread = $parentThread = NULL;
+								
+								if ( $rule = $operation->rule() )
+								{
+									$thread 	= $rule->event()->thread;
+									$parentThread 	= $rule->event()->parentThread;
+								}
+								
+								$unique_key = $operation->schedule_key ? static::replaceTokens( $operation->schedule_key, $tokens ) : NULL;
+								$result = static::scheduleAction( $operation, $future_time, $operation_args, $arg_map, $thread, $parentThread, $unique_key );
+							}
+							
+						}
+					
+						/**
+						 * If our operation was scheduled, then it will have a result already from the scheduler
+						 */
+						if ( ! isset ( $result ) )
+						{
+							$result = call_user_func_array( $operation->definition[ 'callback' ], array_merge( $operation_args, array( $operation->data[ 'configuration' ][ 'data' ], $arg_map, $operation ) ) );					
 						}
 						
+						/**
+						 * Conditions have a special setting to invert their result with NOT, so let's check that 
+						 */
+						if ( $operation instanceof \IPS\rules\Condition and $operation->not )
+						{
+							$result = ! $result;
+						}
+						
+						if ( $rule = $operation->rule() and $rule->debug and $result !== '__suppress__' )
+						{
+							static::rulesLog( $rule->event(), $rule, $operation, $result, 'Evaluated' );
+						}
+						
+						return $result;
 					}
-				
-					/**
-					 * If our operation was scheduled, then it will have a result already from the scheduler
-					 */
-					if ( ! isset ( $result ) )
+					catch ( \Exception $e ) 
 					{
-						$result = call_user_func_array( $operation->definition[ 'callback' ], array_merge( $operation_args, array( $operation->data[ 'configuration' ][ 'data' ], $arg_map, $operation ) ) );					
+						/**
+						 * Log Exceptions
+						 */
+						$event = $operation->rule() ? $operation->rule()->event() : NULL;
+						$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
+						$file = array_pop( $paths );
+						static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
 					}
-					
-					/**
-					 * Conditions have a special setting to invert their result with NOT, so let's check that 
-					 */
-					if ( $operation instanceof \IPS\rules\Condition and $operation->not )
-					{
-						$result = ! $result;
-					}
-					
-					if ( $rule = $operation->rule() and $rule->debug and $result !== '__suppress__' )
-					{
-						static::rulesLog( $rule->event(), $rule, $operation, $result, 'Evaluated' );
-					}
-					
-					return $result;
 				}
-				catch ( \Exception $e ) 
+				else
 				{
-					/**
-					 * Log Exceptions
-					 */
-					$event = $operation->rule() ? $operation->rule()->event() : NULL;
-					$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
-					$file = array_pop( $paths );
-					static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
+					if ( $rule = $operation->rule() )
+					{
+						static::rulesLog( $rule->event(), $rule, $operation, FALSE, 'Missing Callback', 1  );
+					}
 				}
 			}
-			else
+			catch ( \Exception $e )
 			{
-				if ( $rule = $operation->rule() )
-				{
-					static::rulesLog( $rule->event(), $rule, $operation, FALSE, 'Missing Callback', 1  );
-				}
+				/**
+				 * Log Exceptions
+				 */
+				$event = $operation->rule() ? $operation->rule()->event() : NULL;
+				$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
+				$file = array_pop( $paths );
+				static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
 			}
 		}
 	}
