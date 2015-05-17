@@ -528,7 +528,7 @@ class _Application extends \IPS\Application
 							/* If it will be converted, change the item title to indicate that */
 							if ( $converter_class and $converter_key )
 							{
-								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . ' ( ' . $lang->addToStack( $converter_key ) . ' )';
+								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . ' (' . $lang->addToStack( $converter_key ) . ')';
 							}
 							
 							$usable_arguments[ $event_arg_name ] = $eventArgNameKey;			
@@ -640,6 +640,12 @@ class _Application extends \IPS\Application
 	
 	/**
 	 * Save Operation Form
+	 *
+	 * @param	\IPS\Node\Model		$operation	The condition or action node
+	 * @param	string			$optype		A string representing the type of operation ( conditions/actions )
+	 * @param	array			$value		Submitted form values
+	 * @param	array			$core_values	An array of value keys that should be allowed to pass through for core processing
+	 * @return	array					Values for core processing
 	 */
 	public static function opformSave( $operation, $optype, $values, $core_values=array() )
 	{
@@ -700,6 +706,10 @@ class _Application extends \IPS\Application
 	
 	/**
 	 * Get Usable Event Arguments
+	 *
+	 * @param	array			$arg		The argument definition
+	 * @param	\IPS\Node\Model		$operation	The condition or action node
+	 * @return	array					An array of additional arguments that can be derived from the event
 	 */
 	public static function usableEventArguments( $arg, $operation )
 	{
@@ -1247,7 +1257,7 @@ class _Application extends \IPS\Application
 	}
 
 	/**
-	 * Cache Tokens
+	 * @brief	Tokens Cache
 	 */
 	public static $tokensCache = array();
 	
@@ -1289,7 +1299,7 @@ class _Application extends \IPS\Application
 				{
 					if ( isset ( $arg_map ) )
 					{
-						$replacements[ '[' . $arg_name . ']' ] = $arg_map[ $arg_name ];
+						$replacements[ '[' . $arg_name . ']' ] = $replacements[ '~' . $arg_name . '~' ] = $arg_map[ $arg_name ];
 					}
 					else
 					{
