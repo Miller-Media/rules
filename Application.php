@@ -1287,7 +1287,7 @@ class _Application extends \IPS\Application
 			'event' => $event->data[ 'arguments' ] ?: array(),
 			'global' => $global_args,
 		);
-				
+		
 		foreach ( $arg_groups as $group => $all_arguments )
 		{
 			foreach( $all_arguments as $arg_name => $argument )

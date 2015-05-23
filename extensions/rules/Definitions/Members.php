@@ -31,7 +31,8 @@ class _Members
 	 */
 	public function events()
 	{
-		$memberArg = array(
+		$memberArg = array
+		(
 			'argtype' 	=> 'object',
 			'class'		=> '\IPS\Member',
 		);
@@ -667,9 +668,9 @@ class _Members
 					case '=':
 						$value = \IPS\DateTime::ts( $value );
 						return (
-							$value->y == $date->y and
-							$value->m == $date->m and
-							$value->d == $date->d
+							$value->format( 'Y' ) == $date->format( 'Y' ) and
+							$value->format( 'm' ) == $date->format( 'm' ) and
+							$value->format( 'd' ) == $date->format( 'd' )
 						);
 						
 				}			
