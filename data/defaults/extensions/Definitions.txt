@@ -31,6 +31,12 @@ class _{class}
 	 *
 	 * Define the events that can be triggered by your application
 	 *
+	 * Trigger events in your application code like this:
+	 * if ( \IPS\Application::appIsEnabled( 'rules' ) )
+	 * {
+	 * 	\IPS\rules\Event::load( '{app}', '{class}', 'event_key' )->trigger( $arg1, $arg2, etc... );
+	 * }
+	 *
 	 * @return 	array		Array of event definitions
 	 */
 	public function events()
@@ -43,7 +49,7 @@ class _{class}
 			 * Each of your events is triggered using an event key.
 			 * Event keys only need to be unique to this class.
 			 */
-			'event_id' => array
+			'event_key' => array
 			( 
 				/**
 				 * Option Group
@@ -51,7 +57,7 @@ class _{class}
 				 * Customize the option group heading that this event is listed under in the ACP
 				 *
 				 * If this setting is omitted, then this option will be listed under the title of the 
-				 * $default_group property of this class definition.
+				 * $defaultGroup property of this class definition.
 				 */
 				'group' => '{class}',
 				

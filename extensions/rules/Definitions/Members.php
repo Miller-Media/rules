@@ -593,17 +593,17 @@ class _Members
 			
 			case 'joined':
 			
-				$date = \IPS\DateTime::ts( $member->joined );
+				$date = $member->joined;
 				break;
 			
 			case 'birthdate':
 			
-				if ( ! $member->_data[ 'bday_year' ] )
+				if ( ! $member->bday_year )
 				{
 					return FALSE;
 				}
 				
-				$date = new \IPS\DateTime( $member->_data[ 'bday_year' ] . '/' . $member->_data[ 'bday_month' ] . '/' . $member->_data[ 'bday_day' ] );
+				$date = new \IPS\DateTime( $member->bday_year . '/' . $member->bday_month . '/' . $member->bday_day );
 				break;
 				
 			case 'last_activity':

@@ -123,6 +123,9 @@ class _Data extends \IPS\Node\Model
 			. ( $this->description ? "<br><i class='fa fa-caret-right'></i> " . $this->description : "" );
 	}
 	
+	/**
+	 * Get Object Title
+	 */
 	public function entityTitle()
 	{
 		$objClass 	= str_replace( '-', '\\', $this->class );
@@ -135,6 +138,9 @@ class _Data extends \IPS\Node\Model
 		return $objTitle;
 	}
 	
+	/**
+	 * Get Stored Value Title
+	 */
 	public function storedValueTitle()
 	{
 		$typeTitle = NULL;
