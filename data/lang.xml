@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100009">
+ <app key="rules" version="100010">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -10,8 +10,8 @@
   <word key="menu__rules_rules_schedule" js="0">Scheduled Actions</word>
   <word key="ext__Definitions" js="0">Events, Conditions, and Actions Definition Groups</word>
   <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
-  <word key="notifications__rules_Notification" js="0">Rules</word>
-  <word key="notifications__rules_notification" js="0">Rules Automated Notifications</word>
+  <word key="notifications__rules_Notification" js="0">Rules Notifications</word>
+  <word key="notifications__rules_notification" js="0">Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
   <word key="rules_perm__label" js="0">Data Permissions</word>
   <word key="rules_perm__view" js="0">View Data</word>
