@@ -28,9 +28,12 @@ abstract class rules_hook_ipsNodeModel extends _HOOK_CLASS_
 			foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', static::rulesDataClass() ) ) as $row )
 			{
 				$data_field = \IPS\rules\Data::constructFromData( $row );
-				foreach( $data_field->formElements( $this ) as $name => $element )
+				if ( $data_field->can( 'edit' ) )
 				{
-					$form->add( $element );
+					foreach( $data_field->formElements( $this ) as $name => $element )
+					{
+						$form->add( $element );
+					}
 				}
 			}
 		}

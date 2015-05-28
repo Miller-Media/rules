@@ -55,12 +55,13 @@ $lang = array(
 						   
 	'data_class'				=> "Data Associated With",
 	'data_type'				=> "Stored Data Type",
-	'data_type_class'			=> "Stored Object Class",
+	'data_type_class'			=> "Stored Data",
 	'data_custom_class'			=> "Custom Classname",
 	'data_use_mode'				=> "Field Editing Mode",
 	'data_tab'				=> "Form Tab Name",
 	'data_tab_desc'				=> "Enter the name of the tab that this field should appear under on editing forms",
 	'data_required'				=> "Is this data required?",
+	'data_text_mode' 			=> "Text Input Control",
 	
 	'rules_numeric_math_operation'		=> "Value update method",
 	'rules_array_operation'			=> "Array update method",

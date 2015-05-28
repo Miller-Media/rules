@@ -101,10 +101,32 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	}
 	
 	/**
+	 * Get Rules Data With Permission Check
+	 * @param 	string			$key		The data to retrieve/set
+	 * @param 	\IPS\Member|NULL	$member		The member to check access against or NULL for currently logged in member
+	 * @param	string			$permission	The permission to check
+	 * @return 	mixed|NULL				Rules Data or NULL if member does not have permission
+	 */
+	public function getRulesDataWithPermission( $key, \IPS\Member $member=NULL, $permission='view' )
+	{
+		try
+		{
+			$data = \IPS\rules\Data::load( $key, 'data_key' );
+			if ( $data->can( $permission, $member ) )
+			{
+				return $this->getRulesData( $key );
+			}
+		}
+		catch ( \OutOfRangeException $e ) { }
+		
+		return NULL;
+	}
+	
+	/**
 	 * Get Rules Data
 	 *
-	 * @param 	string|NULL	$key		The data to retrieve/set
-	 * @return	array				Rules Data
+	 * @param 	string|NULL		$key		The data to retrieve/set
+	 * @return	array					Rules Data
 	 */
 	public function getRulesData( $key=NULL )
 	{
@@ -205,6 +227,8 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 									switch ( $data_field->type_class )
 									{
 										case '-IPS-DateTime':
+										
+											if ( ! $_id ) continue;
 										
 											$_data_field_data[ $_id ] = \IPS\DateTime::ts( $_id );
 											break;
@@ -317,7 +341,13 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 						
 							if ( ! is_object( $value ) )
 							{
-								throw new \InvalidArgumentException( 'Value is expected to be an object' );
+								if ( ! $value )
+								{
+									$save_value = NULL;
+									break;
+								}
+								
+								throw new \InvalidArgumentException( 'Value is expected to be an object. ' . gettype( $value ) . ' given.' );
 							}
 						
 							if ( $data_field->type_class )
@@ -352,6 +382,12 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 						
 							if ( ! is_array( $value ) )
 							{
+								if ( ! $value )
+								{
+									$save_value = NULL;
+									break;
+								}
+								
 								throw new \InvalidArgumentException( 'Value is expected to be an array' );
 							}
 							

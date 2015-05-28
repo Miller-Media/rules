@@ -1,0 +1,22 @@
+{
+    "1": {
+        "method": "addColumn",
+        "params": [
+            "rules_data",
+            {
+                "name": "data_text_mode",
+                "type": "INT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    }
+}

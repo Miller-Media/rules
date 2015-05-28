@@ -123,7 +123,10 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 			if ( $row[ 'data_use_mode' ] == 'public' or static::modPermission( 'edit', NULL, $container ) )
 			{
 				$data_field = \IPS\rules\Data::constructFromData( $row );
-				$formElements = array_merge( $formElements, $data_field->formElements( $item ) );
+				if ( $data_field->can( 'edit' ) )
+				{
+					$formElements = array_merge( $formElements, $data_field->formElements( $item ) );
+				}
 			}
 		}
 		

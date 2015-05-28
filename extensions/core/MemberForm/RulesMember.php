@@ -44,11 +44,11 @@ class _RulesMember
 	 */
 	public function process( &$form, $member )
 	{
-		if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $member::rulesDataClass() ) )->first() )
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $member::rulesDataClass() ) ) as $row )
 		{
-			foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $member::rulesDataClass() ) ) as $row )
+			$data_field = \IPS\rules\Data::constructFromData( $row );
+			if ( $data_field->can( 'edit' ) )
 			{
-				$data_field = \IPS\rules\Data::constructFromData( $row );
 				foreach( $data_field->formElements( $member ) as $name => $element )
 				{
 					$form->add( $element );

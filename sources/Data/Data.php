@@ -20,7 +20,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Node
  */
-class _Data extends \IPS\Node\Model
+class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 {
 	/**
 	 * @brief	[ActiveRecord] Multiton Store
@@ -60,25 +60,25 @@ class _Data extends \IPS\Node\Model
 	/**
 	 * @brief	[Node] App for permission index
 	 */
-	//public static $permApp = 'rules';
+	public static $permApp = 'rules';
 	
 	/**
 	 * @brief	[Node] Type for permission index
 	 */
-	//public static $permType = 'data_field';
+	public static $permType = 'data_field';
 	
 	/**
 	 * @brief	The map of permission columns
 	 */
-	/*public static $permissionMap = array(
+	public static $permissionMap = array(
 		'view'			=> 'view',
 		'edit'			=> 2,
-	);*/
+	);
 	
 	/**
 	 * @brief	[Node] Prefix string that is automatically prepended to permission matrix language strings
 	 */
-	//public static $permissionLangPrefix = 'rules_';
+	public static $permissionLangPrefix = 'rules_';
 	
 	/**
 	 * @brief	Use Modal Forms?
@@ -88,7 +88,7 @@ class _Data extends \IPS\Node\Model
 	/**
 	 * @brief	Original Key
 	 */
-	public $original_data = array();
+	public $originalData = array();
 	
 	/**
 	 *  Disable Copy Button
@@ -205,7 +205,7 @@ class _Data extends \IPS\Node\Model
 	 */
 	public function init()
 	{
-		$this->original_data = $this->_data;
+		$this->originalData = $this->_data;
 	}
 	
 	/**
@@ -298,11 +298,21 @@ class _Data extends \IPS\Node\Model
 		(
 			'object'	=> 'Object',
 			'int' 		=> 'Integer',
-			'string' 	=> 'String',
-			'array'		=> 'Array',
 			'float'		=> 'Decimal / Float',
+			'string' 	=> 'String',
 			'bool'		=> 'TRUE / FALSE',
-			'mixed'		=> 'Mixed Values',
+			'array'		=> 'Array (multiple values)',
+			'mixed'		=> 'Any Value',
+		);
+		
+		$data_toggles = array
+		(
+			'object' 	=> array( 'data_use_mode', 'data_type_class' ),
+			'int'		=> array( 'data_use_mode' ),
+			'float'		=> array( 'data_use_mode' ),
+			'string' 	=> array( 'data_use_mode', 'data_text_mode', 'data_text_mode_wrap' ),
+			'bool'		=> array( 'data_use_mode' ),
+			'array' 	=> array( 'data_use_mode', 'data_type_class' ),
 		);
 		
 		/**
@@ -375,7 +385,7 @@ class _Data extends \IPS\Node\Model
 		);
 		
 		$form->add( new \IPS\Helpers\Form\Select( 'data_class', $this->class ?: '-IPS-Member', FALSE, array( 'options' => $data_classes, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_class' ) );
-		$form->add( new \IPS\Helpers\Form\Select( 'data_type', $this->type ?: 'string', TRUE, array( 'options' => $data_types, 'toggles' => array( 'object' => array( 'data_type_class' ), 'array' => array( 'data_type_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'data_type', $this->type ?: 'string', TRUE, array( 'options' => $data_types, 'toggles' => $data_toggles, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
 		$form->add( new \IPS\Helpers\Form\Select( 'data_type_class', $this->type_class ?: '', FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'data_custom_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_type_class' ) );
 		
 		$data_use_options = array
@@ -387,13 +397,20 @@ class _Data extends \IPS\Node\Model
 		
 		$data_use_toggles = array
 		(
-			'public' => array( 'data_tab', 'data_required' ),
-			'admin' => array( 'data_tab', 'data_required' ),
+			'public' => array( 'data_tab', 'data_required', 'data_text_mode' ),
+			'admin' => array( 'data_tab', 'data_required', 'data_text_mode' ),
 		);
 		
-		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ) ) );
+		$data_text_modes = array
+		(
+			1 => 'Text Field',
+			2 => 'Editor',
+		);
+		
+		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
 		//$form->add( new \IPS\Helpers\Form\Text( 'data_tab', $this->tab, FALSE, array(), NULL, NULL, NULL, 'data_tab' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes ), NULL, "<div id='data_text_mode_wrap'>", "</div>", 'data_text_mode' ) );
 		
 		parent::form( $form );
 	}
@@ -424,14 +441,96 @@ class _Data extends \IPS\Node\Model
 				break;
 				
 			case 'float':
+			
+				$formElements[ $form_name ] = new \IPS\Helpers\Form\Number( $form_name, $form_value, $this->required, array( 'min' => NULL, 'decimals' => TRUE ), NULL, NULL, NULL, $form_name );
+				break;
+			
 			case 'string':
 			
-				$formElements[ $form_name ] = new \IPS\Helpers\Form\Text( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+				switch( $this->text_mode )
+				{
+					case 2:
+					
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Editor( $form_name, $form_value, $this->required, array( 'app' => 'rules', 'key' => 'Generic' ) );
+						break;
+						
+					case 1:
+					default:
+					
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Text( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+						break;
+				}
 				break;
 				
 			case 'bool':
 			
-				$formElements[ $form_name ] = new \IPS\Helpers\Form\YesNo( $form_name, $form_value, TRUE, array(), NULL, NULL, NULL, $form_name );
+				$formElements[ $form_name ] = new \IPS\Helpers\Form\YesNo( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+				break;
+				
+			case 'object':
+			
+				$objectClass = str_replace( '-', '\\', $this->type_class );
+				
+				/* Node Select */
+				if ( is_subclass_of( $objectClass, '\IPS\Node\Model' ) )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Node( $form_name, $form_value, $this->required, array( 'class' => $objectClass, 'multiple' => FALSE, 'permissionCheck' => 'view' ), NULL, NULL, NULL, $form_name );
+				}
+				
+				/* Content Select */
+				else if ( is_subclass_of( $objectClass, '\IPS\Content\Item' ) )
+				{
+					// @TODO:
+				}
+				
+				/* Member Select */
+				else if ( $objectClass == '\IPS\Member' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Member( $form_name, $form_value, $this->required, array( 'multiple' => 1 ), NULL, NULL, NULL, $form_name );
+				}
+				
+				/* Date Select */
+				else if ( $objectClass == '\IPS\DateTime' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Date( $form_name, $form_value, $this->required, array( 'time' => TRUE ), NULL, NULL, NULL, $form_name );
+				}
+				
+				break;
+			
+			case 'array':
+			
+				$objectClass = str_replace( '-', '\\', $this->type_class );
+
+				/* Multiple Node Select */
+				if ( is_subclass_of( $objectClass, '\IPS\Node\Model' ) )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Node( $form_name, $form_value, $this->required, array( 'class' => $objectClass, 'multiple' => TRUE, 'permissionCheck' => 'view' ), NULL, NULL, NULL, $form_name );
+				}
+				
+				/* Multiple Content Select */
+				else if ( is_subclass_of( $objectClass, '\IPS\Content\Item' ) )
+				{
+					// @TODO:
+				}
+				
+				/* Multiple Member Select */
+				else if ( $objectClass == '\IPS\Member' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Member( $form_name, $form_value, $this->required, array( 'multiple' => NULL ), NULL, NULL, NULL, $form_name );
+				}
+				
+				/* Multiple Date Select */
+				else if ( $objectClass == '\IPS\DateTime' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Stack( $form_name, $form_value, $this->required, array( 'stackFieldType' => 'Date', 'time' => FALSE ), NULL, NULL, NULL, $form_name );
+				}
+
+				/* Multiple Arbitrary Values */
+				else if ( $objectClass == '' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Stack( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+				}
+				
 				break;
 		}
 		
@@ -510,20 +609,20 @@ class _Data extends \IPS\Node\Model
 			 * 
 			 * DROP COLUMN
 			 */
-			if ( $this->original_data[ 'class' ] != $this->class or $this->original_data[ 'type_class' ] != $this->type_class or $this->original_data[ 'type' ] != $this->type )
+			if ( $this->originalData[ 'class' ] != $this->class or $this->originalData[ 'type_class' ] != $this->type_class or $this->originalData[ 'type' ] != $this->type )
 			{
 				try
 				{
-					\IPS\Db::i()->dropColumn( $this::getTableName( $this->original_data[ 'class' ] ), 'data_' . $this->original_data[ 'column_name' ] );
+					\IPS\Db::i()->dropColumn( $this::getTableName( $this->originalData[ 'class' ] ), 'data_' . $this->originalData[ 'column_name' ] );
 				}
 				catch ( \IPS\Db\Exception $e ) {}
 				
 				/* If there are no data fields left for the old class, drop the table too */
-				if ( ! \IPS\Db::i()->select( 'COUNT(*)', 'rules_data', array( 'data_class=? AND data_id!=?', $this->original_data[ 'class' ], $this->id ) )->first() )
+				if ( ! \IPS\Db::i()->select( 'COUNT(*)', 'rules_data', array( 'data_class=? AND data_id!=?', $this->originalData[ 'class' ], $this->id ) )->first() )
 				{
 					try
 					{
-						\IPS\Db::i()->dropTable( $this::getTableName( $this->original_data[ 'class' ] ) );
+						\IPS\Db::i()->dropTable( $this::getTableName( $this->originalData[ 'class' ] ) );
 					}
 					catch ( \IPS\Db\Exception $e ) {}
 				}
@@ -534,9 +633,9 @@ class _Data extends \IPS\Node\Model
 			 *
 			 * CHANGE COLUMN
 			 */
-			else if ( $this->original_data[ 'column_name' ] != $this->column_name )
+			else if ( $this->originalData[ 'column_name' ] != $this->column_name )
 			{
-				\IPS\Db::i()->changeColumn( $this::getTableName( $this->class ), 'data_' . $this->original_data[ 'column_name' ], $this::columnDefinition( $this->type, $this->type_class, $this->column_name ) );
+				\IPS\Db::i()->changeColumn( $this::getTableName( $this->class ), 'data_' . $this->originalData[ 'column_name' ], $this::columnDefinition( $this->type, $this->type_class, $this->column_name ) );
 			}
 		}
 		
@@ -559,7 +658,7 @@ class _Data extends \IPS\Node\Model
 		/**
 		 * Update the original data
 		 */
-		$this->original_data = $this->_data;
+		$this->originalData = $this->_data;
 		
 		parent::save();
 		
