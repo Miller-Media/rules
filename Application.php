@@ -878,7 +878,9 @@ class _Application extends \IPS\Application
 								if ( isset ( $input_arg ) )
 								{
 									/**
-									 * Convert the event argument if necessary
+									 * If an argument has been chosen which is a "derivative" of an actual event argument,
+									 * then we need to pass the event argument to the conversion function to get the
+									 * correct derivative value.
 									 */
 									if ( $converter_class and $converter_key )
 									{
@@ -905,17 +907,17 @@ class _Application extends \IPS\Application
 									}
 									
 									/**
-									 * Argtypes must be set to use event arguments
+									 * Argtypes must be defined to use event arguments
 									 */
 									if ( is_array( $arg[ 'argtypes' ] ) )
 									{
-										/* Simple definitions with no converters */
+										/* Simple definitions with no processing callbacks */
 										if ( in_array( $event_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
 										{
 											$_operation_arg = $event_arg;
 										}
 										
-										/* Complex definitions, check for converters */
+										/* Complex definitions, check for processing callbacks */
 										else if ( isset( $arg[ 'argtypes' ][ $event_arg_type ] ) )
 										{
 											if ( isset ( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $event_arg_type ][ 'converter' ] ) )
@@ -957,6 +959,11 @@ class _Application extends \IPS\Application
 							
 							case 'manual':
 							
+								/**
+								 * Arguments received from manual configuration callbacks are not passed through any processing callbacks
+								 * because it is expected that the designer of the operation will return an argument that is
+								 * already in a state that can be passed directly to the operation callback.
+								 */
 								if ( isset ( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) )
 								{
 									$operation_args[] = call_user_func_array( $arg[ 'configuration' ][ 'getArg' ], array( $operation->data[ 'configuration' ][ 'data' ], $operation ) );
@@ -993,13 +1000,13 @@ class _Application extends \IPS\Application
 										
 										$php_arg_type = $type_map[ gettype( $argVal ) ];
 										
-										/* Simple definitions with no converters */
+										/* Simple definitions with no processing callbacks */
 										if ( in_array( $php_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
 										{
 											$operation_args[] = $argVal;
 										}
 										
-										/* Complex definitions, check for converters */
+										/* Complex definitions, check for processing callbacks */
 										else if ( isset( $arg[ 'argtypes' ][ $php_arg_type ] ) )
 										{
 											if ( isset ( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) )
@@ -1106,14 +1113,14 @@ class _Application extends \IPS\Application
 											
 											$php_arg_type = $type_map[ gettype( $argVal ) ];
 											
-											/* Simple definitions with no converters */
+											/* Simple definitions with no processing callbacks */
 											if ( in_array( $php_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
 											{
 												$operation_args[] = $argVal;
 												$argument_missing = FALSE;
 											}
 											
-											/* Complex definitions, check for converters */
+											/* Complex definitions, check for processing callbacks */
 											else if ( isset( $arg[ 'argtypes' ][ $php_arg_type ] ) )
 											{
 												if ( isset ( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) )
