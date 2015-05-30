@@ -1155,9 +1155,11 @@ class _Content
 									$item, $content, TRUE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, $now
 								);
 							}
+							
 							if ( ! empty ( $tags ) )
 							{
-								$item->setTags( $tags );
+								/* Set tags through our rules action to account for non-logged in members */
+								$this->setTags( $item, $tags, array( 'rules_Content_modify_tags_type' => 'set' ) );
 							}
 							
 							return "content created";
@@ -1637,16 +1639,26 @@ class _Content
 	 * Set Content Tags
 	 */
 	public function setTags( $content, $tags, $values )
-	{	
+	{
+		/* Tags cannot be saved with a NULL member_id */
+		if ( \IPS\Member::loggedIn()->member_id === NULL )
+		{
+			$anonymous = TRUE;
+			\IPS\Member::loggedIn()->member_id = 0;
+		}
+		
 		switch ( $values[ 'rules_Content_modify_tags_type' ] )
 		{
 			case 'add':
+			
 				$_tags = array_merge( (array) $content->tags(), (array) $tags );
 				$_tags = array_unique( $_tags );
 				$content->setTags( $_tags );
-				return "content tags added";
+				$status = "content tags added";
+				break;
 			
 			case 'remove':
+			
 				$_tags = $content->tags();
 				foreach ( (array) $tags as $tag )
 				{
@@ -1656,12 +1668,23 @@ class _Content
 					}
 				}
 				$content->setTags( $_tags );
-				return "content tags removed";
+				$status = "content tags removed";
+				break;
 			
 			case 'set':
+			
 				$content->setTags( $tags );
-				return "content tags set";
+				$status = "content tags set";
+				break;
 		}
+		
+		/* If member is anonymous, re-set member_id to NULL */
+		if ( isset( $anonymous ) )
+		{
+			\IPS\Member::loggedIn()->member_id = NULL;
+		}
+		
+		return $status;
 	}
 
 	/**
