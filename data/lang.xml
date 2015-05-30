@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100010">
+ <app key="rules" version="100100">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -47,15 +47,17 @@
 						   </div>]]></word>
   <word key="data_class" js="0">Data Associated With</word>
   <word key="data_type" js="0">Stored Data Type</word>
-  <word key="data_type_class" js="0">Stored Object Class</word>
+  <word key="data_type_class" js="0">Stored Data</word>
   <word key="data_custom_class" js="0">Custom Classname</word>
   <word key="data_use_mode" js="0">Field Editing Mode</word>
   <word key="data_tab" js="0">Form Tab Name</word>
   <word key="data_tab_desc" js="0">Enter the name of the tab that this field should appear under on editing forms</word>
   <word key="data_required" js="0">Is this data required?</word>
+  <word key="data_text_mode" js="0">Text Input Control</word>
   <word key="rules_numeric_math_operation" js="0">Value update method</word>
   <word key="rules_array_operation" js="0">Array update method</word>
   <word key="rules_node_data_tab" js="0">Rules Data</word>
+  <word key="rules_profile_data_header" js="0">Custom Profile Data</word>
   <word key="data_column_not_unique" js="0">This key is already being used for another field</word>
   <word key="rules_data_column_invalid" js="0">Your data key contains invalid characters. Only lowercase alphanumerics (including underscores) are allowed.</word>
   <word key="rules_scheduled_actions" js="0">Scheduled Actions</word>
@@ -119,8 +121,8 @@
   <word key="phpcode_desc_details" js="0">The operation expects you to return one of the following argument types:</word>
   <word key="phpcode_desc_details_vars" js="0">The following variables are available to your php code:</word>
   <word key="use_event_argument" js="0">Data To Use</word>
-  <word key="use_event_argument_default" js="0">Use A Default Configuration?</word>
-  <word key="use_event_argument_default_desc" js="0">If the event data for this argument is empty, use a default configuration.</word>
+  <word key="use_event_argument_default" js="0">Use An Alternative Value?</word>
+  <word key="use_event_argument_default_desc" js="0">If the event data for this argument is empty, an alternative value can be used.</word>
   <word key="rule_debug" js="0">Debug This Rule</word>
   <word key="debug_on_badge" js="0"><![CDATA[<i class='fa fa-bug'></i> Debug Mode]]></word>
   <word key="rule_event_missing_badge" js="0"><![CDATA[<i class='fa fa-warning'></i> Event Missing]]></word>
@@ -146,8 +148,8 @@
 							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>]]></word>
   <word key="condition_not" js="0">NOT</word>
   <word key="condition_not_desc" js="0">Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.</word>
-  <word key="rules_event_argument_optional_notice" js="0">The event has indicated that this data may sometimes be empty. And even though this data is not required for the operation, you may choose to use a default configuration if it is (empty).</word>
-  <word key="rules_event_argument_required_notice" js="0">The event has indicated that this data may sometimes be empty. Since this argument is required by the operation, you must also provide a default configuration to use.</word>
+  <word key="rules_event_argument_optional_notice" js="0">The event has indicated that this data may sometimes be empty. The good news is that this argument is optional for the operation. However, you may still provide an alternative value to use in case it is not provided by the event.</word>
+  <word key="rules_event_argument_required_notice" js="0">The event has indicated that this data may sometimes be empty. This argument is REQUIRED for the operation to work. If you do not provide an alternative value, this operation will be skipped if the event data is missing.</word>
   <word key="conditions_add_child" js="0">Add Sub Condition</word>
   <word key="or_group_badge" js="0">OR ANY SUBCONDITION</word>
   <word key="and_group_badge" js="0">AND ALL SUBCONDITIONS</word>
@@ -171,6 +173,7 @@
   <word key="rules_subrules_table_rule_id" js="0">Rule Name</word>
   <word key="rules_subrules_table_message" js="0">Status</word>
   <word key="rules_subrules_table_result" js="0">Result</word>
+  <word key="rules_view_overview" js="0">Display Overview</word>
   <word key="rules_scheduled_schedule_time" js="0">Scheduled Date</word>
   <word key="rules_scheduled_schedule_action_id" js="0">Scheduled Action</word>
   <word key="rules_scheduled_schedule_unique_key" js="0">Keyphrase</word>

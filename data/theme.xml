@@ -93,6 +93,33 @@
 	<p>Actions that have been scheduled will appear in the &ldquo;Scheduled Actions&rdquo; portion of your ACP in the Rules management section. You can see a list of all upcoming scheduled actions, modify the scheduled action date, delete scheduled actions, or execute specific actions immediately instead of waiting for their scheduled date to arrive.</p>
 
 </div>	]]></template>
+ <template template_group="views" template_name="actions" template_data="$actions" template_location="admin" template_app="rules"><![CDATA[
+{{if $actions}}	
+<ul style="margin-top:3px">
+	{{foreach $actions as $action}}
+	<li>
+		<strong>{lang="{$action->app}_{$action->class}_actions_{$action->key}"}</strong> ({$action->title}) {{if ! $action->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
+	</li>
+	{{endforeach}}
+</ul>
+{{endif}}]]></template>
+ <template template_group="views" template_name="conditions" template_data="$conditions" template_location="admin" template_app="rules"><![CDATA[
+{{if $conditions}}	
+<ul style="margin-top:3px">
+	{{foreach $conditions as $condition}}
+	<li>
+		{{if $condition->not}}<span class="ipsBadge ipsBadge_warning">NOT</span> {{endif}}<strong>{lang="{$condition->app}_{$condition->class}_conditions_{$condition->key}"}</strong> ({$condition->title})  {{if ! $condition->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
+		
+		{{if $condition->children()}}
+			{{if $condition->group_compare == 'and'}} - and ALL subconditions{{else}} - or ANY subconditions{{endif}}
+			{template="conditions" app="rules" group="views" params="$condition->children()"}
+		{{endif}}
+	</li>
+	{{endforeach}}
+</ul>
+{{endif}}
+	
+]]></template>
  <template template_group="views" template_name="logdetails" template_data="$log, $event, $rule, $conditions, $actions, $subrules" template_location="admin" template_app="rules"><![CDATA[
 <div class='ipsPad'>
 
@@ -115,6 +142,41 @@
 	{$subrules|raw}
 	
 </div>]]></template>
+ <template template_group="views" template_name="rules" template_data="$rules, $top=TRUE" template_location="admin" template_app="rules"><![CDATA[
+{{foreach $rules as $rule}}
+<div class="ipsPad">
+	<div class="ipsCode">
+		<i class='fa fa-legal'></i> {{if $top}}Rule:{{else}}Subrule:{{endif}} <strong>{$rule->title}</strong> {{if ! $rule->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
+		<ul>
+			{{if $top}}
+			<li class='ipsPad_top'>
+				Event: <strong>{$rule->event()->title()}</strong>
+			</li>
+			{{endif}}
+			<li class='ipsPad_top'>
+				Conditions: {{if count($rule->conditions()) > 1 }}( {{if $rule->base_compare == 'and'}}match all conditions{{else}}match any condition{{endif}} ){{endif}}
+				{{if $rule->conditions()}}
+					{template="conditions" app="rules" group="views" params="$rule->conditions()"}
+				{{else}}
+					<strong>None</strong>
+				{{endif}}
+			</li>
+			<li class='ipsPad_top'>
+				Actions: 
+				{{if $rule->actions()}}
+					{template="actions" app="rules" group="views" params="$rule->actions()"}
+				{{else}}
+					<strong>None</strong>
+				{{endif}}
+			</li>
+		</ul>
+		{{if $rule->children()}}
+			{template="rules" app="rules" group="views" params="$rule->children(), FALSE"}
+		{{endif}}
+	</div>
+</div>
+{{endforeach}}
+]]></template>
  <css css_location="admin" css_app="rules" css_attributes="" css_path="." css_name="chosen.css">/*!
 Chosen, a Select Box Enhancer for jQuery and Prototype
 by Patrick Filler for Harvest, http://getharvest.com

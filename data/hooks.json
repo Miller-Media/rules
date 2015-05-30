@@ -34,5 +34,9 @@
     "ipsNodeController": {
         "type": "C",
         "class": "\\IPS\\Node\\Controller"
+    },
+    "modCoreMembersProfile": {
+        "type": "C",
+        "class": "\\IPS\\core\\modules\\front\\members\\profile"
     }
 }
