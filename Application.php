@@ -406,12 +406,9 @@ class _Application extends \IPS\Application
 							<div class='ipsMessage ipsMessage_warning'>
 								{$noticeLang}
 							</div>
-							<div>
-								<strong>Default Configuration:</strong>
-							</div>
 						</div>
 						";
-							
+
 					/**
 					 * Argument source selection
 					 *
@@ -422,9 +419,13 @@ class _Application extends \IPS\Application
 					$source_select->options[ 'options' ] = array();
 					
 					/**
-					 * Can the argument be configured manually
+					 * Does the argument support a manual configuration
 					 */
-					if ( isset ( $arg[ 'configuration' ][ 'form' ] ) and is_callable( $arg[ 'configuration' ][ 'form' ] ) )
+					if 
+					( 
+						( isset ( $arg[ 'configuration' ][ 'form' ] ) 	and is_callable( $arg[ 'configuration' ][ 'form' ] ) ) and 
+						( isset ( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) )
+					)
 					{				
 						/**
 						 * Add manual configuration form fields from definition
@@ -537,21 +538,11 @@ class _Application extends \IPS\Application
 							{
 								$form->hiddenValues[ md5( $event_arg_name ) . '_nullable' ] = TRUE;
 							
-								/* Toggle on manual settings to use in case the event argument is empty */
-								if ( $arg[ 'required' ] )
-								{
-									/* toggle the manual configuration form by necessity because it's required */
-									$usable_toggles[ $event_arg_name ] = array_merge( (array) $source_select->options[ 'toggles' ][ 'manual' ], array( $argNameKey . '_optional_notice' ) );
-									$form->hiddenValues[ $argNameKey . '_eventArg_useDefault' ] = TRUE;
-								}
-								else
-								{
-									/* The default config YesNo option will be needed */
-									$default_toggle_needed = TRUE;
-									
-									/* a yes/no option will be given to allow the user to choose a default configuration, so just toggle that */
-									$usable_toggles[ $event_arg_name ] = array( $argNameKey . '_eventArg_useDefault', $argNameKey . '_optional_notice' );
-								}
+								/* The default config YesNo option will be needed */
+								$default_toggle_needed = TRUE;
+								
+								/* a yes/no option will be given to allow the user to choose a default configuration, so just toggle that */
+								$usable_toggles[ $event_arg_name ] = array( $argNameKey . '_eventArg_useDefault', $argNameKey . '_optional_notice' );
 							}
 							else
 							{
@@ -573,11 +564,12 @@ class _Application extends \IPS\Application
 							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix . $noticeHtml, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
 							
 							/**
-							 * Make using a manual configuration optional if the argument is also optional
+							 * Offer default configuration option if available
 							 */
-							if ( ! $arg[ 'required' ] and $default_toggle_needed )
+							if ( $default_toggle_needed )
 							{
-								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $source_select->options[ 'toggles' ][ 'manual' ] ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
+								$togglesOn = ( isset( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) ) ? $source_select->options[ 'toggles' ][ 'manual' ] : array( $argNameKey . '_phpcode' );
+								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $togglesOn ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
 							}
 							
 							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg', $argNameKey . '_eventArg_useDefault' );
@@ -989,7 +981,8 @@ class _Application extends \IPS\Application
 								{
 									if ( is_array( $arg[ 'argtypes' ] ) )
 									{
-										$type_map = array( 
+										$type_map = array
+										( 
 											'integer' 	=> 'int',
 											'double'	=> 'float',
 											'boolean' 	=> 'bool',
@@ -1062,11 +1055,13 @@ class _Application extends \IPS\Application
 						( 
 							$argument_missing and 
 							$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] !== 'manual' and
-							isset ( $arg[ 'configuration' ][ 'getArg' ] ) and 
-							is_callable( $arg[ 'configuration' ][ 'getArg' ] )
-						)
+							$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ]
+						)	
 						{
-							if ( $arg[ 'required' ] or $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ] )
+							/**
+							 * Get the default value from manual configuration setting
+							 */
+							if ( isset ( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) )
 							{
 								$argVal = call_user_func_array( $arg[ 'configuration' ][ 'getArg' ], array( $operation->data[ 'configuration' ][ 'data' ], $operation ) );
 								if ( isset( $argVal ) )
@@ -1075,14 +1070,89 @@ class _Application extends \IPS\Application
 									$operation_args[] = $argVal;
 								}
 							}
+							
+							/**
+							 * Get the default value from phpcode
+							 */
+							else
+							{
+								/* Only if we haven't already attempted to get the argument from phpcode */
+								if ( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] !== 'phpcode' )
+								{
+									/**
+									 * This code is getting a little redundant. I know.
+									 */
+									$evaluate = function( $phpcode ) use ( $arg_map )
+									{
+										extract( $arg_map );								
+										return @eval( $phpcode );
+									};
+									
+									$argVal = $evaluate( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] );
+									
+									if ( isset( $argVal ) )
+									{
+										if ( is_array( $arg[ 'argtypes' ] ) )
+										{
+											$type_map = array
+											( 
+												'integer' 	=> 'int',
+												'double'	=> 'float',
+												'boolean' 	=> 'bool',
+												'string' 	=> 'string',
+												'array'		=> 'array',
+												'object'	=> 'object',
+											);
+											
+											$php_arg_type = $type_map[ gettype( $argVal ) ];
+											
+											/* Simple definitions with no converters */
+											if ( in_array( $php_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
+											{
+												$operation_args[] = $argVal;
+												$argument_missing = FALSE;
+											}
+											
+											/* Complex definitions, check for converters */
+											else if ( isset( $arg[ 'argtypes' ][ $php_arg_type ] ) )
+											{
+												if ( isset ( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) )
+												{
+													$operation_args[] = call_user_func_array( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ], array( $argVal, $operation->data[ 'configuration' ][ 'data' ] ) );
+												}
+												else
+												{
+													$operation_args[] = $argVal;
+												}
+												$argument_missing = FALSE;
+											}
+											else if ( isset( $arg[ 'argtypes' ][ 'mixed' ] ) )
+											{
+												if ( isset ( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ] ) )
+												{
+													$operation_args[] = call_user_func_array( $arg[ 'argtypes' ][ 'mixed' ][ 'converter' ], array( $argVal, $operation->data[ 'configuration' ][ 'data' ] ) );
+												}
+												else
+												{
+													$operation_args[] = $argVal;
+												}
+												$argument_missing = FALSE;
+											}
+										}
+									}							
+								}
+							}
 						}
 
 						if ( $argument_missing )
 						{
 							if ( $arg[ 'required' ] )
 							{
-								/* Operation cannot be invoked because we're missing required arguments */
-								static::rulesLog( $event, $operation->rule(), $operation, "No argument available for: " . $arg_name, 'Action not taken (missing argument)', 1 );
+								/* Operation cannot be invoked because we're missing a required argument */
+								if ( $rule = $operation->rule() and $rule->debug )
+								{
+									static::rulesLog( $event, $operation->rule(), $operation, "No argument available for: " . $arg_name, 'Operation skipped (missing argument)' );
+								}
 								return NULL;
 							}
 							else
