@@ -922,6 +922,10 @@ class _Content
 								$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_reason', $values[ 'rules_Content_reason' ], FALSE, array(), NULL, NULL, NULL, 'rules_Content_reason' ) );
 								return array( 'rules_Content_reason' );
 							},
+							'getArg' => function( $values )
+							{
+								return $values[ 'rules_Content_reason' ];
+							},
 						),
 					),
 				),
@@ -1369,10 +1373,11 @@ class _Content
 	 */
 	public function contentType( $content, $values )
 	{
-		if ( ! is_object( $content ) )
+		if ( ! ( $content instanceof \IPS\Content ) )
 		{
-			return FALSE;
+			throw new \UnexpectedValueException( 'Invalid content' );
 		}
+		
 		return in_array( str_replace( '\\', '-', get_class( $content ) ), (array) $values[ 'rules_Content_content_types' ] );
 	}
 	
@@ -1381,9 +1386,9 @@ class _Content
 	 */
 	public function contentStatus( $content, $values )
 	{
-		if ( ! is_object( $content ) or ! ( $content instanceof \IPS\Content ) )
+		if ( ! ( $content instanceof \IPS\Content ) )
 		{
-			return FALSE;
+			throw new \UnexpectedValueException( 'Invalid content' );
 		}
 		
 		$hasStatus = TRUE;
@@ -1444,11 +1449,16 @@ class _Content
 	 */
 	public function contentAuthor( $content, $member, $values )
 	{
-		if ( ! ( $content instanceof \IPS\Content ) or ! ( $member instanceof \IPS\Member ) )
+		if ( ! ( $content instanceof \IPS\Content ) )
 		{
-			return FALSE;
+			throw new \UnexpectedValueException( 'Invalid content' );
 		}
-				
+		
+		if ( ! ( $member instanceof \IPS\Member ) )
+		{
+			throw new \UnexpectedValueException( 'Invalid member' );
+		}
+			
 		return $content->author()->member_id == $member->member_id;
 	}
 	
@@ -1459,7 +1469,7 @@ class _Content
 	{
 		if ( ! ( $item instanceof \IPS\Content\Item ) )
 		{
-			return FALSE;
+			throw new \UnexpectedValueException( 'Invalid content item' );
 		}
 	
 		switch ( $values[ 'rules_Content_check_tags_type' ] )
@@ -1493,9 +1503,9 @@ class _Content
 	 */
 	public function checkContentAttributes( $content, $values )
 	{
-		if ( ! ( $content instanceof \IPS\Content\Item ) )
+		if ( ! ( $content instanceof \IPS\Content ) )
 		{
-			return FALSE;
+			throw new \UnexpectedValueException( 'Invalid content' );
 		}
 
 		switch ( $values[ 'rules_Content_content_attribute' ] )
@@ -1622,9 +1632,14 @@ class _Content
 	 */
 	public function contentContainer( $containers, $content, $values )
 	{
-		if ( ! ( $content instanceof \IPS\Content\Item ) or ! isset( $content::$containerNodeClass ) )
+		if ( ! ( $content instanceof \IPS\Content\Item ) )
 		{
-			return FALSE;
+			throw new \UnexpectedValueException( 'Invalid content item' );
+		}
+		
+		if ( ! isset( $content::$containerNodeClass ) )
+		{
+			throw new \InvalidArgumentException( 'Content item does not support containers' );
 		}
 		
 		if ( $container = $content->containerWrapper( TRUE ) )
@@ -1640,6 +1655,11 @@ class _Content
 	 */
 	public function setTags( $content, $tags, $values )
 	{
+		if ( ! ( $content instanceof \IPS\Content\Item ) )
+		{
+			throw new \UnexpectedValueException( 'Invalid content item' );
+		}
+		
 		/* Tags cannot be saved with a NULL member_id */
 		if ( \IPS\Member::loggedIn()->member_id === NULL )
 		{

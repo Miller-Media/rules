@@ -67,6 +67,7 @@ $lang = array(
 	'rules_array_operation'			=> "Array update method",
 	
 	'rules_node_data_tab'			=> "Rules Data",
+	'rules_profile_data_header'		=> "Custom Profile Data",
 	
 	'data_column_not_unique'		=> "This key is already being used for another field",
 	'rules_data_column_invalid'		=> "Your data key contains invalid characters. Only lowercase alphanumerics (including underscores) are allowed.",
@@ -139,8 +140,8 @@ $lang = array(
 	'phpcode_desc_details'			=> "The operation expects you to return one of the following argument types:",
 	'phpcode_desc_details_vars'		=> "The following variables are available to your php code:",
 	'use_event_argument'			=> "Data To Use",
-	'use_event_argument_default'		=> "Use A Default Configuration?",
-	'use_event_argument_default_desc'	=> "If the event data for this argument is empty, use a default configuration.",
+	'use_event_argument_default'		=> "Use An Alternative Value?",
+	'use_event_argument_default_desc'	=> "If the event data for this argument is empty, an alternative value can be used.",
 
 	// Node Form
 	'rule_debug'				=> "Debug This Rule",
@@ -168,8 +169,8 @@ $lang = array(
 							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>",
 	'condition_not'				=> "NOT",
 	'condition_not_desc'			=> "Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.",
-	'rules_event_argument_optional_notice'	=> "The event has indicated that this data may sometimes be empty. And even though this data is not required for the operation, you may choose to use a default configuration if it is (empty).",
-	'rules_event_argument_required_notice'	=> "The event has indicated that this data may sometimes be empty. Since this argument is required by the operation, you must also provide a default configuration to use.",
+	'rules_event_argument_optional_notice'	=> "The event has indicated that this data may sometimes be empty. The good news is that this argument is optional for the operation. However, you may still provide an alternative value to use in case it is not provided by the event.",
+	'rules_event_argument_required_notice'	=> "The event has indicated that this data may sometimes be empty. This argument is REQUIRED for the operation to work. If you do not provide an alternative value, this operation will be skipped if the event data is missing.",
 	'conditions_add_child'			=> "Add Sub Condition",
 	'or_group_badge'			=> "OR ANY SUBCONDITION",
 	'and_group_badge'			=> "AND ALL SUBCONDITIONS",
@@ -195,6 +196,7 @@ $lang = array(
 	'rules_subrules_table_rule_id'		=> "Rule Name",
 	'rules_subrules_table_message'		=> "Status",
 	'rules_subrules_table_result'		=> "Result",
+	'rules_view_overview'			=> "Display Overview",
 	
 	'rules_scheduled_schedule_time'		=> "Scheduled Date",
 	'rules_scheduled_schedule_action_id'	=> "Scheduled Action",
