@@ -48,6 +48,11 @@ class _{class}
 			 *
 			 * Each of your events is triggered using an event key.
 			 * Event keys only need to be unique to this class.
+			 *
+			 * The name of the event should be stored as a language string
+			 * in your lang.php with a key in the following format:
+			 *
+			 * '{app}_{class}_event_{event_key}' => 'Event Name'
 			 */
 			'event_key' => array
 			( 
@@ -80,6 +85,11 @@ class _{class}
 					 *
 					 * Note: since they are used as variable names, you may only
 					 * use alphanumerics and underscores in the name.
+					 *
+					 * The description of the variable should be stored as a language string
+					 * in your lang.php with a key in the following format:
+					 *
+					 * '{app}_{class}_event_{event_key}_{variable1}' => 'Variable description'					 
 					 */
 					'variable1' => array
 					(
@@ -150,6 +160,11 @@ class _{class}
 			 *
 			 * Any condition you provide is invoked using a condition key.
 			 * Condition keys only need to be unique to this class.
+			 *
+			 * The name of the condition should be stored as a language string
+			 * in your lang.php with a key in the following format:
+			 *
+			 * '{app}_{class}_conditions_{condition_key}' => 'Condition Name'
 			 */
 			'condition_key' => array
 			(
@@ -224,8 +239,13 @@ class _{class}
 					/**
 					 * Argument Names
 					 *
-					 * Arguments are defined in the order that they will be
+					 * Arguments need to be defined in the order that they will be
 					 * passed to your callback function.
+					 *
+					 * The description of the argument should be stored as a language string
+					 * in your lang.php with a key in the following format:
+					 *
+					 * '{app}_{class}_conditions_{condition_key}_{arg1}' => 'Description of argument'					 
 					 */
 					'arg1' => array
 					(
@@ -316,8 +336,8 @@ class _{class}
 							 */
 							'form'		=> function( $form, $values, $condition ) 
 							{
-								$form->add( new \IPS\Helpers\Form\Text( 'custom_arg_value', $values[ 'custom_arg_value' ], FALSE, array(), NULL, NULL, NULL, 'custom_arg_value' ) );
-								return array( 'custom_arg_value' );
+								$form->add( new \IPS\Helpers\Form\Text( 'custom_arg_value', $values[ 'custom_arg_value' ], FALSE, array(), NULL, NULL, NULL, 'custom_html_id' ) );
+								return array( 'custom_html_id' );
 							},
 							
 							/**
@@ -374,6 +394,11 @@ class _{class}
 			 *
 			 * Each of your actions is invoked using an action key.
 			 * Actions keys only need to be unique to this class.
+			 *
+			 * The name of the action should be stored as a language string
+			 * in your lang.php with a key in the following format:
+			 *
+			 * '{app}_{class}_actions_{action_key}' => 'Action Name'
 			 */
 			'action_key' => array
 			(
@@ -447,8 +472,13 @@ class _{class}
 					/**
 					 * Argument Names
 					 *
-					 * Arguments are defined in the order that they will be
+					 * Arguments need to be defined in the order that they will be
 					 * passed to your callback function.
+					 *
+					 * The description of the argument should be stored as a language string
+					 * in your lang.php with a key in the following format:
+					 *
+					 * '{app}_{class}_actions_{action_key}_{arg1}' => 'Description of argument'					 
 					 */
 					'arg1' => array
 					(

@@ -43,7 +43,8 @@ class _{class}
 			 * language string. The key for the language string is your argument
 			 * name prepended with "__global_". For example, the argument in the 
 			 * example below would require a langauge string to be defined for:
-			 * __global_logged_in_member = "Global: Logged in member";
+			 *
+			 * '__global_logged_in_member' = "Global: Logged in member"
 			 */
 			'logged_in_member' => array
 			(
