@@ -1,0 +1,17 @@
+<ips:template parameters="$conditions" />
+
+{{if $conditions}}	
+<ul style="margin-top:3px">
+	{{foreach $conditions as $condition}}
+	<li>
+		{{if $condition->not}}<span class="ipsBadge ipsBadge_warning">NOT</span> {{endif}}<strong>{lang="{$condition->app}_{$condition->class}_conditions_{$condition->key}"}</strong> ({$condition->title})  {{if ! $condition->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
+		
+		{{if $condition->children()}}
+			{{if $condition->group_compare == 'and'}} - and ALL subconditions{{else}} - or ANY subconditions{{endif}}
+			{template="conditions" app="rules" group="views" params="$condition->children()"}
+		{{endif}}
+	</li>
+	{{endforeach}}
+</ul>
+{{endif}}
+	

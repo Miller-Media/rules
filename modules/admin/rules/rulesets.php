@@ -694,12 +694,54 @@ class _rulesets extends \IPS\Node\Controller
 	}
 	
 	/**
+	 * View Rule Overview
+	 */
+	protected function viewOverview()
+	{
+		/**
+		 * Overview A Single Rule(group)
+		 */
+		if ( \IPS\Request::i()->rule )
+		{
+			try
+			{
+				$rule = \IPS\rules\Rule::load( \IPS\Request::i()->rule );
+			}
+			catch( \OutOfRangeException $e )
+			{
+				\IPS\Output::i()->error( 'invalid_rule', '2RL01/B', 403 );
+			}
+			
+			\IPS\Output::i()->title	= "Overview for rule: " . $rule->title;
+			\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'views' )->rules( array( $rule ) );
+		}
+		
+		/**
+		 * Overview A Whole Ruleset
+		 */
+		else
+		{
+			try
+			{
+				$set = \IPS\rules\Rule\Ruleset::load( \IPS\Request::i()->ruleset );
+			}
+			catch ( \OutOfRangeException $e )
+			{
+				\IPS\Output::i()->error( 'invalid_rule', '2RL01/B', 403 );
+			}
+			
+			\IPS\Output::i()->title = "Overview for ruleset: " . $set->title;
+			\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'views' )->rules( $set->children() );
+		}	
+	}
+	
+	/**
 	 * Export Rule(set)
 	 */
 	protected function export()
 	{
 		/**
-		 * Export A Single Rule (Group)
+		 * Export A Single Rule(group)
 		 */
 		if ( \IPS\Request::i()->rule )
 		{
@@ -737,7 +779,7 @@ class _rulesets extends \IPS\Node\Controller
 		}
 		
 		/**
-		 * Export A Whole Rule Set
+		 * Export A Whole Ruleset
 		 */
 		else
 		{
@@ -905,7 +947,7 @@ class _rulesets extends \IPS\Node\Controller
 		}
 		
 		/**
-		 * Export any custom action that this rule is triggered by
+		 * Export any custom ACTION that this rule is triggered by
 		 */
 		if 
 		( 
@@ -920,11 +962,11 @@ class _rulesets extends \IPS\Node\Controller
 				$custom_action = \IPS\rules\Action\Custom::load( $custom_action_key, 'custom_action_key' );
 				$custom_actions[ $custom_action_key ] = $custom_action;
 			}
-			catch ( \OutOfRangeException $e ) {}
+			catch ( \OutOfRangeException $e ) { }
 		}
 			
 		/**
-		 * Export any custom data that this rule is triggered by
+		 * Export any custom DATA that this rule is triggered by
 		 */
 		if 
 		( 
@@ -939,7 +981,7 @@ class _rulesets extends \IPS\Node\Controller
 				$data_field = \IPS\rules\Data::load( $custom_data_key, 'data_key' );
 				$custom_data[ $custom_data_key ] = $data_field;
 			}
-			catch ( \OutOfRangeException $e ) {}
+			catch ( \OutOfRangeException $e ) { }
 		}
 
 		return array
@@ -1145,7 +1187,8 @@ class _rulesets extends \IPS\Node\Controller
 		$dataNode->addAttribute( 'use_mode', 		$data->use_mode );
 		$dataNode->addAttribute( 'required', 		$data->required );
 		$dataNode->addAttribute( 'description',		$data->description );
-		$dataNode->addAttribute( 'key', 		$data->key );		
+		$dataNode->addAttribute( 'key', 		$data->key );
+		$dataNode->addAttribute( 'text_mode',		$data->text_mode );
 	}
 	
 	/**
@@ -1519,6 +1562,7 @@ class _rulesets extends \IPS\Node\Controller
 		$data_field->description	= (string)	$dataXML[ 'description' ];
 		$data_field->tab		= (string)	$dataXML[ 'tab' ];
 		$data_field->use_mode		= (string)	$dataXML[ 'use_mode' ];
+		$data_field->text_mode		= (int)		$dataXML[ 'text_mode' ];
 		$data_field->save();
 		
 		return $data_field;

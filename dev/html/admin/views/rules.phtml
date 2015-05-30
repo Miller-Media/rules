@@ -1,0 +1,35 @@
+<ips:template parameters="$rules, $top=TRUE" />
+
+{{foreach $rules as $rule}}
+<div class="ipsPad">
+	<div class="ipsCode">
+		<i class='fa fa-legal'></i> {{if $top}}Rule:{{else}}Subrule:{{endif}} <strong>{$rule->title}</strong> {{if ! $rule->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
+		<ul>
+			{{if $top}}
+			<li class='ipsPad_top'>
+				Event: <strong>{$rule->event()->title()}</strong>
+			</li>
+			{{endif}}
+			<li class='ipsPad_top'>
+				Conditions: {{if count($rule->conditions()) > 1 }}( {{if $rule->base_compare == 'and'}}match all conditions{{else}}match any condition{{endif}} ){{endif}}
+				{{if $rule->conditions()}}
+					{template="conditions" app="rules" group="views" params="$rule->conditions()"}
+				{{else}}
+					<strong>None</strong>
+				{{endif}}
+			</li>
+			<li class='ipsPad_top'>
+				Actions: 
+				{{if $rule->actions()}}
+					{template="actions" app="rules" group="views" params="$rule->actions()"}
+				{{else}}
+					<strong>None</strong>
+				{{endif}}
+			</li>
+		</ul>
+		{{if $rule->children()}}
+			{template="rules" app="rules" group="views" params="$rule->children(), FALSE"}
+		{{endif}}
+	</div>
+</div>
+{{endforeach}}

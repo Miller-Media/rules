@@ -460,6 +460,14 @@ class _Rule extends \IPS\Node\Model
 			'link' => $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'export', 'rule' => $this->id ) ),		
 		);
 		
+		$buttons[ 'overview' ] = array
+		(
+			'icon' => 'list',
+			'title' => 'rules_view_overview',
+			'link' => $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'viewOverview', 'rule' => $this->id ) ),
+			'data' => array( 'ipsDialog' => '', 'ipsDialog-title' => 'Rule Overview' ),
+		);
+		
 		if ( $this->debug )
 		{
 			$buttons[ 'debug_disable' ] = array

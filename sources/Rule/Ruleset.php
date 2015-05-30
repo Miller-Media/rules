@@ -174,6 +174,14 @@ class _Ruleset extends \IPS\Node\Model
 			'link' => $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'export', 'ruleset' => $this->id ) ),		
 		);
 		
+		$buttons[ 'overview' ] = array
+		(
+			'icon' => 'list',
+			'title' => 'rules_view_overview',
+			'link' => $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'viewOverview', 'ruleset' => $this->id ) ),
+			'data' => array( 'ipsDialog' => '', 'ipsDialog-title' => 'Ruleset Overview' ),
+		);
+		
 		return $buttons;
 	}
 	 

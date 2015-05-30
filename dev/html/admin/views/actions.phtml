@@ -1,0 +1,11 @@
+<ips:template parameters="$actions" />
+
+{{if $actions}}	
+<ul style="margin-top:3px">
+	{{foreach $actions as $action}}
+	<li>
+		<strong>{lang="{$action->app}_{$action->class}_actions_{$action->key}"}</strong> ({$action->title}) {{if ! $action->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
+	</li>
+	{{endforeach}}
+</ul>
+{{endif}}
