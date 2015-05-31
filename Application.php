@@ -321,8 +321,12 @@ class _Application extends \IPS\Application
 				(
 					'form' => function( $form, $values, $action ) use ( $field_name, $required )
 					{
-						$form->add( new \IPS\Helpers\Form\Url( $field_name, $values[ $field_name ], $required, array(), NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Url( $field_name, new \IPS\Http\Url( $values[ $field_name ] ), $required, array(), NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
+					},
+					'saveValues' => function( &$values ) use ( $field_name )
+					{
+						$values[ $field_name ] = (string) $values[ $field_name ];
 					},
 					'getArg' => function( $values, $action ) use ( $field_name )
 					{
