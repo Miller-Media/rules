@@ -75,21 +75,24 @@ class _Nodes
 		{
 			foreach ( $router->classes as $contentItemClass )
 			{
-				$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
-				$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
-				
-				//$this->buildEvents( $app_events, $contentItemClass, $content_type, $group, $data );
-				
-				if ( isset ( $contentItemClass::$commentClass ) )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$commentClass = $contentItemClass::$commentClass;
-					//$this->buildEvents( $app_events, $commentClass, $content_type . ' Comment', $group, $data );
-				}
-				
-				if ( isset ( $contentItemClass::$reviewClass ) )
-				{
-					$reviewClass = $contentItemClass::$reviewClass;
-					//$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
+					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
+					
+					//$this->buildEvents( $app_events, $contentItemClass, $content_type, $group, $data );
+					
+					if ( isset ( $contentItemClass::$commentClass ) )
+					{
+						$commentClass = $contentItemClass::$commentClass;
+						//$this->buildEvents( $app_events, $commentClass, $content_type . ' Comment', $group, $data );
+					}
+					
+					if ( isset ( $contentItemClass::$reviewClass ) )
+					{
+						$reviewClass = $contentItemClass::$reviewClass;
+						//$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
+					}
 				}
 			}
 		}		

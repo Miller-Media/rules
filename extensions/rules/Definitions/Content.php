@@ -207,21 +207,24 @@ class _Content
 		{
 			foreach ( $router->classes as $contentItemClass )
 			{
-				$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
-				$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
-				
-				$this->buildEvents( $app_events, $contentItemClass, $content_type, $group, $data );
-				
-				if ( isset ( $contentItemClass::$commentClass ) )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$commentClass = $contentItemClass::$commentClass;
-					$this->buildEvents( $app_events, $commentClass, $content_type . ' Comment', $group, $data );
-				}
-				
-				if ( isset ( $contentItemClass::$reviewClass ) )
-				{
-					$reviewClass = $contentItemClass::$reviewClass;
-					$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
+					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
+					
+					$this->buildEvents( $app_events, $contentItemClass, $content_type, $group, $data );
+					
+					if ( isset ( $contentItemClass::$commentClass ) )
+					{
+						$commentClass = $contentItemClass::$commentClass;
+						$this->buildEvents( $app_events, $commentClass, $content_type . ' Comment', $group, $data );
+					}
+					
+					if ( isset ( $contentItemClass::$reviewClass ) )
+					{
+						$reviewClass = $contentItemClass::$reviewClass;
+						$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
+					}
 				}
 			}
 		}
@@ -380,18 +383,21 @@ class _Content
 						{
 							foreach ( $router->classes as $contentItemClass )
 							{
-								$options[ str_replace( '\\', '-', $contentItemClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Content Item)';
-								
-								if ( isset ( $contentItemClass::$commentClass ) )
+								if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 								{
-									$commentClass = $contentItemClass::$commentClass;
-									$options[ str_replace( '\\', '-', $commentClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Comment)';
-								}
-								
-								if ( isset ( $contentItemClass::$reviewClass ) )
-								{
-									$reviewClass = $contentItemClass::$reviewClass;
-									$options[ str_replace( '\\', '-', $reviewClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Review)';
+									$options[ str_replace( '\\', '-', $contentItemClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Content Item)';
+									
+									if ( isset ( $contentItemClass::$commentClass ) )
+									{
+										$commentClass = $contentItemClass::$commentClass;
+										$options[ str_replace( '\\', '-', $commentClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Comment)';
+									}
+									
+									if ( isset ( $contentItemClass::$reviewClass ) )
+									{
+										$reviewClass = $contentItemClass::$reviewClass;
+										$options[ str_replace( '\\', '-', $reviewClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Review)';
+									}
 								}
 							}
 						}
@@ -626,95 +632,98 @@ class _Content
 		{
 			foreach ( $router->classes as $contentItemClass )
 			{
-				$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
-				$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
-				$class_key = md5( ltrim( $contentItemClass, '\\' ) );
-				
-				if ( isset ( $contentItemClass::$containerNodeClass ) )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$nodeClass = $contentItemClass::$containerNodeClass;
-					$lang->words[ 'rules_Content_conditions_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_content_container' ), $content_type, mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-					$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_content' ), $content_type );
-					$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_container' ), $lang->get( $nodeClass::$nodeTitle ) );
-					$lang->words[ 'rules_Content_content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
+					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
+					$class_key = md5( ltrim( $contentItemClass, '\\' ) );
 					
-					$conditions[ 'content_container_' . $class_key ] = array
-					(
-						'group' => $group,
-						'callback' => array( $this, 'contentContainer' ),
-						'arguments' 	=> array
+					if ( isset ( $contentItemClass::$containerNodeClass ) )
+					{
+						$nodeClass = $contentItemClass::$containerNodeClass;
+						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_content_container' ), $content_type, mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
+						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_content' ), $content_type );
+						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_container' ), $lang->get( $nodeClass::$nodeTitle ) );
+						$lang->words[ 'rules_Content_content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
+						
+						$conditions[ 'content_container_' . $class_key ] = array
 						(
-							'container' => array
+							'group' => $group,
+							'callback' => array( $this, 'contentContainer' ),
+							'arguments' 	=> array
 							(
-								'default' => 'manual',
-								'required' => TRUE,
-								'configuration' => array
+								'container' => array
 								(
-									'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
-									{
-										$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_containers_' . $class_key, $values[ 'rules_Content_content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_content_containers_' . $class_key ) );
-										return array( 'rules_Content_content_containers_' . $class_key );
-									},
-									'saveValues' => function( &$values ) use ( $class_key )
-									{
-										if ( is_array ( $values[ 'rules_Content_content_containers_' . $class_key ] ) )
-										{
-											$values[ 'rules_Content_content_containers_' . $class_key ] = array_keys( $values[ 'rules_Content_content_containers_' . $class_key ] );
-										}
-									},
-									'getArg' => function( $values ) use ( $class_key )
-									{
-										return $values[ 'rules_Content_content_containers_' . $class_key ];
-									},
-								),
-								'argtypes' => array
-								(
-									'object' => array
+									'default' => 'manual',
+									'required' => TRUE,
+									'configuration' => array
 									(
-										'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
-										'class' => $nodeClass,
-										'converter' => function( $node )
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
 										{
-											return array( $node->_id );
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_containers_' . $class_key, $values[ 'rules_Content_content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_content_containers_' . $class_key ) );
+											return array( 'rules_Content_content_containers_' . $class_key );
+										},
+										'saveValues' => function( &$values ) use ( $class_key )
+										{
+											if ( is_array ( $values[ 'rules_Content_content_containers_' . $class_key ] ) )
+											{
+												$values[ 'rules_Content_content_containers_' . $class_key ] = array_keys( $values[ 'rules_Content_content_containers_' . $class_key ] );
+											}
+										},
+										'getArg' => function( $values ) use ( $class_key )
+										{
+											return $values[ 'rules_Content_content_containers_' . $class_key ];
 										},
 									),
-									'array' => array
+									'argtypes' => array
 									(
-										'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' nodes',
-										'class' => $nodeClass,
-										'converter' => function( $nodes )
-										{
-											$_nodes = array();
-											if ( is_array( $nodes) )
+										'object' => array
+										(
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'class' => $nodeClass,
+											'converter' => function( $node )
 											{
-												foreach( $nodes as $node )
+												return array( $node->_id );
+											},
+										),
+										'array' => array
+										(
+											'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' nodes',
+											'class' => $nodeClass,
+											'converter' => function( $nodes )
+											{
+												$_nodes = array();
+												if ( is_array( $nodes) )
 												{
-													if ( $node instanceof \IPS\Node\Model )
+													foreach( $nodes as $node )
 													{
-														$_nodes[] = $node->_id;
+														if ( $node instanceof \IPS\Node\Model )
+														{
+															$_nodes[] = $node->_id;
+														}
 													}
 												}
-											}
-											return $_nodes;
-										},
+												return $_nodes;
+											},
+										),
 									),
 								),
-							),
-							'content' => array
-							(
-								'required' => TRUE,
-								'argtypes' => array
+								'content' => array
 								(
-									'object' => array
+									'required' => TRUE,
+									'argtypes' => array
 									(
-										'description' => $content_type . " to check",
-										'class' => '\\' . ltrim( $contentItemClass, '\\' ),
-									),							
+										'object' => array
+										(
+											'description' => $content_type . " to check",
+											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
+										),							
+									),
 								),
-							),
 
-						),						
-					);
+							),						
+						);
+					}
 				}
 			}
 		}		
@@ -1005,280 +1014,108 @@ class _Content
 		{
 			foreach ( $router->classes as $contentItemClass )
 			{
-				$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
-				$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
-				$class_key = md5( ltrim( $contentItemClass, '\\' ) );
-				
-				if ( isset ( $contentItemClass::$containerNodeClass ) )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$nodeClass = $contentItemClass::$containerNodeClass;
-					$lang->words[ 'rules_Content_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_container' ), $lang->get( $nodeClass::$nodeTitle ) );
-
-					$lang->words[ 'rules_Content_actions_move_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_move_content' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-					$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_item' ), $content_type );
-					$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_container' ), $lang->get( $nodeClass::$nodeTitle ) );
+					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
+					$class_key = md5( ltrim( $contentItemClass, '\\' ) );
 					
-					$lang->words[ 'rules_Content_actions_create_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-					$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_container' ), $content_type );
-					$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_author' ), $content_type );
-					$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_title' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_title' ), $content_type );
-					$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_content' ), $content_type );
-					$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_tags' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_tags' ), $content_type );
-
-					$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-					$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_item' ), $content_type );
-					$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_author' ), $content_type );
-					$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_content' ), $content_type );
-
-					/**
-					 * Move Content
-					 */
-					$actions[ 'move_content_' . $class_key ] = array
-					(
-						'group' => $group,
-						'callback' => array( $this, 'moveContent' ),
-						'configuration' => array
-						(
-							'form' => function( $form, $values )
-							{
-								$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_move_content_link', $values[ 'rules_Content_move_content_link' ], TRUE ) );
-							},
-						),
-						'arguments' 	=> array
-						(
-							'container' => array
-							(
-								'default' => 'manual',
-								'required' => TRUE,
-								'configuration' => array
-								(
-									'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
-									{
-										$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
-										return array( 'rules_Content_content_container_' . $class_key );
-									},
-									'saveValues' => function( &$values ) use ( $class_key )
-									{	
-										if ( $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
-										{
-											$values[ 'rules_Content_content_container_' . $class_key ] = $values[ 'rules_Content_content_container_' . $class_key ]->_id;
-										}
-									},
-									'getArg' => function( $values ) use ( $nodeClass, $class_key )
-									{
-										try
-										{
-											$container = $nodeClass::load( $values[ 'rules_Content_content_container_' . $class_key ] );
-											return $container;
-										}
-										catch( \OutOfRangeException $e )
-										{
-											return NULL;
-										}
-									},
-								),
-								'argtypes' => array
-								(
-									'object' => array
-									(
-										'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
-										'class' => $nodeClass,
-									),
-								),
-							),
-							'item' => array
-							(
-								'required' => TRUE,
-								'argtypes' => array
-								(
-									'object' => array
-									(
-										'description' => $content_type . " to move",
-										'class' => '\\' . ltrim( $contentItemClass, '\\' ),
-									),							
-								),
-							),
-						),						
-					);
-					
-					/**
-					 * Create New Content Item
-					 */
-					$actions[ 'create_content_' . $class_key ] = array
-					(
-						'group' => $group,
-						'configuration' => array
-						(
-							'form' => function( $form, $values )
-							{
-								$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', $values[ 'rules_Content_increase_posts' ], TRUE ) );
-								$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
-							},
-						),
-						'callback' => function( $container, $author, $title, $content, $tags, $values ) use ( $nodeClass, $contentItemClass )
-						{
-							if ( ! ( $container instanceof \IPS\Node\Model ) )
-							{
-								throw new \UnexpectedValueException( "container is not a node" );
-							}
-							
-							if ( get_class( $container ) !== $nodeClass )
-							{
-								throw new \UnexpectedValueException( "container is not the expected class" );
-							}
-							
-							if ( ! ( $author instanceof \IPS\Member ) )
-							{
-								throw new \UnexpectedValueException( "author is not a valid member" );
-							}
-							
-							$now = \IPS\DateTime::ts( time() );
-							
-							$item = $contentItemClass::createItem
-							(
-								$author, $author->ip_address, $now, $container
-							);
-							
-							if ( $titleColumn = $contentItemClass::$databaseColumnMap[ 'title' ] )
-							{
-								$item->$titleColumn = $title;
-							}
-							
-							if ( $bodyColumn = $contentItemClass::$databaseColumnMap[ 'content' ] )
-							{
-								$item->$bodyColumn = $content;
-							}
-							
-							$item->save();
-							
-							if ( $contentItemClass::$firstCommentRequired and isset ( $contentItemClass::$commentClass ) )
-							{
-								$commentClass = $contentItemClass::$commentClass;
-								$comment = $commentClass::create
-								(
-									$item, $content, TRUE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, $now
-								);
-							}
-							
-							if ( ! empty ( $tags ) )
-							{
-								/* Set tags through our rules action to account for non-logged in members */
-								$this->setTags( $item, $tags, array( 'rules_Content_modify_tags_type' => 'set' ) );
-							}
-							
-							return "content created";
-						},
-						'arguments' 	=> array
-						(
-							'container' => array
-							(
-								'required' => TRUE,
-								'configuration' => array
-								(
-									'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
-									{
-										$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
-										return array( 'rules_Content_content_container_' . $class_key );
-									},
-									'saveValues' => function( &$values ) use ( $class_key )
-									{	
-										if ( $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
-										{
-											$values[ 'rules_Content_content_container_' . $class_key ] = $values[ 'rules_Content_content_container_' . $class_key ]->_id;
-										}
-									},
-									'getArg' => function( $values ) use ( $nodeClass, $class_key )
-									{
-										try
-										{
-											$container = $nodeClass::load( $values[ 'rules_Content_content_container_' . $class_key ] );
-											return $container;
-										}
-										catch( \OutOfRangeException $e )
-										{
-											return NULL;
-										}
-									},
-								),
-								'argtypes' => array
-								(
-									'object' => array
-									(
-										'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
-										'class' => $nodeClass,
-									),
-								),
-							),
-							'author' => array
-							(
-								'argtypes' => \IPS\rules\Application::argPreset( 'member' ),
-								'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
-								'required' 	=> TRUE,
-							),
-							'title' => array
-							(
-								'default' => 'manual',
-								'required' => TRUE,
-								'argtypes' => array
-								( 
-									'string' => array
-									(
-										'description' => 'The content title',
-									),
-								),
-								'configuration' => array
-								(
-									'form' => function( $form, $values )
-									{
-										$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_content_title', $values[ 'rules_Content_content_title' ], TRUE, array(), NULL, NULL, NULL, 'rules_Content_content_title' ) );
-										return array( 'rules_Content_content_title' );
-									},
-									'getArg' => function( $values )
-									{
-										return $values[ 'rules_Content_content_title' ];
-									},
-								),
-							),
-							'content' => array
-							(
-								'default' => 'manual',
-								'required' => TRUE,
-								'argtypes' => array
-								( 
-									'string' => array
-									(
-										'description' => 'The content body',
-									),
-								),
-								'configuration' => array
-								(
-									'form' => function( $form, $values )
-									{
-										$form->add( new \IPS\Helpers\Form\Editor( 'rules_Content_content_body', $values[ 'rules_Content_content_body' ], TRUE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
-										return array( $form->id . '_rules_Content_content_body' );
-									},
-									'getArg' => function( $values )
-									{
-										return $values[ 'rules_Content_content_body' ];
-									},
-								),							
-							),
-							'tags' => array
-							(
-								'default' => 'manual',
-								'argtypes' => \IPS\rules\Application::argPreset( 'tags' ),
-								'configuration' => \IPS\rules\Application::configPreset( 'tags', 'rules_Content_tags_stack', FALSE ),
-								'required' => FALSE,
-							),
-						),
-					);
-					
-					if ( isset ( $contentItemClass::$commentClass ) )
+					if ( isset ( $contentItemClass::$containerNodeClass ) )
 					{
+						$nodeClass = $contentItemClass::$containerNodeClass;
+						$lang->words[ 'rules_Content_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_container' ), $lang->get( $nodeClass::$nodeTitle ) );
+
+						$lang->words[ 'rules_Content_actions_move_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_move_content' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
+						$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_item' ), $content_type );
+						$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_container' ), $lang->get( $nodeClass::$nodeTitle ) );
+						
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_container' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_author' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_title' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_title' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_content' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_tags' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_tags' ), $content_type );
+
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_item' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_author' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_content' ), $content_type );
+
 						/**
-						 * Create New Content Comment
+						 * Move Content
 						 */
-						$actions[ 'create_content_comment_' . $class_key ] = array
+						$actions[ 'move_content_' . $class_key ] = array
+						(
+							'group' => $group,
+							'callback' => array( $this, 'moveContent' ),
+							'configuration' => array
+							(
+								'form' => function( $form, $values )
+								{
+									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_move_content_link', $values[ 'rules_Content_move_content_link' ], TRUE ) );
+								},
+							),
+							'arguments' 	=> array
+							(
+								'container' => array
+								(
+									'default' => 'manual',
+									'required' => TRUE,
+									'configuration' => array
+									(
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										{
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
+											return array( 'rules_Content_content_container_' . $class_key );
+										},
+										'saveValues' => function( &$values ) use ( $class_key )
+										{	
+											if ( $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
+											{
+												$values[ 'rules_Content_content_container_' . $class_key ] = $values[ 'rules_Content_content_container_' . $class_key ]->_id;
+											}
+										},
+										'getArg' => function( $values ) use ( $nodeClass, $class_key )
+										{
+											try
+											{
+												$container = $nodeClass::load( $values[ 'rules_Content_content_container_' . $class_key ] );
+												return $container;
+											}
+											catch( \OutOfRangeException $e )
+											{
+												return NULL;
+											}
+										},
+									),
+									'argtypes' => array
+									(
+										'object' => array
+										(
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'class' => $nodeClass,
+										),
+									),
+								),
+								'item' => array
+								(
+									'required' => TRUE,
+									'argtypes' => array
+									(
+										'object' => array
+										(
+											'description' => $content_type . " to move",
+											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
+										),							
+									),
+								),
+							),						
+						);
+						
+						/**
+						 * Create New Content Item
+						 */
+						$actions[ 'create_content_' . $class_key ] = array
 						(
 							'group' => $group,
 							'configuration' => array
@@ -1289,16 +1126,16 @@ class _Content
 									$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
 								},
 							),
-							'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass )
-							{								
-								if ( ! ( $item instanceof \IPS\Content\Item ) )
+							'callback' => function( $container, $author, $title, $content, $tags, $values ) use ( $nodeClass, $contentItemClass )
+							{
+								if ( ! ( $container instanceof \IPS\Node\Model ) )
 								{
-									throw new \UnexpectedValueException( "invalid content item" );
+									throw new \UnexpectedValueException( "container is not a node" );
 								}
 								
-								if ( get_class( $item ) !== $contentItemClass )
+								if ( get_class( $container ) !== $nodeClass )
 								{
-									throw new \UnexpectedValueException( "content item is not the correct class" );
+									throw new \UnexpectedValueException( "container is not the expected class" );
 								}
 								
 								if ( ! ( $author instanceof \IPS\Member ) )
@@ -1306,26 +1143,81 @@ class _Content
 									throw new \UnexpectedValueException( "author is not a valid member" );
 								}
 								
-								$commentClass = $contentItemClass::$commentClass;
-								$comment = $commentClass::create
+								$now = \IPS\DateTime::ts( time() );
+								
+								$item = $contentItemClass::createItem
 								(
-									$item, $content, FALSE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, \IPS\DateTime::ts( time() )
+									$author, $author->ip_address, $now, $container
 								);
 								
-								return "content comment created";
+								if ( $titleColumn = $contentItemClass::$databaseColumnMap[ 'title' ] )
+								{
+									$item->$titleColumn = $title;
+								}
+								
+								if ( $bodyColumn = $contentItemClass::$databaseColumnMap[ 'content' ] )
+								{
+									$item->$bodyColumn = $content;
+								}
+								
+								$item->save();
+								
+								if ( $contentItemClass::$firstCommentRequired and isset ( $contentItemClass::$commentClass ) )
+								{
+									$commentClass = $contentItemClass::$commentClass;
+									$comment = $commentClass::create
+									(
+										$item, $content, TRUE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, $now
+									);
+								}
+								
+								if ( ! empty ( $tags ) )
+								{
+									/* Set tags through our rules action to account for non-logged in members */
+									$this->setTags( $item, $tags, array( 'rules_Content_modify_tags_type' => 'set' ) );
+								}
+								
+								return "content created";
 							},
 							'arguments' 	=> array
 							(
-								'item' => array
+								'container' => array
 								(
 									'required' => TRUE,
+									'configuration' => array
+									(
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										{
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
+											return array( 'rules_Content_content_container_' . $class_key );
+										},
+										'saveValues' => function( &$values ) use ( $class_key )
+										{	
+											if ( $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
+											{
+												$values[ 'rules_Content_content_container_' . $class_key ] = $values[ 'rules_Content_content_container_' . $class_key ]->_id;
+											}
+										},
+										'getArg' => function( $values ) use ( $nodeClass, $class_key )
+										{
+											try
+											{
+												$container = $nodeClass::load( $values[ 'rules_Content_content_container_' . $class_key ] );
+												return $container;
+											}
+											catch( \OutOfRangeException $e )
+											{
+												return NULL;
+											}
+										},
+									),
 									'argtypes' => array
 									(
 										'object' => array
 										(
-											'description' => $content_type . " to post comment to",
-											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
-										),							
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'class' => $nodeClass,
+										),
 									),
 								),
 								'author' => array
@@ -1333,6 +1225,30 @@ class _Content
 									'argtypes' => \IPS\rules\Application::argPreset( 'member' ),
 									'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
 									'required' 	=> TRUE,
+								),
+								'title' => array
+								(
+									'default' => 'manual',
+									'required' => TRUE,
+									'argtypes' => array
+									( 
+										'string' => array
+										(
+											'description' => 'The content title',
+										),
+									),
+									'configuration' => array
+									(
+										'form' => function( $form, $values )
+										{
+											$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_content_title', $values[ 'rules_Content_content_title' ], TRUE, array(), NULL, NULL, NULL, 'rules_Content_content_title' ) );
+											return array( 'rules_Content_content_title' );
+										},
+										'getArg' => function( $values )
+										{
+											return $values[ 'rules_Content_content_title' ];
+										},
+									),
 								),
 								'content' => array
 								(
@@ -1358,8 +1274,104 @@ class _Content
 										},
 									),							
 								),
+								'tags' => array
+								(
+									'default' => 'manual',
+									'argtypes' => \IPS\rules\Application::argPreset( 'tags' ),
+									'configuration' => \IPS\rules\Application::configPreset( 'tags', 'rules_Content_tags_stack', FALSE ),
+									'required' => FALSE,
+								),
 							),
 						);
+						
+						if ( isset ( $contentItemClass::$commentClass ) )
+						{
+							/**
+							 * Create New Content Comment
+							 */
+							$actions[ 'create_content_comment_' . $class_key ] = array
+							(
+								'group' => $group,
+								'configuration' => array
+								(
+									'form' => function( $form, $values )
+									{
+										$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', $values[ 'rules_Content_increase_posts' ], TRUE ) );
+										$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
+									},
+								),
+								'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass )
+								{								
+									if ( ! ( $item instanceof \IPS\Content\Item ) )
+									{
+										throw new \UnexpectedValueException( "invalid content item" );
+									}
+									
+									if ( get_class( $item ) !== $contentItemClass )
+									{
+										throw new \UnexpectedValueException( "content item is not the correct class" );
+									}
+									
+									if ( ! ( $author instanceof \IPS\Member ) )
+									{
+										throw new \UnexpectedValueException( "author is not a valid member" );
+									}
+									
+									$commentClass = $contentItemClass::$commentClass;
+									$comment = $commentClass::create
+									(
+										$item, $content, FALSE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, \IPS\DateTime::ts( time() )
+									);
+									
+									return "content comment created";
+								},
+								'arguments' 	=> array
+								(
+									'item' => array
+									(
+										'required' => TRUE,
+										'argtypes' => array
+										(
+											'object' => array
+											(
+												'description' => $content_type . " to post comment to",
+												'class' => '\\' . ltrim( $contentItemClass, '\\' ),
+											),							
+										),
+									),
+									'author' => array
+									(
+										'argtypes' => \IPS\rules\Application::argPreset( 'member' ),
+										'configuration'	=> \IPS\rules\Application::configPreset( 'member', 'rules_choose_member' ),
+										'required' 	=> TRUE,
+									),
+									'content' => array
+									(
+										'default' => 'manual',
+										'required' => TRUE,
+										'argtypes' => array
+										( 
+											'string' => array
+											(
+												'description' => 'The content body',
+											),
+										),
+										'configuration' => array
+										(
+											'form' => function( $form, $values )
+											{
+												$form->add( new \IPS\Helpers\Form\Editor( 'rules_Content_content_body', $values[ 'rules_Content_content_body' ], TRUE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
+												return array( $form->id . '_rules_Content_content_body' );
+											},
+											'getArg' => function( $values )
+											{
+												return $values[ 'rules_Content_content_body' ];
+											},
+										),							
+									),
+								),
+							);
+						}
 					}
 				}
 			}

@@ -579,40 +579,43 @@ class _Core
 		{
 			foreach ( $router->classes as $contentItemClass )
 			{
-				$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
-				
-				/**
-				 * Add Converters For Comments
-				 */
-				if ( isset ( $contentItemClass::$commentClass ) )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$commentClass = $contentItemClass::$commentClass;
-					$map[ '\\' . ltrim( $commentClass, '\\' ) ][ $content_type ] = array
-					(
-						'argtype' => 'object',
-						'class' => '\\' . ltrim( $contentItemClass, '\\' ),
-						'converter' => function( $comment )
-						{
-							return $comment->item();
-						},
-					);
-				}
-				
-				/**
-				 * Add Converters For Reviews
-				 */
-				if ( isset ( $contentItemClass::$reviewClass ) )
-				{
-					$reviewClass = $contentItemClass::$reviewClass;
-					$map[ '\\' . ltrim( $reviewClass, '\\' ) ][ $content_type ] = array
-					(
-						'argtype' => 'object',
-						'class' => '\\' . ltrim( $contentItemClass, '\\' ),
-						'converter' => function( $review )
-						{
-							return $review->item();
-						},
-					);					
+					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					
+					/**
+					 * Add Converters For Comments
+					 */
+					if ( isset ( $contentItemClass::$commentClass ) )
+					{
+						$commentClass = $contentItemClass::$commentClass;
+						$map[ '\\' . ltrim( $commentClass, '\\' ) ][ $content_type ] = array
+						(
+							'argtype' => 'object',
+							'class' => '\\' . ltrim( $contentItemClass, '\\' ),
+							'converter' => function( $comment )
+							{
+								return $comment->item();
+							},
+						);
+					}
+					
+					/**
+					 * Add Converters For Reviews
+					 */
+					if ( isset ( $contentItemClass::$reviewClass ) )
+					{
+						$reviewClass = $contentItemClass::$reviewClass;
+						$map[ '\\' . ltrim( $reviewClass, '\\' ) ][ $content_type ] = array
+						(
+							'argtype' => 'object',
+							'class' => '\\' . ltrim( $contentItemClass, '\\' ),
+							'converter' => function( $review )
+							{
+								return $review->item();
+							},
+						);					
+					}
 				}
 			}
 		}

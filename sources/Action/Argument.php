@@ -277,16 +277,19 @@ class _Argument extends \IPS\Node\Model
 			$_object_classes = array();
 			foreach ( $router->classes as $contentItemClass )
 			{
-				/* Set Appname */
-				$appname = $appname ?: $lang->addToStack( '__app_' . $contentItemClass::$application );
-				
-				/* Add the content class */
-				$_object_classes[ '-' . str_replace( '\\', '-', $contentItemClass ) ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
-				
-				/* Add node class */
-				if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
+					/* Set Appname */
+					$appname = $appname ?: $lang->addToStack( '__app_' . $contentItemClass::$application );
+					
+					/* Add the content class */
+					$_object_classes[ '-' . str_replace( '\\', '-', $contentItemClass ) ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
+					
+					/* Add node class */
+					if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
+					{
+						$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
+					}
 				}
 			}
 			

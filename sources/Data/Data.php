@@ -345,20 +345,23 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 			$_object_classes = array();
 			foreach ( $router->classes as $contentItemClass )
 			{
-				/* Set Appname */
-				$appname = $appname ?: $lang->addToStack( '__app_' . $contentItemClass::$application );
-				if ( $contentItemClass::$application == 'core' )
+				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$core_key = $appname;
-				}
-				
-				/* Add the content class */
-				$_object_classes[ '-' . str_replace( '\\', '-', $contentItemClass ) ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
-				
-				/* Add node class */
-				if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
-				{
-					$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
+					/* Set Appname */
+					$appname = $appname ?: $lang->addToStack( '__app_' . $contentItemClass::$application );
+					if ( $contentItemClass::$application == 'core' )
+					{
+						$core_key = $appname;
+					}
+					
+					/* Add the content class */
+					$_object_classes[ '-' . str_replace( '\\', '-', $contentItemClass ) ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
+					
+					/* Add node class */
+					if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
+					{
+						$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
+					}
 				}
 			}
 			
