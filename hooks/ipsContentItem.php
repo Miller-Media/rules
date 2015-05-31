@@ -118,7 +118,7 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	{
 		$formElements = parent::formElements( $item, $container );
 		
-		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\' )', static::rulesDataClass() ) ) as $row )
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', static::rulesDataClass() ) ) as $row )
 		{
 			if ( $row[ 'data_use_mode' ] == 'public' or static::modPermission( 'edit', NULL, $container ) )
 			{
@@ -143,7 +143,7 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	{
 		parent::processForm( $values );
 		
-		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\' )', $this::rulesDataClass() ) ) as $row )
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $this::rulesDataClass() ) ) as $row )
 		{
 			$data_field = \IPS\rules\Data::constructFromData( $row );
 			

@@ -59,19 +59,22 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 		/**
 		 * Rules Data Fields
 		 */
-		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\' )', \IPS\Member::rulesDataClass() ) ) as $row )
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', \IPS\Member::rulesDataClass() ) ) as $row )
 		{
-			$data_field = \IPS\rules\Data::constructFromData( $row );
-			if ( $data_field->can( 'edit' ) )
+			if ( $row[ 'data_use_mode' ] == 'public' or \IPS\Member::loggedIn()->modPermission( 'can_modify_profiles' ) )
 			{
-				if ( ! isset( $_rules_header ) )
+				$data_field = \IPS\rules\Data::constructFromData( $row );
+				if ( $data_field->can( 'edit' ) )
 				{
-					$_rules_header = TRUE and $form->addHeader( "rules_profile_data_header" );
-				}
-				
-				foreach( $data_field->formElements( $member ) as $name => $element )
-				{
-					$form->add( $element );
+					if ( ! isset( $_rules_header ) )
+					{
+						$_rules_header = TRUE and $form->addHeader( "rules_profile_data_header" );
+					}
+					
+					foreach( $data_field->formElements( $member ) as $name => $element )
+					{
+						$form->add( $element );
+					}
 				}
 			}
 		}		

@@ -739,6 +739,7 @@ class _System
 				(
 					'message' => array
 					(
+						'default' => 'manual',
 						'configuration' => array
 						(
 							'form' => function( $form, $values, $action )
