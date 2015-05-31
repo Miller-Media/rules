@@ -776,6 +776,13 @@ class _System
 					),
 					'message' => array
 					(
+						'argtypes' => array
+						(
+							'string' => array
+							(
+								'description' => "Message to display after redirect",
+							),
+						),
 						'configuration' => array
 						(
 							'form' => function( $form, $values, $action )
@@ -788,14 +795,7 @@ class _System
 								return $values[ 'rules_System_redirect_message' ];
 							},
 						),
-						'required' => TRUE,
-						'argtypes' => array
-						(
-							'string' => array
-							(
-								'description' => "Message to display after redirect",
-							),
-						),
+						'required' => FALSE,
 					),
 				),
 			),
