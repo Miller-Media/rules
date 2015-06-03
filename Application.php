@@ -356,24 +356,32 @@ class _Application extends \IPS\Application
 		$wrap_chosen_suffix	= "</div>";
 		$form->class 		.= " opformForm"; 
 		
-		/**
-		 * Select options for new operations
-		 */
-		if ( ! $operation->id or ! $operation->key )
+		if ( ! $operation->_id )
 		{
 			$form->actionButtons = array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
-			foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
+		}
+		
+		/**
+		 * Footprint is used to limit the operations selection to compatible operations
+		 */
+		if ( $operation->footprint or isset( $operation->definition ) )
+		{
+			$footprint = $operation->footprint ?: md5( json_encode( $operation->definition[ 'arguments' ] ) );
+		}
+		
+		/**
+		 * Operation select options
+		 */
+		foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
+		{
+			foreach ( $definition[ $optype ] as $operation_key => $operation_data )
 			{
-				foreach ( $definition[ $optype ] as $operation_key => $operation_data )
-				{				
+				if ( ! isset( $footprint ) or $footprint == md5( json_encode( $operation_data[ 'arguments' ] ) ) )
+				{
 					$group = $operation_data[ 'group' ] ?: $definition[ 'group' ];
 					$_operations[ $group ][ $definition_key . '_' . $operation_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_' . $optype . '_' . $operation_key;
 				}
 			}
-		}
-		else
-		{
-			$_operations[ md5( $operation->app . $operation->class ) . '_' . $operation->key ] = $operation->app . '_' . $operation->class . '_' . $optype . '_' . $operation->key;
 		}
 		
 		$lang->words[ 'operation_title' ] = $lang->get( $optype . '_title' );	
@@ -442,7 +450,7 @@ class _Application extends \IPS\Application
 						$source 		= $argNameKey . '_source';
 						$eventArg		= $argNameKey . '_eventArg';
 						$eventArgNullable	= md5( \IPS\Request::i()->$eventArg ) . '_nullable';
-						$useDefault 		= $argNameKey . '_eventArg_useDefault';
+						$useDefault 		= $argNameKey . '_eventArg_useDefault_checkbox';
 						$enforce_validation 	=  
 						( 
 							\IPS\Request::i()->$source == 'manual' or 
@@ -576,7 +584,7 @@ class _Application extends \IPS\Application
 								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $togglesOn ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
 							}
 							
-							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg', $argNameKey . '_eventArg_useDefault' );
+							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg' );
 						}
 					}
 					
@@ -613,7 +621,7 @@ class _Application extends \IPS\Application
 								}
 							}
 						}
-										
+						
 						$_arg_list_info = "<ul><li>" . implode( '</li><li>', $_arg_list ) . "</li></ul>";
 					
 						$lang->words[ $argNameKey . '_phpcode' ] 	= $lang->get( 'phpcode' );
@@ -696,7 +704,7 @@ class _Application extends \IPS\Application
 				unset( $values[ $key ] );
 			}
 		}
-		
+				
 		return $values;
 	}
 	
@@ -1704,7 +1712,7 @@ class _Application extends \IPS\Application
 		
 		$scheduled_action->save();
 		
-		return "action scheduled: " . \IPS\DateTime::ts( $time );
+		return "Action Scheduled (ID#{$scheduled_action->id}): " . \IPS\DateTime::ts( $time );
 	}
 
 	/**

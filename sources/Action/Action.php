@@ -322,6 +322,16 @@ class _Action extends \IPS\Node\Model
 		
 		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id', 'action_schedule_mode', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months', 'action_schedule_date', 'action_schedule_customcode', 'action_schedule_key' ) );		
 		parent::saveForm( $values );
+		
+		/**
+		 * Save Footprint
+		 */
+		$this->init();
+		if ( isset( $this->definition ) )
+		{
+			$this->footprint = md5( json_encode( $this->definition[ 'arguments' ] ) );
+			$this->save();
+		}
 	}
 	
 	/**

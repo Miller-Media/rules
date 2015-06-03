@@ -160,7 +160,7 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	{
 		if ( $this->_new )
 		{
-			call_user_func_array( 'parent::save', func_get_args() );
+			$result = call_user_func_array( 'parent::save', func_get_args() );
 			
 			\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $this->_data, TRUE );
 			
@@ -173,10 +173,12 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 		}
 		else
 		{
-			$changed = $this->changed;
-			call_user_func_array( 'parent::save', func_get_args() );
+			$changed 		= $this->changed;
+			$rulesDataChanged 	= $this->rulesDataChanged;
 			
-			if ( $changed )
+			$result = call_user_func_array( 'parent::save', func_get_args() );
+			
+			if ( ! empty( $changed ) or $rulesDataChanged )
 			{
 				\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $changed, FALSE );
 				
@@ -185,9 +187,10 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 				{
 					$classEvent->trigger( $this, $changed, FALSE );
 				}
-
 			}
 		}
+		
+		return $result;
 	}
 	
 	/**

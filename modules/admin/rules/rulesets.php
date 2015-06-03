@@ -1013,6 +1013,7 @@ class _rulesets extends \IPS\Node\Controller
 		$conditionNode->addAttribute( 'enabled',	$condition->enabled );
 		$conditionNode->addAttribute( 'compare', 	$condition->group_compare );
 		$conditionNode->addAttribute( 'not',		$condition->not );
+		$conditionNode->addAttribute( 'footprint',	$condition->footprint );
 		
 		$conditionNode->addChild( 'data', json_encode( $condition->data ) );
 		
@@ -1078,6 +1079,8 @@ class _rulesets extends \IPS\Node\Controller
 		$actionNode->addAttribute( 'schedule_hours', 	$action->schedule_hours );
 		$actionNode->addAttribute( 'schedule_days',	$action->schedule_days );
 		$actionNode->addAttribute( 'schedule_months',	$action->schedule_months );
+		$actionNode->addAttribute( 'schedule_key', 	$action->schedule_key );
+		$actionNode->addAttribute( 'footprint',		$action->footprint );
 		
 		$actionNode->addChild( 'schedule_customcode', $action->schedule_customcode );
 		$actionNode->addChild( 'data', json_encode( $action->data ) );
@@ -1391,6 +1394,7 @@ class _rulesets extends \IPS\Node\Controller
 		$rule->base_compare	= (string) 	$ruleXML[ 'compare' ];
 		$rule->enabled		= (int) 	$ruleXML[ 'enabled' ];
 		$rule->debug		= (int) 	$ruleXML[ 'debug' ];
+		$rule->event_footprint	= (string)	$ruleXML[ 'footprint' ];
 		$rule->imported_time	= time();
 		$rule->save();
 		
@@ -1438,6 +1442,7 @@ class _rulesets extends \IPS\Node\Controller
 		$condition->enabled		= (int) 	$conditionXML[ 'enabled' ];
 		$condition->group_compare 	= (string) 	$conditionXML[ 'compare' ];
 		$condition->not			= (string) 	$conditionXML[ 'not' ];
+		$condition->footprint		= (string)	$conditionXML[ 'footprint' ];
 		$condition->data 		= json_decode( (string) $conditionXML->data );
 		$condition->save();
 		
@@ -1472,6 +1477,8 @@ class _rulesets extends \IPS\Node\Controller
 		$action->schedule_days 		= (int)		$actionXML[ 'schedule_days' ];
 		$action->schedule_months 	= (int)		$actionXML[ 'schedule_months' ];
 		$action->schedule_date		= (int)		$actionXML[ 'schedule_date' ];
+		$action->schedule_key		= (string)	$actionXML[ 'schedule_key' ];
+		$action->footprint		= (string)	$actionXML[ 'footprint' ];
 		$action->schedule_customcode	= (string)	$actionXML->schedule_customcode;
 		$action->data 			= json_decode( (string) $actionXML->data );
 		$action->save();

@@ -86,11 +86,9 @@ class _schedule extends \IPS\Dispatcher\Controller
 				return $val;
 			},
 		);				
-		$table->sortBy = 'schedule_time';
-		if ( ! \IPS\Request::i()->sortdirection )
-		{
-			$table->sortDirection = 'asc';
-		}	
+
+		$table->sortBy = \IPS\Request::i()->sortby ?: 'schedule_time';
+		$table->sortDirection = \IPS\Request::i()->sortdirection ?: 'asc';
 		
 		$table->rowButtons = function( $row ) use ( $self )
 		{	

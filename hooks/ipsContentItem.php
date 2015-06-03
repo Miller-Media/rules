@@ -140,17 +140,37 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	 * @return	void
 	 */
 	public function processForm( $values )
-	{
+	{	
 		parent::processForm( $values );
 		
-		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $this::rulesDataClass() ) ) as $row )
+		/**
+		 * Make sure we have an ID
+		 */
+		$idField = static::$databaseColumnId;
+		if ( ! $this->$idField )
+		{
+			$this->save();
+		}
+		
+		/**
+		 * We can only update rules data after this item has been saved to the database
+		 */
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', static::rulesDataClass() ) ) as $row )
 		{
 			$data_field = \IPS\rules\Data::constructFromData( $row );
 			
 			if ( isset ( $values[ 'rules_data_' . $data_field->column_name ] ) )
 			{
-				$this->setRulesData( $data_field->column_name, $data_field->valueFromForm( $values ) );
+				$this->setRulesData( $data_field->column_name, $data_field->valueFromForm( $values ) );					
 			}
+		}
+		
+		/**
+		 * If rules data has changed, save yet again.
+		 */
+		if ( $this->rulesDataChanged )
+		{
+			$this->save();
 		}
 	}
 	

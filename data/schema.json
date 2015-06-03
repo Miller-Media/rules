@@ -169,6 +169,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "rule_event_footprint": {
+                "name": "rule_event_footprint",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
@@ -349,6 +363,20 @@
                 "values": [],
                 "allow_null": false,
                 "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "condition_footprint": {
+                "name": "condition_footprint",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
                 "comment": "",
                 "unsigned": false,
                 "zerofill": false,
@@ -614,6 +642,20 @@
                 "name": "action_schedule_key",
                 "type": "VARCHAR",
                 "length": 1028,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "action_footprint": {
+                "name": "action_footprint",
+                "type": "VARCHAR",
+                "length": 56,
                 "decimals": null,
                 "values": [],
                 "allow_null": true,

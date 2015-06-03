@@ -24,6 +24,11 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	protected $rulesAllKeysLoaded = FALSE;
 	
 	/**
+	 * @brief 	Flag for if rules data has been updated
+	 */
+	public $rulesDataChanged = FALSE;
+
+	/**
 	 * Save Changed Columns
 	 *
 	 * @return	void
@@ -33,19 +38,25 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		if ( $this->_new )
 		{
 			$result = call_user_func_array( 'parent::save', func_get_args() );			
-			\IPS\rules\Event::load( 'rules', 'System', 'record_updated' )->trigger( $this, $this->_data, TRUE );			
+			\IPS\rules\Event::load( 'rules', 'System', 'record_updated' )->trigger( $this, $this->_data, TRUE );
+			
+			/* Core doesn't reset changed after saving new item */
+			$this->changed = array();
 		}
 		else
 		{
-			$changed = $this->changed;
+			$changed 		= $this->changed;
+			$rulesDataChanged 	= $this->rulesDataChanged;
+			
 			$result = call_user_func_array( 'parent::save', func_get_args() );
 			
-			if ( $changed )
+			if ( ! empty( $changed ) or $rulesDataChanged )
 			{
 				\IPS\rules\Event::load( 'rules', 'System', 'record_updated' )->trigger( $this, $changed, FALSE );
 			}
 		}
 		
+		$this->rulesDataChanged = FALSE;
 		return $result;
 	}
 
@@ -333,6 +344,13 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 				$data_class = $this::rulesDataClass();
 				$data_field = \IPS\rules\Data::load( $key, 'data_column_name', array( 'data_class=?', $data_class ) );
 				
+				/* Only continue if value has changed */
+				$existingValue = $this->getRulesData( $key );
+				if ( $value === $existingValue )
+				{
+					return FALSE;
+				}
+				
 				if ( $value !== NULL )
 				{											
 					switch ( $data_field->type )
@@ -474,7 +492,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							break;
 					}
 				}
-				
+								
 				/**
 				 * Update or create the database record
 				 */
@@ -489,6 +507,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 				
 				$this->rulesDataRaw = \IPS\Db::i()->select( '*', \IPS\rules\Data::getTableName( get_class( $this ) ), array( 'entity_id=?', $this->$idField ) )->first();
 				$this->rulesData[ $key ] = $value;
+				$this->rulesDataChanged = TRUE;
 				
 				/* Trigger Event */
 				$event_id = 'updated_' . $data_field->key;

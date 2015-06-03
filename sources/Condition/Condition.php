@@ -274,6 +274,16 @@ class _Condition extends \IPS\Node\Model
 	{
 		$values = \IPS\rules\Application::opformSave( $this, 'conditions', $values, array( 'condition_rule_id', 'condition_group_compare', 'condition_not' ) );		
 		parent::saveForm( $values );
+		
+		/**
+		 * Save Footprint
+		 */
+		$this->init();
+		if ( isset( $this->definition ) )
+		{
+			$this->footprint = md5( json_encode( $this->definition[ 'arguments' ] ) );
+			$this->save();
+		}		
 	}
 	
 	/**
