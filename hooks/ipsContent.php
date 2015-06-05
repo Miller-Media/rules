@@ -119,8 +119,18 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	public function modAction( $action, \IPS\Member $member = NULL, $reason = NULL )
 	{
 		$result = call_user_func_array( 'parent::modAction', func_get_args() );
-		
 		$member = $member ?: \IPS\Member::loggedIn();
+
+		$this->modActionEvent( $action, $member );
+		
+		return $result;
+	}
+	
+	/**
+	 * Trigger moderation action events
+	 */
+	public function modActionEvent( $action, $member )
+	{
 		switch ( $action )
 		{
 			case 'approve'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_approved' 	)->trigger( $this, $member ); break;
@@ -146,9 +156,7 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 		if ( isset( $classEvent ) and ! $classEvent->placeholder )
 		{
 			$classEvent->trigger( $this, $member );
-		}
-
-		return $result;
+		}	
 	}
 	
 	/**
