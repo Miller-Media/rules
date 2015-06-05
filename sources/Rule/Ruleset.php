@@ -182,6 +182,22 @@ class _Ruleset extends \IPS\Node\Model
 			'data' => array( 'ipsDialog' => '', 'ipsDialog-title' => 'Ruleset Overview' ),
 		);
 		
+		$buttons[ 'debug_disable' ] = array
+		(
+			'icon'		=> 'bug',
+			'title'		=> 'Disable Debugging',
+			'id'		=> "{$this->id}-debug-disable",
+			'link'		=> $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'debugDisable', 'setid' => $this->id ) ),
+		);
+		
+		$buttons[ 'debug_enable' ] = array
+		(
+			'icon'		=> 'bug',
+			'title'		=> 'Enable Debugging',
+			'id'		=> "{$this->id}-debug-enable",
+			'link'		=> $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'debugEnable', 'setid' => $this->id ) ),
+		);		
+		
 		return $buttons;
 	}
 	 

@@ -476,29 +476,45 @@ class _rulesets extends \IPS\Node\Controller
 	 */
 	protected function debugEnable()
 	{
-		try
+		$rules = array();
+		
+		if ( \IPS\Request::i()->setid )
 		{
-			$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
-			
-			$enableRecursive = function( $rule, $enableRecursive )
+			try
 			{
-				$rule->debug = 1;
-				$rule->save();
-				
-				foreach ( $rule->children() as $_rule )
-				{
-					$enableRecursive( $_rule, $enableRecursive );
-				}
-			};
-			
-			$enableRecursive( $rule, $enableRecursive );
-			
-			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'Debugging Enabled' );
+				$ruleset = \IPS\rules\Rule\Ruleset::load( \IPS\Request::i()->setid );
+				$rules = $ruleset->children();
+			}
+			catch( \OutOfRangeException $e ) { }
 		}
-		catch ( \OutOfRangeException $e )
+		
+		else if ( \IPS\Request::i()->id )
 		{
-			\IPS\Output::i()->error( 'node_error', '2R101/F', 404, '' );
+			try
+			{
+				$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
+				$rules = array( $rule );
+			}
+			catch( \OutOfRangeException $e ) { }
 		}
+
+		$enableRecursive = function( $rule ) use ( &$enableRecursive )
+		{
+			$rule->debug = 1;
+			$rule->save();
+			
+			foreach ( $rule->children() as $_rule )
+			{
+				$enableRecursive( $_rule );
+			}
+		};
+		
+		foreach( $rules as $rule )
+		{		
+			$enableRecursive( $rule );
+		}
+		
+		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'Debugging Enabled' );
 	}
 	
 	/**
@@ -506,29 +522,45 @@ class _rulesets extends \IPS\Node\Controller
 	 */
 	protected function debugDisable()
 	{
-		try
+		$rules = array();
+		
+		if ( \IPS\Request::i()->setid )
 		{
-			$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
-			
-			$disableRecursive = function( $rule, $disableRecursive )
+			try
 			{
-				$rule->debug = 0;
-				$rule->save();
-				
-				foreach ( $rule->children() as $_rule )
-				{
-					$disableRecursive( $_rule, $disableRecursive );
-				}
-			};
-			
-			$disableRecursive( $rule, $disableRecursive );
-			
-			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'Debugging Disabled' );
+				$ruleset = \IPS\rules\Rule\Ruleset::load( \IPS\Request::i()->setid );
+				$rules = $ruleset->children();
+			}
+			catch( \OutOfRangeException $e ) { }
 		}
-		catch ( \OutOfRangeException $e )
+		
+		else if ( \IPS\Request::i()->id )
 		{
-			\IPS\Output::i()->error( 'node_error', '2R101/G', 404, '' );
+			try
+			{
+				$rule = \IPS\rules\Rule::load( \IPS\Request::i()->id );
+				$rules = array( $rule );
+			}
+			catch( \OutOfRangeException $e ) { }
 		}
+
+		$disableRecursive = function( $rule ) use ( &$disableRecursive )
+		{
+			$rule->debug = 0;
+			$rule->save();
+			
+			foreach ( $rule->children() as $_rule )
+			{
+				$disableRecursive( $_rule );
+			}
+		};
+		
+		foreach( $rules as $rule )
+		{		
+			$disableRecursive( $rule );
+		}
+		
+		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets" ), 'Debugging Disabled' );
 	}
 
 	/**
