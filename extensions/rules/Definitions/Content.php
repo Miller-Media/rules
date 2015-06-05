@@ -1403,16 +1403,14 @@ class _Content
 			throw new \UnexpectedValueException( 'Invalid content' );
 		}
 		
-		$hasStatus = TRUE;
+		$hasStatus = FALSE;
 		
 		foreach ( (array) $values[ 'rules_Content_content_statuses' ] as $status )
-		{
-			if ( ! $hasStatus ) break;
-			
+		{			
 			switch ( $status )
 			{
 				case 'is_poll':
-					$hasStatus = ( $content instanceof \IPS\Content\Polls ) and $content->getPoll();
+					$hasStatus = ( ( $content instanceof \IPS\Content\Polls ) and $content->getPoll() );
 					break;
 					
 				case 'pinned':
@@ -1420,7 +1418,7 @@ class _Content
 					break;
 					
 				case 'unpinned':
-					$hasStatus = isset( $content::$databaseColumnMap[ 'pinned' ] ) and ! $content->mapped( 'pinned' );
+					$hasStatus = ( isset( $content::$databaseColumnMap[ 'pinned' ] ) and ! $content->mapped( 'pinned' ) );
 					break;
 					
 				case 'featured':
@@ -1428,7 +1426,7 @@ class _Content
 					break;
 					
 				case 'unfeatured':
-					$hasStatus = isset( $content::$databaseColumnMap[ 'featured' ] ) and ! $content->mapped( 'featured' );
+					$hasStatus = ( isset( $content::$databaseColumnMap[ 'featured' ] ) and ! $content->mapped( 'featured' ) );
 					break;
 					
 				case 'hidden':
@@ -1440,7 +1438,7 @@ class _Content
 					break;
 					
 				case 'locked':
-					$hasStatus = $content->mapped( 'locked' ) or $content->mapped( 'status' ) == 'closed';
+					$hasStatus = ( $content->mapped( 'locked' ) or $content->mapped( 'status' ) == 'closed' );
 					break;
 					
 				case 'unlocked':
@@ -1448,12 +1446,14 @@ class _Content
 					break;
 					
 				case 'published':
-					$hasStatus = ! $content->isFutureDate() and ! $content->hidden();
+					$hasStatus = ( ! $content->isFutureDate() and ! $content->hidden() );
 					break;
 			}
+			
+			if ( ! $hasStatus ) break;
 		}
-		
-		return $hasStatus;
+
+		return (bool) $hasStatus;
 	}
 	
 	/**
@@ -1738,6 +1738,8 @@ class _Content
 		{
 			$content->$pinned = TRUE;
 			$content->save();
+			$content->modActionEvent( 'pin' );
+			
 			return 'content pinned';
 		}
 		
@@ -1763,6 +1765,8 @@ class _Content
 		{
 			$content->$pinned = FALSE;
 			$content->save();
+			$content->modActionEvent( 'unpin' );
+			
 			return 'content unpinned';
 		}
 		
@@ -1788,6 +1792,8 @@ class _Content
 		{
 			$content->$featured = TRUE;
 			$content->save();
+			$content->modActionEvent( 'feature' );
+			
 			return 'content featured';
 		}
 		
@@ -1813,6 +1819,8 @@ class _Content
 		{
 			$content->$featured = FALSE;
 			$content->save();
+			$content->modActionEvent( 'unfeature' );
+			
 			return 'content unfeatured';
 		}
 		
@@ -1844,6 +1852,8 @@ class _Content
 		{
 			$content->$status = 'closed';
 			$content->save();
+			$content->modActionEvent( 'lock' );
+			
 			return 'content locked';		
 		}
 		
@@ -1875,6 +1885,8 @@ class _Content
 		{
 			$content->$status = 'open';
 			$content->save();
+			$content->modActionEvent( 'unlock' );
+			
 			return 'content unlocked';		
 		}
 		

@@ -1027,8 +1027,9 @@ class _System
 				
 					if ( $count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_scheduled_actions', array( 'schedule_unique_key=?', trim( $unique_key ) ) )->first() )
 					{
+						$schedule_id = \IPS\Db::i()->select( 'schedule_id', 'rules_scheduled_actions', array( 'schedule_unique_key=?', trim( $unique_key ) ) )->first();
 						\IPS\Db::i()->delete( 'rules_scheduled_actions', array( 'schedule_unique_key=?', trim( $unique_key ) ) );
-						return "{$count} scheduled action deleted";
+						return "{$count} scheduled action deleted (ID#{$schedule_id})";
 					}
 					else
 					{
