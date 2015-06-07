@@ -177,10 +177,60 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 				{
 					$data_field_data = $data[ 'data_' . $data_field->column_name ];
 					
+					/**
+					 * If the database data is NULL, no need to proceed
+					 */
 					if ( ! isset ( $data_field_data ) )
 					{
 						$this->rulesData[ $data_field->column_name ] = NULL;
+						$this->rulesLoadedKeys[ $data_field->column_name ] = TRUE;
 						continue;
+					}
+					
+					/**
+					 * Check if this data only applies for specific containers
+					 */
+					if 
+					( 
+						/* Node */
+						(
+							$this instanceof \IPS\Node\Model and
+							$nodeClass = get_class( $this )
+						) 
+						or
+						/* Content Item */
+						( 
+							$this instanceof \IPS\Content\Item and 
+							isset( $this::$containerNodeClass ) and 
+							$nodeClass = $this::$containerNodeClass 
+						)
+					)
+					{
+						$configuration = json_decode( $data_field->configuration, TRUE ) ?: array();
+						$containers = 'containers-' . str_replace( '\\', '-', $nodeClass );
+						
+						if ( isset( $configuration[ $containers ] ) and is_array( $configuration[ $containers ] ) )
+						{
+							$node_id = 0;
+							if ( $this instanceof \IPS\Content\Item )
+							{
+								if ( $node = $this->containerWrapper() )
+								{
+									$node_id = $node->_id;
+								}
+							}
+							else if ( $this instanceof \IPS\Node\Model )
+							{
+								$node_id = $this->_id;
+							}
+							
+							if ( ! in_array( $node_id, $configuration[ $containers ] ) )
+							{
+								$this->rulesData[ $data_field->column_name ] = NULL;
+								$this->rulesLoadedKeys[ $data_field->column_name ] = TRUE;
+								continue;
+							}
+						}
 					}
 				
 					switch ( $data_field->type )
@@ -197,6 +247,11 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 									case '-IPS-DateTime':
 									
 										$data_field_data = \IPS\DateTime::ts( $data_field_data );
+										break;
+										
+									case '-IPS-Http-Url':
+									
+										$data_field_data = new \IPS\Http\Url( $data_field_data );
 										break;
 									
 									default:
@@ -227,7 +282,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							/**
 							 * Arrays of known object types are saved as comma separated lists
 							 */
-							if ( $data_field->type_class )
+							if ( $data_field->type_class and $data_field->type_class !== '-IPS-Http-Url' )
 							{
 								$data_field_data = explode( ',', $data_field_data );
 								$_data_field_data = array();
@@ -384,6 +439,11 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 										$save_value = $value->getTimestamp();
 										break;
 										
+									case 'IPS\Http\Url':
+									
+										$save_value = (string) $value;
+										break;
+										
 									default:
 									
 										$_idField = $value::$databaseColumnId;
@@ -409,7 +469,10 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 								throw new \InvalidArgumentException( 'Value is expected to be an array' );
 							}
 							
-							if ( $data_field->type_class )
+							/**
+							 * Url's should not be saved using comma seperation, so use json encoded format 
+							 */
+							if ( $data_field->type_class and $data_field->type_class !== '-IPS-Http-Url' )
 							{
 								$ids = array();
 								$new_value = array();

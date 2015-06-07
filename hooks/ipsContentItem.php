@@ -123,6 +123,33 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 			if ( $row[ 'data_use_mode' ] == 'public' or static::modPermission( 'edit', NULL, $container ) )
 			{
 				$data_field = \IPS\rules\Data::constructFromData( $row );
+				
+				/**
+				 * Check if this data only applies in specific containers
+				 */
+				if ( isset( static::$containerNodeClass ) and $nodeClass = static::$containerNodeClass )
+				{
+					$configuration = json_decode( $data_field->configuration, TRUE ) ?: array();
+					$containers = 'containers-' . str_replace( '\\', '-', $nodeClass );
+					
+					if ( isset( $configuration[ $containers ] ) and is_array( $configuration[ $containers ] ) )
+					{
+						$node_id = 0;
+						if ( $node = $item->containerWrapper() )
+						{
+							$node_id = $node->_id;
+						}
+						
+						if ( ! in_array( $node_id, $configuration[ $containers ] ) )
+						{
+							continue;
+						}
+					}
+				}
+				
+				/**
+				 * Check if user has permission to edit field
+				 */
 				if ( $data_field->can( 'edit' ) )
 				{
 					$formElements = array_merge( $formElements, $data_field->formElements( $item ) );
