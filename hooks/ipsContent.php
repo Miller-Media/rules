@@ -129,8 +129,10 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	/**
 	 * Trigger moderation action events
 	 */
-	public function modActionEvent( $action, $member )
+	public function modActionEvent( $action, $member=NULL )
 	{
+		$member = $member ?: new \IPS\Member;
+	
 		switch ( $action )
 		{
 			case 'approve'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_approved' 	)->trigger( $this, $member ); break;

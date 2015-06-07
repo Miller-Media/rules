@@ -1846,6 +1846,7 @@ class _Content
 		{
 			$content->$locked = TRUE;
 			$content->save();
+			$content->modActionEvent( 'lock' );
 			return 'content locked';
 		}
 		else if ( $status = $content::$databaseColumnMap[ 'status' ] )
@@ -1879,6 +1880,7 @@ class _Content
 		{
 			$content->$locked = FALSE;
 			$content->save();
+			$content->modActionEvent( 'unlock' );
 			return 'content unlocked';
 		}
 		else if ( $status = $content::$databaseColumnMap[ 'status' ] )
