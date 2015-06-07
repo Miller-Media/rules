@@ -71,7 +71,7 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 						$_rules_header = TRUE and $form->addHeader( "rules_profile_data_header" );
 					}
 					
-					foreach( $data_field->formElements( $member ) as $name => $element )
+					foreach( $data_field->formElements( $this->member ) as $name => $element )
 					{
 						$form->add( $element );
 					}
@@ -161,7 +161,7 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 			{
 				if ( isset ( $values[ 'rules_data_' . $row[ 'data_column_name' ] ] ) )
 				{
-					$member->setRulesData( $row[ 'data_column_name' ], $values[ 'rules_data_' . $row[ 'data_column_name' ] ] );
+					$this->member->setRulesData( $row[ 'data_column_name' ], $values[ 'rules_data_' . $row[ 'data_column_name' ] ] );
 					unset( $values[ 'rules_data_' . $row[ 'data_column_name' ] ] );
 				}
 			}
