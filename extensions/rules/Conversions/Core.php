@@ -232,6 +232,7 @@ class _Core
 				),
 				'Created Date' => array
 				(
+					'token' => 'created',
 					'argtype' => 'object',
 					'class' => '\IPS\DateTime',
 					'converter' => function( $content )
@@ -241,6 +242,7 @@ class _Core
 				),
 				'Updated Date' => array
 				(
+					'token' => 'updated',
 					'argtype' => 'object',
 					'class' => '\IPS\DateTime',
 					'converter' => function( $content )
@@ -321,6 +323,7 @@ class _Core
 				),
 				'Last Post Time' => array
 				(
+					'token' => 'lastpost',
 					'argtype' => 'object',
 					'class' => '\IPS\DateTime',
 					'converter' => function( $item )
@@ -340,6 +343,7 @@ class _Core
 				),
 				'Url' => array
 				(
+					'token' => 'url',
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $item )
@@ -389,6 +393,24 @@ class _Core
 						}
 						return $members;
 					},
+				),
+				'First Comment' => array
+				(
+					'argtype' => 'object',
+					'class' => '\IPS\Content\Comment',
+					'converter' => function( $item )
+					{
+						return $this->comments( 1, 0, 'date', 'asc', NULL, FALSE, NULL, NULL, TRUE );
+					},
+				),
+				'Last Comment' => array
+				(
+					'argtype' => 'object',
+					'class' => '\IPS\Content\Comment',
+					'converter' => function( $item )
+					{
+						return $this->comments( 1, 0, 'date', 'desc', NULL, FALSE, NULL, NULL, TRUE );
+					},					
 				),
 			),
 			'\IPS\Node\Model' => array
@@ -446,6 +468,7 @@ class _Core
 				),
 				'Url' => array
 				(
+					'token' => 'url',
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $node )
