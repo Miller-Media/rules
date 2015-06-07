@@ -17,6 +17,15 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 	exit;
 }
 
+const TEXT 	= 1;
+const EDITOR	= 2;
+const TEXTAREA	= 3;
+const EMAIL	= 4;
+const URL	= 5;
+const PHONE	= 6;
+const PASSWORD	= 7;
+const COLOR	= 8;
+
 /**
  * Node
  */
@@ -262,6 +271,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		$self = $this;
 		$lang = \IPS\Member::loggedIn()->language();
+		$configuration = json_decode( $this->configuration, TRUE ) ?: array();
 		$wrap_chosen_prefix	= "<div data-controller='rules.admin.ui.chosen'>";
 		$wrap_chosen_suffix	= "</div>";
 		
@@ -307,12 +317,12 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$data_toggles = array
 		(
-			'object' 	=> array( 'data_use_mode', 'data_type_class' ),
-			'int'		=> array( 'data_use_mode' ),
-			'float'		=> array( 'data_use_mode' ),
+			'object' 	=> array( 'data_use_mode', 'data_type_class', 'data_text_mode_unavailable' ),
+			'int'		=> array( 'data_use_mode', 'data_text_mode_unavailable' ),
+			'float'		=> array( 'data_use_mode', 'data_text_mode_unavailable' ),
 			'string' 	=> array( 'data_use_mode', 'data_text_mode', 'data_text_mode_wrap' ),
-			'bool'		=> array( 'data_use_mode' ),
-			'array' 	=> array( 'data_use_mode', 'data_type_class' ),
+			'bool'		=> array( 'data_use_mode', 'data_text_mode_unavailable' ),
+			'array' 	=> array( 'data_use_mode', 'data_type_class', 'data_text_mode_unavailable' ),
 		);
 		
 		/**
@@ -325,6 +335,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				''				=> 'Arbitrary',
 				'-IPS-Member'			=> 'Member ( IPS\Member )',
 				'-IPS-DateTime'			=> 'A Date/Time ( IPS\DateTime )',
+				'-IPS-Http-Url'			=> 'A Url ( IPS\Http\Url )',
 				'-IPS-Content'			=> 'Content ( IPS\Content )',
 				'-IPS-Content-Item'		=> 'Content Item ( IPS\Content\Item )',
 				'-IPS-Content-Comment'		=> 'Content Comment ( IPS\Content\Comment )',
@@ -333,6 +344,9 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				'-IPS-Patterns-ActiveRecord'	=> 'Active Record ( IPS\Patterns\ActiveRecord )',
 			),
 		);
+		
+		$object_classes_toggles = array();
+		$object_classes_containers = array();
 		
 		$core_key = $lang->get( '__app_core' );
 		
@@ -361,6 +375,11 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 					if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
 					{
 						$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
+						
+						$lang->words[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->get( $nodeClass::$nodeTitle );
+						$object_classes_containers[] = new \IPS\Helpers\Form\Node( 'containers-' . str_replace( '\\', '-', $nodeClass ), isset( $configuration[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] ) ? $configuration[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] : 0, FALSE, array( 'class' => $nodeClass, 'multiple' => TRUE, 'subnodes' => FALSE, 'zeroVal' => 'All' ), NULL, NULL, NULL, 'containers-' . str_replace( '\\', '-', $nodeClass ) );
+						$object_classes_toggles[ '-' . str_replace( '\\', '-', $contentItemClass ) ] = array( 'containers-' . str_replace( '\\', '-', $nodeClass ) );
+						$object_classes_toggles[ '-' . str_replace( '\\', '-', $nodeClass ) ] = array( 'containers-' . str_replace( '\\', '-', $nodeClass ) );
 					}
 				}
 			}
@@ -387,10 +406,6 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 			\IPS\Db::i()->select( 'COUNT(*)', $this::getTableName( $this->class ), array( $column_name . ' > \'\' ') )->first()
 		);
 		
-		$form->add( new \IPS\Helpers\Form\Select( 'data_class', $this->class ?: '-IPS-Member', FALSE, array( 'options' => $data_classes, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_class' ) );
-		$form->add( new \IPS\Helpers\Form\Select( 'data_type', $this->type ?: 'string', TRUE, array( 'options' => $data_types, 'toggles' => $data_toggles, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
-		$form->add( new \IPS\Helpers\Form\Select( 'data_type_class', $this->type_class ?: '', FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'data_custom_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_type_class' ) );
-		
 		$data_use_options = array
 		(
 			'internal' 	=> 'Internal Use Only',
@@ -406,14 +421,27 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$data_text_modes = array
 		(
-			1 => 'Text Field',
-			2 => 'Editor',
+			TEXT 		=> 'Text Field',
+			TEXTAREA 	=> 'Text Area',
+			EDITOR 		=> 'Content Editor',
+			URL		=> 'Url Input',
+			EMAIL		=> 'Email Input',
 		);
 		
+		$form->add( new \IPS\Helpers\Form\Select( 'data_class', $this->class ?: '-IPS-Member', FALSE, array( 'options' => $data_classes, 'disabled' => $field_locked, 'toggles' => $object_classes_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_class' ) );
+		
+		foreach( $object_classes_containers as $nodeSelect )
+		{
+			$form->add( $nodeSelect );
+		}
+		
+		$form->add( new \IPS\Helpers\Form\Select( 'data_type', $this->type ?: 'int', TRUE, array( 'options' => $data_types, 'toggles' => $data_toggles, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'data_type_class', $this->type_class ?: '', FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'data_custom_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_type_class' ) );
+		
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
-		//$form->add( new \IPS\Helpers\Form\Text( 'data_tab', $this->tab, FALSE, array(), NULL, NULL, NULL, 'data_tab' ) );
+		// $form->add( new \IPS\Helpers\Form\Text( 'data_tab', $this->tab, FALSE, array(), NULL, NULL, NULL, 'data_tab' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
-		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes ), NULL, "<div id='data_text_mode_wrap'>", "</div>", 'data_text_mode' ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
 		
 		parent::form( $form );
 	}
@@ -452,12 +480,27 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 			
 				switch( $this->text_mode )
 				{
-					case 2:
+					case EDITOR:
 					
 						$formElements[ $form_name ] = new \IPS\Helpers\Form\Editor( $form_name, $form_value, $this->required, array( 'app' => 'rules', 'key' => 'Generic' ) );
 						break;
 						
-					case 1:
+					case TEXTAREA:
+					
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\TextArea( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+						break;
+						
+					case URL:
+					
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Url( $form_name, new \IPS\Http\Url( $form_value ), $this->required, array(), NULL, NULL, NULL, $form_name );
+						break;
+						
+					case EMAIL:
+
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Email( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+						break;
+					
+					case TEXT:
 					default:
 					
 						$formElements[ $form_name ] = new \IPS\Helpers\Form\Text( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
@@ -483,7 +526,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				/* Content Select */
 				else if ( is_subclass_of( $objectClass, '\IPS\Content\Item' ) )
 				{
-					// @TODO:
+					$formElements[ $form_name ] = new \IPS\rules\Field\Content( $form_name, $form_value, $this->required, array( 'multiple' => 1, 'class' => $objectClass ), NULL, NULL, NULL, $form_name );
 				}
 				
 				/* Member Select */
@@ -496,6 +539,12 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				else if ( $objectClass == '\IPS\DateTime' )
 				{
 					$formElements[ $form_name ] = new \IPS\Helpers\Form\Date( $form_name, $form_value, $this->required, array( 'time' => TRUE ), NULL, NULL, NULL, $form_name );
+				}
+				
+				/* Url Input */
+				else if ( $objectClass == '\IPS\Http\Url' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Url( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
 				}
 				
 				break;
@@ -513,7 +562,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				/* Multiple Content Select */
 				else if ( is_subclass_of( $objectClass, '\IPS\Content\Item' ) )
 				{
-					// @TODO:
+					$formElements[ $form_name ] = new \IPS\rules\Field\Content( $form_name, $form_value, $this->required, array( 'multiple' => NULL, 'class' => $objectClass ), NULL, NULL, NULL, $form_name );
 				}
 				
 				/* Multiple Member Select */
@@ -527,6 +576,12 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				{
 					$formElements[ $form_name ] = new \IPS\Helpers\Form\Stack( $form_name, $form_value, $this->required, array( 'stackFieldType' => 'Date', 'time' => FALSE ), NULL, NULL, NULL, $form_name );
 				}
+				
+				/* Multiple Urls */
+				else if ( $objectClass == '\IPS\Http\Url' )
+				{
+					$formElements[ $form_name ] = new \IPS\Helpers\Form\Stack( $form_name, $form_value, $this->required, array( 'stackFieldType' => 'Url' ), NULL, NULL, NULL, $form_name );
+				}				
 
 				/* Multiple Arbitrary Values */
 				else if ( $objectClass == '' )
@@ -545,8 +600,15 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function valueFromForm( $values )
 	{
-		$form_name = 'rules_data_' . $this->column_name;
-		return $values[ $form_name ];
+		$form_name 	= 'rules_data_' . $this->column_name;
+		$form_value 	= $values[ $form_name ];
+		
+		if ( $this->type == 'string' )
+		{
+			$form_value = (string) $form_value;
+		}
+		
+		return $form_value;
 	}
 	
 	/**
@@ -562,7 +624,34 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function saveForm( $values )
 	{
-		$values[ 'data_column_name' ] = mb_strtolower( $values[ 'data_column_name' ] );		
+		$values[ 'data_column_name' ] = mb_strtolower( $values[ 'data_column_name' ] );
+		$configuration = array();
+		
+		foreach( $values as $key => $value )
+		{
+			/**
+			 * Save node container selections in configuration array
+			 */
+			if ( mb_substr( $key, 0, 11 ) == 'containers-' )
+			{
+				if ( is_array( $values[ $key ] ) )
+				{
+					foreach( $values[ $key ] as $node )
+					{
+						$configuration[ $key ][] = $node->_id;
+					}
+				}
+				else
+				{
+					$configuration[ $key ] = $values[ $key ];
+				}
+				
+				unset( $values[ $key ] );
+			}
+		}
+		
+		$values[ 'data_configuration' ] = json_encode( $configuration );
+		
 		parent::saveForm( $values );
 	}
 	
@@ -682,6 +771,13 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				{
 					$field_type = 'MEDIUMTEXT';
 					$field_length = NULL;
+					break;
+				}
+				
+				if ( $type_class == '-IPS-Http-Url' )
+				{
+					$field_type = 'VARCHAR';
+					$field_length = 1028;
 					break;
 				}
 			
