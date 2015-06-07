@@ -1731,15 +1731,34 @@ class _Application extends \IPS\Application
 			return $arg;
 		}
 		
+		/**
+		 * Active Record
+		 */
 		if ( $arg instanceof \IPS\Patterns\ActiveRecord )
 		{
 			$idColumn = $arg::$databaseColumnId;
 			$dbstore = array( '_obj_class' => '\\' . get_class( $arg ), 'id' => $arg->$idColumn );
 		}
+		
+		/**
+		 * DateTime Object
+		 */
 		else if ( $arg instanceof \IPS\DateTime )
 		{
 			$dbstore = array( '_obj_class' => '\IPS\DateTime', 'timestamp' => $arg->getTimestamp() );
 		}
+		
+		/**
+		 * Url Object
+		 */
+		else if ( $arg instanceof \IPS\Http\Url )
+		{
+			$dbstore = array( '_obj_class' => '\IPS\Http\Url', 'url' => (string) $arg );
+		}
+		
+		/**
+		 * Generic Object
+		 */
 		else
 		{
 			$dbstore = array( '_obj_class' => 'stdClass', 'data' => (array) $arg );
@@ -1761,14 +1780,33 @@ class _Application extends \IPS\Application
 			return $arg;
 		}
 		
+		/**
+		 * Generic Object
+		 */
 		if ( $arg[ '_obj_class' ] == 'stdClass' )
 		{
 			return (object) $arg[ 'data' ];
 		}
+		
+		/**
+		 * DateTime Object
+		 */
 		else if ( $arg[ '_obj_class' ] == '\IPS\DateTime' )
 		{
 			return \IPS\DateTime::ts( $arg[ 'timestamp' ] );
 		}
+		
+		/**
+		 * Url Object
+		 */
+		else if ( $arg[ '_obj_class' ] == '\IPS\Http\Url' )
+		{
+			return new \IPS\Http\Url( $arg[ 'url' ] );
+		}
+		
+		/**
+		 * Active Record
+		 */
 		else
 		{
 			$class = $arg[ '_obj_class' ];
