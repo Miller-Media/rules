@@ -116,7 +116,19 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	 */
 	public static function formElements( $item=NULL, \IPS\Node\Model $container=NULL )
 	{
-		$formElements = parent::formElements( $item, $container );
+		return array_merge( parent::formElements( $item, $container ), static::rulesFormElements( $item, $container ) );
+	}
+	
+	/**
+	 * Get elements for add/edit form
+	 *
+	 * @param	\IPS\Content\Item|NULL	$item		The current item if editing or NULL if creating
+	 * @param	\IPS\Node\Model|NULL	$container	Container (e.g. forum), if appropriate
+	 * @return	array
+	 */
+	public static function rulesFormElements( $item=NULL, \IPS\Node\Model $container=NULL )
+	{
+		$formElements = array();
 		
 		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', static::rulesDataClass() ) ) as $row )
 		{
@@ -156,8 +168,8 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 				}
 			}
 		}
-		
-		return $formElements;		
+
+		return $formElements;
 	}
 	
 	/**
