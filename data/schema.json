@@ -1600,6 +1600,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "data_configuration": {
+                "name": "data_configuration",
+                "type": "MEDIUMTEXT",
+                "length": null,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {

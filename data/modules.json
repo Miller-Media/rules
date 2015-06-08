@@ -3,6 +3,16 @@
         "rules": {
             "default_controller": "",
             "protected": 0
+        },
+        "system": {
+            "default_controller": "",
+            "protected": false
+        }
+    },
+    "front": {
+        "system": {
+            "default_controller": "",
+            "protected": 0
         }
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100101">
+ <app key="rules" version="100103">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -49,11 +49,12 @@
   <word key="data_type" js="0">Stored Data Type</word>
   <word key="data_type_class" js="0">Stored Data</word>
   <word key="data_custom_class" js="0">Custom Classname</word>
-  <word key="data_use_mode" js="0">Field Editing Mode</word>
+  <word key="data_use_mode" js="0">Field Access Mode</word>
+  <word key="data_use_mode_desc" js="0">Public access will allow the field to be edited by any member with permission. Administrative access limits editing of the field to moderators with permission to edit the item.</word>
   <word key="data_tab" js="0">Form Tab Name</word>
   <word key="data_tab_desc" js="0">Enter the name of the tab that this field should appear under on editing forms</word>
   <word key="data_required" js="0">Is this data required?</word>
-  <word key="data_text_mode" js="0">Text Input Control</word>
+  <word key="data_text_mode" js="0">Data Input Control</word>
   <word key="rules_numeric_math_operation" js="0">Value update method</word>
   <word key="rules_array_operation" js="0">Array update method</word>
   <word key="rules_node_data_tab" js="0">Rules Data</word>
