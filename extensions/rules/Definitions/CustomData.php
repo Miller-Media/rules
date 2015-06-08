@@ -287,7 +287,6 @@ class _CustomData
 			);
 		}
 		
-		
 		return $actions;
 	}
 	

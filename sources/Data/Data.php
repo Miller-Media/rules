@@ -870,6 +870,14 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		return 'rules_data_' . $table_suffix;
 	}
 	
+	/**
+	 * Clone
+	 */
+	public function __clone()
+	{
+		$this->key = md5( uniqid() . mt_rand() );
+		parent::__clone();
+	}
 	
 	/**
 	 * [ActiveRecord] Delete Record
