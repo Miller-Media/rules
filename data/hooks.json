@@ -38,5 +38,9 @@
     "modCoreMembersProfile": {
         "type": "C",
         "class": "\\IPS\\core\\modules\\front\\members\\profile"
+    },
+    "ipsCmsRecords": {
+        "type": "C",
+        "class": "\\IPS\\cms\\Records"
     }
 }

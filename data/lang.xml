@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100103">
+ <app key="rules" version="100104">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -93,7 +93,7 @@
   <word key="action_schedule_mode" js="0">Action should be executed</word>
   <word key="action_schedule_mode_desc" js="0">Actions that are executed immediately can affect the conditions of other rules operating on the same event. In some cases this is desirable, but is generally not recommended as it can lead to unexpected rule results.</word>
   <word key="rules_action_execution_now" js="0">Immediately</word>
-  <word key="rules_action_execution_defer" js="0">At the end of the event</word>
+  <word key="rules_action_execution_defer" js="0">At the end of the event (recommended)</word>
   <word key="rules_action_execution_future" js="0">Fixed amount of time in the future</word>
   <word key="rules_action_execution_date" js="0">A specific date in the future</word>
   <word key="rules_action_execution_custom" js="0">A calculated date and time</word>
