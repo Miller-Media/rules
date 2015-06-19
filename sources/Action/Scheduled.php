@@ -62,7 +62,7 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 	public function execute( $deleteWhenDone=TRUE )
 	{
 		$action_data = json_decode( $this->data, TRUE );
-
+		
 		$args = array();
 		$event_args = array();
 

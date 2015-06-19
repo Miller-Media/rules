@@ -220,6 +220,7 @@ class _Application extends \IPS\Application
 							try { $members[] = \IPS\Member::load( $member_id ); }
 							catch( \Exception $e ) {}
 						}
+						
 						return $members;
 					},
 				);
@@ -1073,7 +1074,7 @@ class _Application extends \IPS\Application
 						if 
 						( 
 							$argument_missing and 
-							$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] !== 'manual' and
+							$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] == 'event' and
 							$operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ]
 						)	
 						{
@@ -1417,6 +1418,7 @@ class _Application extends \IPS\Application
 									$input_arg = NULL;
 									$arg_name_token = NULL;
 									$arg_name_description = NULL;
+									$tokenValue = NULL;
 									
 									/**
 									 * Building Token Values
@@ -1447,7 +1449,16 @@ class _Application extends \IPS\Application
 										
 										if ( isset( $arg_name_token ) and isset( $input_arg ) )
 										{
-											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
+											/* Standard conversion */
+											$tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
+											
+											/* Token formatter? */
+											if ( isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) and is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
+											{
+												$tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $tokenValue );
+											}
+											
+											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $tokenValue;
 										}
 									}
 									
@@ -1726,6 +1737,19 @@ class _Application extends \IPS\Application
 	 */
 	public static function storeArg( $arg )
 	{
+		/* Walk through arrays recursively to store arguments */
+		if ( is_array( $arg ) )
+		{
+			$arg_array = array();
+			
+			foreach ( $arg as $k => $_arg )
+			{
+				$arg_array[ $k ] = static::storeArg( $_arg );
+			}
+			
+			return $arg_array;
+		}
+		
 		if ( ! is_object( $arg ) )
 		{
 			return $arg;
@@ -1775,9 +1799,22 @@ class _Application extends \IPS\Application
 	 */
 	public static function restoreArg( $arg )
 	{
-		if ( ! is_array( $arg ) or ! isset ( $arg[ '_obj_class' ] ) )
+		if ( ! is_array( $arg ) )
 		{
 			return $arg;
+		}
+		
+		/* If the array is not a stored object reference, walk through elements recursively to restore values */
+		if ( ! isset ( $arg[ '_obj_class' ] ) )
+		{
+			$arg_array = array();
+			
+			foreach ( $arg as $k => $_arg )
+			{
+				$arg_array[ $k ] = static::restoreArg( $_arg );
+			}
+
+			return $arg_array;
 		}
 		
 		/**

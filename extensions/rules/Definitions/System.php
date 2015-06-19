@@ -891,7 +891,7 @@ class _System
 		{
 			return "no participants specified";
 		}
-	
+
 		$conversation = \IPS\core\Messenger\Conversation::createItem( $creator, $creator->ip_address, \IPS\DateTime::ts( time() ) );
 		$conversation->title = $subject;
 		$conversation->is_system = TRUE;
@@ -906,12 +906,12 @@ class _System
 		}
 		
 		foreach ( $participants as $participant )
-		{		
+		{
 			$conversation->authorize( $participant );
 		}
 		
 		$conversation->save();
-		
+				
 		return "conversation started with " . $conversation->activeParticipants . " participants";
 	}
 	
