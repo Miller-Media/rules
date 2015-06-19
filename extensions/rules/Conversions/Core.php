@@ -171,6 +171,8 @@ class _Core
 				),
 				'Url' => array
 				(
+					'token' => 'url',
+					'tokenValue' => function( $url ) { return (string) $url; },
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $member )
@@ -344,6 +346,7 @@ class _Core
 				'Url' => array
 				(
 					'token' => 'url',
+					'tokenValue' => function( $url ) { return (string) $url; },
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $item )
@@ -469,6 +472,7 @@ class _Core
 				'Url' => array
 				(
 					'token' => 'url',
+					'tokenValue' => function( $url ) { return (string) $url; },
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $node )
@@ -587,10 +591,15 @@ class _Core
 				(
 					'token' => 'url',
 					'description' => 'The site url',
-					'argtype' => 'string',
+					'argtype' => 'object',
+					'class' => '\IPS\Http\Url',
 					'converter' => function( $settings )
 					{
-						return $settings->base_url;
+						return new \IPS\Http\Url( $settings->base_url );
+					},
+					'tokenValue' => function( $url )
+					{
+						return (string) $url;
 					},
 				),
 			),

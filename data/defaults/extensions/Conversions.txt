@@ -90,10 +90,23 @@ class _{class}
 				 * Argument Getter
 				 *
 				 * This function is called to get the global argument
+				 *
+				 * @return 	mixed		Global argument
 				 */
 				'getArg' => function()
 				{
 					return \IPS\Member::loggedIn();
+				},
+				
+				/**
+				 * Token Value Formatter
+				 *
+				 * @params	$arg		The global argument
+				 * @return	string		The string value of the argument for token replacement
+				 */
+				'tokenValue' => function( $arg )
+				{
+					return (string) $arg;
 				},
 			),
 		);
@@ -136,7 +149,10 @@ class _{class}
 					 * be used as a token replacement on rules editing forms.
 					 *
 					 * Note: only values of type 'string', 'int', or 'float'
-					 * are able to be used as token replacements.
+					 * are able to be used as token replacements unless you
+					 * define a 'tokenValue' function which returns a string
+					 * representation of your converted argument that can be
+					 * used for token replacement.
 					 */
 					'token' => 'title',
 					
@@ -186,6 +202,17 @@ class _{class}
 					'converter' => function( $object )
 					{
 						return $object->mapped( 'title' );
+					},
+					
+					/**
+					 * Token Value Formatter
+					 *
+					 * @params	$arg		The converted argument returned by your converter function
+					 * @return	string		The string value of the argument for token replacement
+					 */
+					'tokenValue' => function( $arg )
+					{
+						return (string) $arg;
 					},
 				),
 			),

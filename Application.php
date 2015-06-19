@@ -1406,9 +1406,10 @@ class _Application extends \IPS\Application
 					{
 						foreach ( $derivative_arguments as $map_key => $derivative_argument )
 						{
-							if ( in_array( $derivative_argument[ 'argtype' ], $_types ) )
+							list( $converter_class, $converter_key ) = explode( ':', $map_key );
+							
+							if ( in_array( $derivative_argument[ 'argtype' ], $_types ) or isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
 							{
-								list( $converter_class, $converter_key ) = explode( ':', $map_key );
 								if 
 								( 
 									isset ( $classConverters[ $converter_class ][ $converter_key ][ 'token' ] ) and 
@@ -1458,7 +1459,7 @@ class _Application extends \IPS\Application
 												$tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $tokenValue );
 											}
 											
-											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $tokenValue;
+											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $replacements[ '~' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . '~' ] = $tokenValue;
 										}
 									}
 									
