@@ -48,6 +48,7 @@ class _Core
 				'description' => 'the currently logged in user',
 				'argtype' => 'object',
 				'class' => '\IPS\Member',
+				'nullable' => TRUE,
 				'getArg' => function()
 				{
 					return \IPS\Member::loggedIn();

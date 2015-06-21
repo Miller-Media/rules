@@ -79,7 +79,7 @@ class _{class}
 				 * If this global argument has the possibility of having a NULL value, 
 				 * then set the nullable setting to TRUE.
 				 */
-				'nullable' => FALSE,
+				'nullable' => TRUE,
 				
 				/**
 				 * If this global argument is an object, specify it's classname

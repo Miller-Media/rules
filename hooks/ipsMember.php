@@ -4,6 +4,24 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 {
 
 	/**
+	 * Get logged in member
+	 *
+	 * @return	\IPS\Member
+	 */
+	public static function loggedIn()
+	{
+		if ( static::$loggedInMember === NULL )
+		{
+			if ( ! \IPS\Dispatcher::hasInstance() )
+			{
+				static::$loggedInMember = static::load( NULL );
+			}
+		}
+		
+		return parent::loggedIn();
+	}
+	
+	/**
 	 * Member Sync
 	 *
 	 * @param	string	$method	Method

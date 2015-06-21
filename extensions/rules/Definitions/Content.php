@@ -679,7 +679,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
 											'class' => $nodeClass,
 											'converter' => function( $node )
 											{
@@ -688,7 +688,7 @@ class _Content
 										),
 										'array' => array
 										(
-											'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' nodes',
+											'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' nodes',
 											'class' => $nodeClass,
 											'converter' => function( $nodes )
 											{
@@ -1092,7 +1092,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
 											'class' => $nodeClass,
 										),
 									),
@@ -1215,7 +1215,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( \IPS\Member::loggedIn()->language()->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
 											'class' => $nodeClass,
 										),
 									),
