@@ -132,6 +132,16 @@ class _Core
 						return (int) $member->pp_reputation_points;
 					},
 				),
+				'Warn Level' => array
+				(
+					'token' => 'warnlevel',
+					'description' => 'Warning level',
+					'argtype' => 'int',
+					'converter' => function( $member )
+					{
+						return (int) $member->warn_level;
+					},
+				),				
 				'Joined Date' => array
 				(
 					'argtype' => 'object',
