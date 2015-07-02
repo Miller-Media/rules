@@ -87,7 +87,7 @@ class _Content extends \IPS\Helpers\Form\Text
 			{
 				if ( $v instanceof \IPS\Content\Item )
 				{
-					$value[] = 'ID: ' . $v->$idField . ' - ' . $v->mapped( 'title' );
+					$value[] = 'ID:' . $v->$idField . ' - ' . $v->mapped( 'title' );
 				}
 				else
 				{
@@ -98,7 +98,7 @@ class _Content extends \IPS\Helpers\Form\Text
 		}
 		elseif ( $value instanceof \IPS\Content\Item )
 		{
-			$value = 'ID: ' . $value->$idField . ' - ' . $value->mapped( 'title' );
+			$value = 'ID:' . $value->$idField . ' - ' . $value->mapped( 'title' );
 		}
 		
 		return \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->text( $this->name, 'text', $value, $this->required, $this->options['maxLength'], $this->options['size'], $this->options['disabled'], $this->options['autocomplete'], $this->options['placeholder'], NULL, NULL );
