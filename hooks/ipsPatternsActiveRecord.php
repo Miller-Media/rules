@@ -377,6 +377,30 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	}
 	
 	/**
+	 * Get value from data store
+	 *
+	 * @param	mixed	$key	Key
+	 * @return	mixed	Value from the datastore
+	 */
+	public function __get( $key )
+	{
+		/**
+		 * Always return a core value if it is available
+		 */
+		$value = parent::__get( $key );
+		
+		if ( $value !== NULL )
+		{
+			return $value;
+		}
+		
+		/**
+		 * Look for a rules data value
+		 */
+		return $this->getRulesDataWithPermission( $key );
+	}
+
+	/**
 	 * Set Rules Data
 	 *
 	 * @param 	string|NULL	$key		The data to retrieve/set
