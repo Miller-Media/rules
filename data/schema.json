@@ -1614,6 +1614,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "data_setting_key": {
+                "name": "data_setting_key",
+                "type": "VARCHAR",
+                "length": 128,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
