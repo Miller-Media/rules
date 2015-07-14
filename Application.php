@@ -377,7 +377,17 @@ class _Application extends \IPS\Application
 		{
 			foreach ( $definition[ $optype ] as $operation_key => $operation_data )
 			{
-				if ( ! isset( $footprint ) or $footprint == md5( json_encode( $operation_data[ 'arguments' ] ) ) )
+				/* 
+				 * Add to the select list if the operation hasn't been previously configured, 
+				 * or if this was the operation which was originally configured, or if this
+				 * operation's footprint is the same as the one which is configured (uses the 
+				 * same arguments).
+				 */
+				if 
+				( 
+					! isset( $footprint ) or 
+					( $definition_key === md5( $operation->app . $operation->class ) and $operation_key === $operation->key ) or 
+					$footprint == md5( json_encode( $operation_data[ 'arguments' ] ) ) )
 				{
 					$group = $operation_data[ 'group' ] ?: $definition[ 'group' ];
 					$_operations[ $group ][ $definition_key . '_' . $operation_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_' . $optype . '_' . $operation_key;
@@ -1566,7 +1576,7 @@ class _Application extends \IPS\Application
 		
 		foreach ( (array) $classes as $_class )
 		{
-			if ( $_class === $class )
+			if ( ltrim( $_class, '\\' ) === ltrim( $class, '\\' ) )
 			{
 				$compliant = TRUE;
 				break;
@@ -2002,6 +2012,11 @@ class _Application extends \IPS\Application
 			{
 				$extensions[ 'Conversions' ][ $application->directory ][ $key ] = $ext;
 			}
+			
+			foreach ( $application->extensions( 'rules', 'Values' ) as $key => $ext )
+			{
+				$extensions[ 'Values' ][ $application->directory ][ $key ] = $ext;
+			}
 		}
 		
 		return $extensions[ $type ];
@@ -2045,9 +2060,9 @@ class _Application extends \IPS\Application
 					'group'		=> $ext->defaultGroup,
 					'app' 		=> $app,
 					'class' 	=> $class,
-					'events' 	=> $ext->events(),
-					'conditions'	=> $ext->conditions(),
-					'actions' 	=> $ext->actions(),
+					'events' 	=> method_exists( $ext, 'events' ) 	? $ext->events() 	: array(),
+					'conditions'	=> method_exists( $ext, 'conditions' ) 	? $ext->conditions() 	: array(),
+					'actions' 	=> method_exists( $ext, 'actions' ) 	? $ext->actions() 	: array(),
 				);
 			}
 		}
