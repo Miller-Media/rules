@@ -398,6 +398,29 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$data_classes = array_replace_recursive( $data_classes, $object_classes );
 		unset( $data_classes[ 'General' ] );
 		
+		/**
+		 * Custom app values
+		 *
+		$data_app_values = array();
+		
+		foreach( \IPS\rules\Application::rulesExtensions( 'Values' ) as $app => $extensions )
+		{
+			$appName = $lang->get( '__app_' . $app );
+			
+			foreach( $extensions as $ext )
+			{
+				$rulesValues = $ext->values();
+				foreach( $rulesValues as $objectClass => $valuesTypes )
+				{
+					foreach( $valuesTypes as $value_key => $value )
+					{
+						$data_app_values[ $objectClass ][ $value_key ] = $appName . ' - ' . $value[ 'description' ];
+					}
+				}
+			}
+		}
+		*/
+		
 		$column_name = 'data_' . $this->column_name;
 		$field_locked = 
 		(
@@ -439,7 +462,6 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->add( new \IPS\Helpers\Form\Select( 'data_type_class', $this->type_class ?: '', FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'data_custom_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_type_class' ) );
 		
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
-		// $form->add( new \IPS\Helpers\Form\Text( 'data_tab', $this->tab, FALSE, array(), NULL, NULL, NULL, 'data_tab' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
 		
