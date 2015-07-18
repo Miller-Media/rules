@@ -12,7 +12,11 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 	{
 		if ( static::$loggedInMember === NULL )
 		{
-			if ( ! \IPS\Dispatcher::hasInstance() )
+			/**
+			 * Rules may trigger core system functions that use \IPS\Member::loggedIn(), (i.e \IPS\Content\Item::setTags )
+			 * This prevents the script from crashing in API mode because the parent method attempts to start a session.
+			 */
+			if ( php_sapi_name() === 'cli' )
 			{
 				static::$loggedInMember = static::load( NULL );
 			}
