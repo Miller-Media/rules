@@ -102,6 +102,26 @@ class _Core
 						return (string) $member->name;
 					},
 				),
+				'Name Link' => array
+				(
+					'token' => 'namelink',
+					'description' => 'User name linked to profile',
+					'argtype' => 'string',
+					'converter' => function ( $member )
+					{
+						return $member->link();
+					},
+				),
+				'Email' => array
+				(
+					'token' => 'email',
+					'description' => 'User email address',
+					'argtype' => 'string',
+					'converter' => function( $member )
+					{
+						return $member->email;
+					},
+				),
 				'Member Title' => array
 				(
 					'token' => 'title',
@@ -184,6 +204,7 @@ class _Core
 				(
 					'token' => 'url',
 					'tokenValue' => function( $url ) { return (string) $url; },
+					'description' => 'The url',
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $member )
@@ -358,6 +379,7 @@ class _Core
 				(
 					'token' => 'url',
 					'tokenValue' => function( $url ) { return (string) $url; },
+					'description' => 'The url',
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $item )
@@ -484,6 +506,7 @@ class _Core
 				(
 					'token' => 'url',
 					'tokenValue' => function( $url ) { return (string) $url; },
+					'description' => 'The url',
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $node )
