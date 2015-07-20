@@ -122,7 +122,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	{
 		try
 		{
-			$data = \IPS\rules\Data::load( $key, 'data_key' );
+			$data = \IPS\rules\Data::load( $key, 'data_column_name' );
 			if ( $data->can( $permission, $member ) )
 			{
 				return $this->getRulesData( $key );
