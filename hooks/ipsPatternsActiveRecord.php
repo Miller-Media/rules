@@ -579,7 +579,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							break;
 					}
 				}
-								
+				
 				/**
 				 * Update or create the database record
 				 */

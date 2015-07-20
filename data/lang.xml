@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100106">
+ <app key="rules" version="100107">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -602,6 +602,10 @@
   <word key="rules_Content_guest_name" js="0">Name to use if author is a guest</word>
   <word key="rules_Content_content_body" js="0">Content Body</word>
   <word key="rules_Content_content_title" js="0">Title</word>
+  <word key="rules_Content_use_created_handler" js="0">Process Content After Creation?</word>
+  <word key="rules_Content_use_created_handler_desc" js="0">(Optional) If you need to perform additional actions on the content after it's created, you can enter custom php code which will be executed after the content has been saved.</word>
+  <word key="rules_Content_created_handler" js="0">PHP Code</word>
+  <word key="rules_Content_created_handler_description" js="0"><![CDATA[Custom php code entered here will be executed after the content is saved. The following variables are available to your code:<br><br><ul><li><strong>$createdContent</strong> - The created content</li></ul>]]></word>
   <word key="rules_Content_actions_create_content_comment" js="0">Post new %s comment</word>
   <word key="rules_Content_actions_create_content_comment_item" js="0">%s</word>
   <word key="rules_Content_actions_create_content_comment_author" js="0">%s Comment Author</word>
