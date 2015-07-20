@@ -777,6 +777,10 @@ $lang = array(
 	'rules_Content_guest_name'				=> "Name to use if author is a guest",
 	'rules_Content_content_body'				=> "Content Body",
 	'rules_Content_content_title'				=> "Title",
+	'rules_Content_use_created_handler'			=> "Process Content After Creation?",
+	'rules_Content_use_created_handler_desc'		=> "(Optional) If you need to perform additional actions on the content after it's created, you can enter custom php code which will be executed after the content has been saved.",
+	'rules_Content_created_handler'				=> "PHP Code",
+	'rules_Content_created_handler_description'		=> "Custom php code entered here will be executed after the content is saved. The following variables are available to your code:<br><br><ul><li><strong>\$createdContent</strong> - The created content</li></ul>",
 	
 	'rules_Content_actions_create_content_comment'		=> "Post new %s comment",
 	'rules_Content_actions_create_content_comment_item'	=> "%s",

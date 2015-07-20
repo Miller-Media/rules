@@ -1120,13 +1120,17 @@ class _Content
 							'group' => $group,
 							'configuration' => array
 							(
-								'form' => function( $form, $values )
+								'form' => function( $form, $values, $operation ) use ( $lang )
 								{
 									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', $values[ 'rules_Content_increase_posts' ], TRUE ) );
 									$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
+									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_use_created_handler', isset( $values[ 'rules_Content_use_created_handler' ] ) ? $values[ 'rules_Content_use_created_handler' ] : FALSE, FALSE, array( 'togglesOn' => array( $form->id . '_rules_Content_created_handler' ) ) ) );
+									
+									$lang->words[ 'rules_Content_created_handler_desc' ] = $lang->get( 'rules_Content_created_handler_description' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
+									$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', $values[ 'rules_Content_created_handler' ] ?: "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 								},
 							),
-							'callback' => function( $container, $author, $title, $content, $tags, $values ) use ( $nodeClass, $contentItemClass )
+							'callback' => function( $container, $author, $title, $content, $tags, $values, $arg_map ) use ( $nodeClass, $contentItemClass )
 							{
 								if ( ! ( $container instanceof \IPS\Node\Model ) )
 								{
@@ -1144,11 +1148,7 @@ class _Content
 								}
 								
 								$now = \IPS\DateTime::ts( time() );
-								
-								$item = $contentItemClass::createItem
-								(
-									$author, $author->ip_address, $now, $container
-								);
+								$item = $contentItemClass::createItem( $author, $author->ip_address, $now, $container );
 								
 								if ( $titleColumn = $contentItemClass::$databaseColumnMap[ 'title' ] )
 								{
@@ -1175,6 +1175,19 @@ class _Content
 								{
 									/* Set tags through our rules action to account for non-logged in members */
 									$this->setTags( $item, $tags, array( 'rules_Content_modify_tags_type' => 'set' ) );
+								}
+								
+								/* Custom PHP Code Handler */
+								if ( $values[ 'rules_Content_use_created_handler' ] )
+								{
+									$arg_map[ 'createdContent' ] = $item;
+									$evaluate = function( $phpcode ) use ( $arg_map )
+									{
+										extract( $arg_map );								
+										return @eval( $phpcode );
+									};
+									
+									$evaluate( $values[ 'rules_Content_created_handler' ] );
 								}
 								
 								return "content created";
@@ -1294,10 +1307,14 @@ class _Content
 								'group' => $group,
 								'configuration' => array
 								(
-									'form' => function( $form, $values )
+									'form' => function( $form, $values, $operation ) use ( $lang )
 									{
 										$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', $values[ 'rules_Content_increase_posts' ], TRUE ) );
 										$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
+										$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_use_created_handler', isset( $values[ 'rules_Content_use_created_handler' ] ) ? $values[ 'rules_Content_use_created_handler' ] : FALSE, FALSE, array( 'togglesOn' => array( $form->id . '_rules_Content_created_handler' ) ) ) );
+										
+										$lang->words[ 'rules_Content_created_handler_desc' ] = $lang->get( 'rules_Content_created_handler_description' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
+										$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', $values[ 'rules_Content_created_handler' ] ?: "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 									},
 								),
 								'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass )
@@ -1323,6 +1340,19 @@ class _Content
 										$item, $content, FALSE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, \IPS\DateTime::ts( time() )
 									);
 									
+									/* Custom PHP Code Handler */
+									if ( $values[ 'rules_Content_use_created_handler' ] )
+									{
+										$arg_map[ 'createdContent' ] = $item;
+										$evaluate = function( $phpcode ) use ( $arg_map )
+										{
+											extract( $arg_map );								
+											return @eval( $phpcode );
+										};
+										
+										$evaluate( $values[ 'rules_Content_created_handler' ] );
+									}
+								
 									return "content comment created";
 								},
 								'arguments' 	=> array
