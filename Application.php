@@ -1380,8 +1380,8 @@ class _Application extends \IPS\Application
 		$global_args 		= static::getGlobalArguments();
 		$classConverters 	= static::getConversions();
 		$replacements 		= array();		
-		$_types 		= array( 'string', 'int', 'float' );
-				
+		$string_types 		= array( 'string', 'int', 'float' );
+		
 		$arg_groups = array
 		(
 			'event' => $event->data[ 'arguments' ] ?: array(),
@@ -1395,12 +1395,14 @@ class _Application extends \IPS\Application
 				/**
 				 * Check if the event argument is string replaceable
 				 */
-				if ( in_array( $argument[ 'argtype' ], $_types ) )
+				if ( in_array( $argument[ 'argtype' ], $string_types ) )
 				{
+					/* Building token values */
 					if ( isset ( $arg_map ) )
 					{
-						$replacements[ '[' . $arg_name . ']' ] = $replacements[ '~' . $arg_name . '~' ] = $arg_map[ $arg_name ];
+						$replacements[ '[' . $arg_name . ']' ] = $replacements[ '~' . $arg_name . '~' ] = (string) $arg_map[ $arg_name ];
 					}
+					/* Building token description */
 					else
 					{
 						$replacements[ '[' . $arg_name . ']' ] = "The value of the '" . $arg_name . "' argument";
@@ -1410,7 +1412,7 @@ class _Application extends \IPS\Application
 				/**
 				 * Add in any other arguments that we can derive from the event argument as options also
 				 */
-				if ( $argument[ 'argtype' ] == 'object' and isset( $argument[ 'class' ] ) )
+				if ( in_array( $argument[ 'argtype' ], array( 'object', 'array' ) ) and isset( $argument[ 'class' ] ) )
 				{				
 					if ( $derivative_arguments = static::classConverters( $argument ) )
 					{
@@ -1418,7 +1420,7 @@ class _Application extends \IPS\Application
 						{
 							list( $converter_class, $converter_key ) = explode( ':', $map_key );
 							
-							if ( in_array( $derivative_argument[ 'argtype' ], $_types ) or isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
+							if ( in_array( $derivative_argument[ 'argtype' ], $string_types ) or isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
 							{
 								if 
 								( 
@@ -1460,15 +1462,29 @@ class _Application extends \IPS\Application
 										
 										if ( isset( $arg_name_token ) and isset( $input_arg ) )
 										{
-											/* Standard conversion */
-											$tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $input_arg );
+											$tokenValues = array();
 											
-											/* Token formatter? */
-											if ( isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) and is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
+											/* Create array so single args and array args can be processed in the same way */
+											if ( ! is_array( $input_arg ) )
 											{
-												$tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $tokenValue );
+												$input_arg = array( $input_arg );
 											}
 											
+											foreach( $input_arg as $_input_arg )
+											{
+												/* Standard conversion */
+												$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $_input_arg );
+												
+												/* Token formatter? */
+												if ( isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) and is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
+												{
+													$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $_tokenValue );
+												}
+												
+												$tokenValues[] = (string) $_tokenValue;
+											}
+											
+											$tokenValue = implode( ', ', $tokenValues );
 											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $replacements[ '~' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . '~' ] = $tokenValue;
 										}
 									}
@@ -1604,7 +1620,7 @@ class _Application extends \IPS\Application
 	 */
 	public static function classConverters( $event_argument, $type_def=array() )
 	{
-		if ( $event_argument[ 'argtype' ] !== 'object' )
+		if ( ! isset( $event_argument[ 'class' ] ) )
 		{
 			return array();
 		}
