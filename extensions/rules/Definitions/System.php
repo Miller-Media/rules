@@ -218,7 +218,8 @@ class _System
 				(
 					'form' => function( $form, $values, $condition )
 					{
-						$compare_options = array(
+						$compare_options = array
+						(
 							'true' 		=> 'Value is TRUE',
 							'false'		=> 'Value is FALSE',
 							'truthy'	=> 'Value is TRUE or equivalent to TRUE (any non-empty string/array, number not 0)',
@@ -238,7 +239,7 @@ class _System
 						(
 							'mixed' => array( 'description' => 'the value to compare' ),
 						),				
-						'required'	=> TRUE,
+						'required'	=> FALSE,
 						'configuration' => array
 						(
 							'form' => function( $form, $values, $condition ) 
@@ -572,8 +573,8 @@ class _System
 						(
 							'form' => function( $form, $values, $action ) 
 							{
-								$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_System_email_message', $values[ 'rules_System_email_message' ], FALSE, array(), NULL, NULL, NULL, 'rules_System_email_message' ) );
-								return array( 'rules_System_email_message' );
+								$form->add( new \IPS\Helpers\Form\Editor( 'rules_System_email_message', $values[ 'rules_System_email_message' ], FALSE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
+								return array( $form->id . '_rules_System_email_message' );
 							},
 							'saveValues' => function( &$values, $action ) 
 							{
@@ -1165,19 +1166,13 @@ class _System
 	{		
 		switch ( $values[ 'rules_Comparisons_type' ] )
 		{
-			case 'true':
-				return $value === TRUE;
-			case 'false':
-				return $value === FALSE;
-			case 'truthy':
-			case 'falsey':
-				return $value ? TRUE : FALSE;
-			case 'null':
-				return $value === NULL;
-			case 'notnull':
-				return $value !== NULL;
-			default:
-				return FALSE;
+			case 'true'	:	return $value === TRUE;
+			case 'false'	:	return $value === FALSE;
+			case 'truthy'	:	return (bool) $value;
+			case 'falsey'	:	return ! ( (bool) $value );
+			case 'null'	:	return $value === NULL;
+			case 'notnull'	:	return $value !== NULL;
+			default		:	return FALSE;
 		}
 	}
 	
