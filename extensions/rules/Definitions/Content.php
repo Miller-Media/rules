@@ -739,6 +739,7 @@ class _Content
 	public function actions()
 	{
 		$lang = \IPS\Member::loggedIn()->language();
+		$self = $this;
 	
 		$actions = array
 		(
@@ -1130,7 +1131,7 @@ class _Content
 									$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', $values[ 'rules_Content_created_handler' ] ?: "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 								},
 							),
-							'callback' => function( $container, $author, $title, $content, $tags, $values, $arg_map ) use ( $nodeClass, $contentItemClass )
+							'callback' => function( $container, $author, $title, $content, $tags, $values, $arg_map ) use ( $nodeClass, $contentItemClass, $self )
 							{
 								if ( ! ( $container instanceof \IPS\Node\Model ) )
 								{
@@ -1174,7 +1175,7 @@ class _Content
 								if ( ! empty ( $tags ) )
 								{
 									/* Set tags through our rules action to account for non-logged in members */
-									$this->setTags( $item, $tags, array( 'rules_Content_modify_tags_type' => 'set' ) );
+									$self->setTags( $item, $tags, array( 'rules_Content_modify_tags_type' => 'set' ) );
 								}
 								
 								/* Custom PHP Code Handler */
