@@ -440,7 +440,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							{
 								if ( ! $value )
 								{
-									$save_value = NULL;
+									$save_value = $value = NULL;
 									break;
 								}
 								
@@ -486,7 +486,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							{
 								if ( ! $value )
 								{
-									$save_value = NULL;
+									$save_value = $value = NULL;
 									break;
 								}
 								
