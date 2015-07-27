@@ -33,6 +33,16 @@ class _Application extends \IPS\Application
 	public static $globalArguments = NULL;
 		
 	/**
+	 * [Node] Get Node Icon
+	 *
+	 * @return	string
+	 */
+	protected function get__icon()
+	{
+		return 'legal';
+	}
+	
+	/**
 	 * Argument Definition Presets
 	 *
 	 * @param	string	$key	The preset key to retrieve

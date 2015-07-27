@@ -166,7 +166,7 @@ class _Action extends \IPS\Node\Model
 	}
 	
 	/**
-	 * Get the attached event
+	 * Get the attached rule
 	 */
 	public function rule()
 	{
