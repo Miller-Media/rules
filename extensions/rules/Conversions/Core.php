@@ -109,7 +109,7 @@ class _Core
 					'argtype' => 'string',
 					'converter' => function ( $member )
 					{
-						return $member->link();
+						return "<a href='" . $member->url() . "' data-ipsHover data-ipsHover-target='" . $member->url()->setQueryString( array( 'do' => 'hovercard' ) ) . "'>{$member->name}</a>";
 					},
 				),
 				'Email' => array
