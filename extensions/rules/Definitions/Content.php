@@ -719,6 +719,7 @@ class _Content
 											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
 										),							
 									),
+									'configuration' => \IPS\rules\Application::configPreset( 'item', 'rules_choose_item', TRUE, array( 'class' => $contentItemClass ) ),
 								),
 
 							),						
@@ -1109,6 +1110,7 @@ class _Content
 											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
 										),							
 									),
+									'configuration' => \IPS\rules\Application::configPreset( 'item', 'rules_choose_item', TRUE, array( 'class' => $contentItemClass ) ),
 								),
 							),						
 						);
@@ -1369,6 +1371,7 @@ class _Content
 												'class' => '\\' . ltrim( $contentItemClass, '\\' ),
 											),							
 										),
+										'configuration' => \IPS\rules\Application::configPreset( 'item', 'rules_choose_item', TRUE, array( 'class' => $contentItemClass ) ),
 									),
 									'author' => array
 									(

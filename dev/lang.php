@@ -210,6 +210,11 @@ $lang = array(
 	'rules_choose_members'			=> "Type Member Names",
 	'rules_choose_members2'			=> "Type Member Names",
 	
+	'rules_choose_item'			=> "Type An Item Name",
+	'rules_choose_item2'			=> "Type An Item Name",
+	'rules_choose_items'			=> "Type Item Names",
+	'rules_choose_items2' 			=> "Type Item Names",
+	
 	// Conditions
 	'condition_title'			=> "Condition Name",
 	
