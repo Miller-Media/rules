@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100108">
+ <app key="rules" version="100109">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -184,6 +184,10 @@
   <word key="rules_choose_member2" js="0">Type A Member Name</word>
   <word key="rules_choose_members" js="0">Type Member Names</word>
   <word key="rules_choose_members2" js="0">Type Member Names</word>
+  <word key="rules_choose_item" js="0">Type An Item Name</word>
+  <word key="rules_choose_item2" js="0">Type An Item Name</word>
+  <word key="rules_choose_items" js="0">Type Item Names</word>
+  <word key="rules_choose_items2" js="0">Type Item Names</word>
   <word key="condition_title" js="0">Condition Name</word>
   <word key="actions_title" js="0">Action Title</word>
   <word key="rule_actions_selection" js="0">Action to perform:</word>
