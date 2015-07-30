@@ -64,34 +64,39 @@ class _Event
 	 * @param 	string	$app		App that defines the action
 	 * @param	string	$class		Extension class where action is defined
 	 * @param	string	$key		Action key
+	 * @param	bool	$forced		Load event regardless of if there are any rules attached to it
 	 * @return	\IPS\rules\Event	Return a rules event object
 	 */
-	public static function load( $app='null', $class='null', $key='null' )
+	public static function load( $app='null', $class='null', $key='null', $forced=FALSE )
 	{
 		if ( isset ( static::$multitons[ $app ][ $class ][ $key ] ) )
 		{
 			return static::$multitons[ $app ][ $class ][ $key ];
 		}
 		
-		try
+		if ( $forced or static::hasRules( $app, $class, $key ) )
 		{
-			$event = new \IPS\rules\Event( $app, $class, $key );
-			return static::$multitons[ $app ][ $class ][ $key ] = $event;
+			try
+			{
+				return static::$multitons[ $app ][ $class ][ $key ] = new \IPS\rules\Event( $app, $class, $key );
+			}
+			catch ( \BadMethodCallException $e )
+			{
+				/* Return a placeholder event */
+				return static::$multitons[ $app ][ $class ][ $key ] = new \IPS\rules\Event\Placeholder( $app, $class, $key );
+			}
 		}
-		catch ( \BadMethodCallException $e )
+		else
 		{
-			/**
-			 * Return a placeholder event
-			 */
-			$event = new \IPS\rules\Event\Placeholder( $app, $class, $key );
-			return static::$multitons[ $app ][ $class ][ $key ] = $event;
+			/* Return a placeholder event */
+			return new \IPS\rules\Event\Placeholder( $app, $class, $key, FALSE );
 		}
 	}
 	
 	/**
-	 * Extension Cache
+	 * Events Cache
 	 */
-	public static $extensions = array();
+	protected static $eventsCache = array();
 	
 	/**
 	 * Constructor
@@ -109,8 +114,15 @@ class _Event
 		$extClass = '\IPS\\' . $app . '\extensions\rules\Definitions\\' . $class;
 		if ( class_exists( $extClass ) )
 		{
-			$ext = isset ( static::$extensions[ $app ][ $class ] ) ? static::$extensions[ $app ][ $class ] : new $extClass;
-			$events = $ext->events();
+			if ( isset( static::$eventsCache[ $app ][ $class ] ) )
+			{
+				$events = static::$eventsCache[ $app ][ $class ];
+			}
+			else
+			{
+				$ext = new $extClass;
+				$events = static::$eventsCache[ $app ][ $class ] = method_exists( $ext, 'events' ) ? $ext->events() : array();
+			}
 			
 			if ( isset ( $events[ $key ] ) )
 			{
@@ -126,7 +138,6 @@ class _Event
 		{
 			throw new \BadMethodCallException( \IPS\Member::loggedIn()->language()->get( 'rules_event_not_found' ) );
 		}
-		
 	}
 		
 	/**
@@ -261,7 +272,7 @@ class _Event
 			return $lang->get( $this->app . '_' . $this->class . '_event_' . $this->key );
 		}
 		
-		return '';
+		return 'Untitled ( ' . $this->app . ' / ' . $this->class . ' / ' . $this->key . ' )';
 	}
 	
 	/**
@@ -290,6 +301,28 @@ class _Event
 			 */
 			return $this->rulesCache = array();
 		}
+	}
+	
+	/* hasRules Cache */
+	public static $hasRules = array();
+	
+	/**
+	 * Check if rules are attached to an event
+	 *
+	 * @param 	string	$app		App that defines the action
+	 * @param	string	$class		Extension class where action is defined
+	 * @param	string	$key		Action key
+	 * @param	bool	$enabled	Whether to only count enabled rules
+	 * @return	bool
+	 */
+	public static function hasRules( $app, $class, $key, $enabled=TRUE )
+	{
+		if ( isset( static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ] ) )
+		{
+			return static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ];
+		}
+		
+		return static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ] = (bool) \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_event_app=? AND rule_event_class=? AND rule_event_key=? AND rule_enabled=1', $app, $class, $key ) ) );
 	}
 		
 }

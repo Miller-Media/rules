@@ -578,7 +578,7 @@ class _rulesets extends \IPS\Node\Controller
 		}
 		
 		$self = $this;
-		$event = \IPS\rules\Event::load( $log[ 'app' ], $log[ 'class' ], $log[ 'key' ] );
+		$event = \IPS\rules\Event::load( $log[ 'app' ], $log[ 'class' ], $log[ 'key' ], TRUE );
 		
 		$rule = NULL;
 		try

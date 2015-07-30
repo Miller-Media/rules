@@ -119,6 +119,11 @@ class _Condition extends \IPS\Node\Model
 	 * @brief	Action Definition
 	 */
 	public $definition = NULL;
+	
+	/**
+	 * @brief 	Conditions Cache
+	 */
+	protected static $conditionsCache = array();
 		
 	/**
 	 * Init
@@ -130,8 +135,15 @@ class _Condition extends \IPS\Node\Model
 		$extClass = '\IPS\\' . $this->app . '\extensions\rules\Definitions\\' . $this->class;
 		if ( class_exists( $extClass ) )
 		{
-			$ext 	= new $extClass;
-			$conditions = $ext->conditions();
+			if ( isset( static::$conditionsCache[ $app ][ $class ] ) )
+			{
+				$conditions = static::$conditionsCache[ $this->app ][ $this->class ];
+			}
+			else
+			{
+				$ext = new $extClass;
+				$conditions = static::$conditionsCache[ $this->app ][ $this->class ] = method_exists( $ext, 'conditions' ) ? $ext->conditions() : array();
+			}
 			
 			if ( isset ( $conditions[ $this->key ] ) )
 			{
@@ -147,7 +159,7 @@ class _Condition extends \IPS\Node\Model
 			{
 				$this->rule = \IPS\rules\Rule::load( $this->rule_id );
 			}
-			catch ( \OutOfRangeException $e ) {}
+			catch ( \OutOfRangeException $e ) { }
 		}
 	}
 	

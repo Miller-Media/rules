@@ -42,15 +42,8 @@ class _logs extends \IPS\Dispatcher\Controller
 		(
 			'app' => function( $val, $row )
 			{
-				$event = \IPS\rules\Event::load( $row[ 'app' ], $row[ 'class' ], $row[ 'key' ] );
-				if ( ! $row[ 'rule_id' ] )
-				{
-					return $event->title() . " ( {$row['app']} / {$row['class']} / {$row['key']} )";
-				}
-				else
-				{
-					return $event->title();
-				}
+				$event = \IPS\rules\Event::load( $row[ 'app' ], $row[ 'class' ], $row[ 'key' ], TRUE );
+				return $event->title();
 			},
 			'key' => function( $val, $row )
 			{

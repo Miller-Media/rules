@@ -121,6 +121,11 @@ class _Action extends \IPS\Node\Model
 	public $definition = NULL;
 		
 	/**
+	 * @brief 	Actions Cache
+	 */
+	protected static $actionsCache = array();
+		
+	/**
 	 * Init
 	 *
 	 * @return	void
@@ -130,8 +135,15 @@ class _Action extends \IPS\Node\Model
 		$extClass = '\IPS\\' . $this->app . '\extensions\rules\Definitions\\' . $this->class;
 		if ( class_exists( $extClass ) )
 		{
-			$ext 	= new $extClass;
-			$actions = $ext->actions();
+			if ( isset( static::$actionsCache[ $app ][ $class ] ) )
+			{
+				$actions = static::$actionsCache[ $this->app ][ $this->class ];
+			}
+			else
+			{
+				$ext = new $extClass;
+				$actions = static::$actionsCache[ $this->app ][ $this->class ] = method_exists( $ext, 'actions' ) ? $ext->actions() : array();
+			}			
 			
 			if ( isset ( $actions[ $this->key ] ) )
 			{
@@ -147,7 +159,7 @@ class _Action extends \IPS\Node\Model
 			{
 				$this->rule = \IPS\rules\Rule::load( $this->rule_id );
 			}
-			catch ( \OutOfRangeException $e ) {}
+			catch ( \OutOfRangeException $e ) { }
 		}
 	}
 	

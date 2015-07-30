@@ -676,7 +676,7 @@ class _Rule extends \IPS\Node\Model
 	 */
 	public function event()
 	{
-		return \IPS\rules\Event::load( $this->event_app, $this->event_class, $this->event_key );
+		return \IPS\rules\Event::load( $this->event_app, $this->event_class, $this->event_key, TRUE );
 	}
 	
 	/**

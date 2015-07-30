@@ -24,24 +24,9 @@ class _Placeholder extends \IPS\rules\Event
 {
 
 	/**
-	 * @brief	App
+	 * @brief	Idle Flag
 	 */
-	public $app = NULL;
-	
-	/**
-	 * @brief	Class
-	 */
-	public $class = NULL;
-	
-	/**
-	 * @brief	Action Key
-	 */
-	public $key = NULL;
-	
-	/**
-	 * @brief	Event Data
-	 */
-	public $data = NULL;
+	protected $log = NULL;
 	
 	/**
 	 * Placeholder Flag
@@ -54,13 +39,14 @@ class _Placeholder extends \IPS\rules\Event
 	 * @param 	string	$app		App that defines the action
 	 * @param	string	$class		Extension class where action is defined
 	 * @param	string	$key		Action key
-	 * @param	bool	$silent		Don't complain if the event cant be loaded, and return a shell object
+	 * @param	bool	$log		Boolean flag indicating if triggers of this placeholder event should be logged
 	 */
-	public function __construct( $app, $class, $key )
+	public function __construct( $app, $class, $key, $log=TRUE )
 	{
 		$this->app 	= $app;
 		$this->class 	= $class;
 		$this->key	= $key;
+		$this->log	= $log;
 	}
 	
 	/**
@@ -68,21 +54,11 @@ class _Placeholder extends \IPS\rules\Event
 	 */
 	public function trigger()
 	{
-		\IPS\rules\Application::rulesLog( $this, NULL, NULL, 'error', 'No event definition available', 1 );
+		if ( $this->log )
+		{
+			\IPS\rules\Application::rulesLog( $this, NULL, NULL, 'error', 'No event definition available', 1 );
+		}
 	}
-	
-	/**
-	 * Event Title
-	 */
-	public function title() 
-	{
-		return 'Undefined ( ' . $this->app . ' / ' . $this->class . ' / ' . $this->key . ' )';
-	}
-
-	/**
-	 * @brief 	Cache for rules
-	 */
-	protected $rulesCache = NULL;
 	
 	/**
 	 * Get rules attached to this event
