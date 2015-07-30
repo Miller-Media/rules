@@ -195,7 +195,7 @@ class _Application extends \IPS\Application
 			
 				return array
 				(
-					'form' => function( $form, $values, $operation ) use ( $field_name, $required )
+					'form' => function( $form, $values ) use ( $field_name, $required )
 					{
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
@@ -213,7 +213,7 @@ class _Application extends \IPS\Application
 						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, array( 'multiple' => NULL ), NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
-					'saveValues' => function( &$values, $operation ) use ( $field_name )
+					'saveValues' => function( &$values ) use ( $field_name )
 					{	
 						$members = array();
 						foreach ( (array) $values[ $field_name ] as $member )
@@ -222,7 +222,7 @@ class _Application extends \IPS\Application
 						}
 						$values[ $field_name ] = $members;
 					},
-					'getArg' => function( $values, $operation ) use ( $field_name )
+					'getArg' => function( $values ) use ( $field_name )
 					{
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
@@ -242,7 +242,7 @@ class _Application extends \IPS\Application
 			
 				return array
 				(
-					'form' => function( $form, $values, $action ) use ( $field_name )
+					'form' => function( $form, $values ) use ( $field_name, $required )
 					{
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
@@ -253,32 +253,182 @@ class _Application extends \IPS\Application
 								{
 									$members[] = \IPS\Member::load( $member_id );
 								}
-								catch ( \Exception $e ) {}
+								catch ( \Exception $e ) { }
 							}
 						}
 						
-						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, TRUE, array( 'multiple' => 1 ), NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, array( 'multiple' => 1 ), NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
-					'saveValues' => function( &$values, $action ) use ( $field_name )
+					'saveValues' => function( &$values ) use ( $field_name )
 					{
 						if ( $values[ $field_name ] instanceof \IPS\Member )
 						{
 							$values[ $field_name ] = array( $values[ $field_name ]->member_id );
 						}
 					},
-					'getArg' => function( $values, $action ) use ( $field_name )
+					'getArg' => function( $values ) use ( $field_name )
 					{
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
 						{
 							try { $members[] = \IPS\Member::load( $member_id ); }
-							catch( \Exception $e ) {}
+							catch( \Exception $e ) { }
 						}
 						return array_shift( $members );
 					},
 				);
 				
+			/**
+			 * Multiple Content Items
+			 */
+			case 'items' :
+			
+				return array
+				(
+					'form' => function( $form, $values ) use ( $field_name, $required, $options )
+					{
+						$items = array();
+						$itemClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $itemClass ) or ! is_subclass_of( $itemClass, '\IPS\Content\Item' ) )
+						{
+							return array();
+						}
+						
+						foreach( (array) $values[ $field_name ] as $content_id )
+						{
+							if ( $content_id )
+							{
+								try
+								{
+									$items[] = $itemClass::load( $content_id );
+								}
+								catch ( \Exception $e ) { }
+							}
+						}
+						
+						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, array( 'multiple' => NULL, 'class' => $itemClass ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values ) use ( $field_name, $options )
+					{
+						$itemClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $itemClass ) or ! is_subclass_of( $itemClass, '\IPS\Content\Item' ) )
+						{
+							$values[ $field_name ] = NULL;
+						}
+						
+						$idField = $itemClass::$databaseColumnId;
+						
+						$items = array();
+						foreach ( (array) $values[ $field_name ] as $content )
+						{
+							if ( $content instanceof $itemClass )
+							{
+								$items[] = $content->$idField;
+							}
+						}
+						
+						$values[ $field_name ] = $items;
+					},
+					'getArg' => function( $values ) use ( $field_name, $options )
+					{
+						$items = array();
+						$itemClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $itemClass ) or ! is_subclass_of( $itemClass, '\IPS\Content\Item' ) )
+						{
+							return NULL;
+						}
+					
+						$items = array();
+						foreach( (array) $values[ $field_name ] as $content_id )
+						{
+							try 
+							{ 
+								$items[] = $itemClass::load( $content_id ); 
+							}
+							catch( \Exception $e ) { }
+						}
+						
+						return $items;
+					},
+				);
+			
+			/**
+			 * Single Content Item
+			 */
+			case 'item':
+			
+				return array
+				(
+					'form' => function( $form, $values ) use ( $field_name, $required, $options )
+					{
+						$items = array();
+						$itemClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $itemClass ) or ! is_subclass_of( $itemClass, '\IPS\Content\Item' ) )
+						{
+							return array();
+						}
+						
+						foreach( (array) $values[ $field_name ] as $content_id )
+						{
+							if ( $content_id )
+							{
+								try
+								{
+									$items[] = $itemClass::load( $content_id );
+								}
+								catch ( \Exception $e ) { }
+							}
+						}
+						
+						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, array( 'multiple' => 1, 'class' => $itemClass ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values ) use ( $field_name, $options )
+					{
+						$itemClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $itemClass ) or ! is_subclass_of( $itemClass, '\IPS\Content\Item' ) )
+						{
+							$values[ $field_name ] = NULL;
+						}
+						
+						$idField = $itemClass::$databaseColumnId;
+						
+						if ( $values[ $field_name ] instanceof $itemClass )
+						{
+							$values[ $field_name ] = array( $values[ $field_name ]->$idField );
+						}
+					},
+					'getArg' => function( $values ) use ( $field_name, $options )
+					{
+						$items = array();
+						$itemClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $itemClass ) or ! is_subclass_of( $itemClass, '\IPS\Content\Item' ) )
+						{
+							return NULL;
+						}
+					
+						$items = array();
+						foreach( (array) $values[ $field_name ] as $content_id )
+						{
+							try 
+							{ 
+								$items[] = $itemClass::load( $content_id ); 
+							}
+							catch( \Exception $e ) { }
+						}
+						
+						return array_shift( $items );
+					},
+				);
+
 			/**
 			 * Date
 			 */
