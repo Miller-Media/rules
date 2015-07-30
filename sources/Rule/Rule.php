@@ -211,6 +211,7 @@ class _Rule extends \IPS\Node\Model
 			$this->event_app 	= $parent->event_app;
 			$this->event_class 	= $parent->event_class;
 			$this->event_key	= $parent->event_key;
+			$form->actionButtons 	= array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
 		}
 		
 		/**
@@ -235,42 +236,28 @@ class _Rule extends \IPS\Node\Model
 			}
 		}
 		
-		/**
-		 * Footprint is used to limit the operations selection to compatible operations
-		 */
-		if ( $this->event_footprint or $this->event()->data !== NULL )
+		if ( $this->event_key and $this->event()->placeholder )
 		{
-			$footprint = $this->event_footprint ?: md5( json_encode( $this->event()->data[ 'arguments' ] ) );
+			$form->addHtml( \IPS\Theme::i()->getTemplate( 'components' )->missingEvent( $this ) );
+			$event_missing = TRUE;
 		}
-		
-		if ( ! $this->id )
+
+		/**
+		 * If the event hasn't been configured for this rule, build an option list
+		 * for all available events for the user to select.
+		 */
+		if ( ! $this->event_key )
 		{
 			$form->actionButtons 	= array( \IPS\Theme::i()->getTemplate( 'forms', 'core', 'global' )->button( 'rules_next', 'submit', null, 'ipsButton ipsButton_primary', array( 'accesskey' => 's' ) ) );
-		}
-		
-		/**
-		 * Build an option list for all available events for the user to select.
-		 */
-		foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
-		{
-			foreach ( $definition[ 'events' ] as $event_key => $event_data )
+			foreach ( \IPS\rules\Application::rulesDefinitions() as $definition_key => $definition )
 			{
-				if ( ! isset( $footprint ) or $footprint == md5( json_encode( $event_data[ 'arguments' ] ) ) )
+				foreach ( $definition[ 'events' ] as $event_key => $event_data )
 				{
 					$group = $event_data[ 'group' ] ?: $definition[ 'group' ];
 					$events[ $group ][ $definition_key . '_' . $event_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_event_' . $event_key;
 				}
 			}
-		}
-		
-		if ( $events )
-		{
 			$form->add( new \IPS\Helpers\Form\Select( 'rule_event_selection', $this->id ? md5( $this->event_app . $this->event_class ) . '_' . $this->event_key : NULL, TRUE, array( 'options' => $events, 'noDefault' => TRUE ), NULL, "<div class='chosen-collapse' data-controller='rules.admin.ui.chosen'>", "</div>", 'rule_event_selection' ) );
-		}
-		else
-		{
-			$form->addHtml( \IPS\Theme::i()->getTemplate( 'components' )->missingEvent( $this ) );
-			$event_missing = TRUE;
 		}
 		
 		/* Rule Title */
