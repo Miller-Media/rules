@@ -479,7 +479,14 @@ class _Core
 					'argtype' => 'string',
 					'converter' => function( $node )
 					{
-						return $node->_title;
+						$title = $node->_title;
+						$lang = \IPS\Member::loggedIn()->language();
+						if ( isset( $lang->outputStack[ $title ] ) )
+						{
+							$title = $lang->get( $lang->outputStack[ $title ][ 'key' ] );
+						}
+						
+						return $title;
 					},
 				),
 				'Content Count' => array
