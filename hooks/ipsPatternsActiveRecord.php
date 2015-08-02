@@ -151,12 +151,15 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		
 		if ( isset( $key ) )
 		{
-			if ( isset( $this->rulesData[ $key ] ) or $this->rulesLoadedKeys[ $key ] )
+			if ( array_key_exists( $key, $this->rulesData ) )
 			{
 				return $this->rulesData[ $key ];
 			}
 
 			$where = array( 'data_class=? AND data_column_name=?', $data_class, $key );
+			
+			/* Prevent subsequent requests for this key from unnecessary processing */
+			$this->rulesData[ $key ] = NULL;
 		}
 		else
 		{
@@ -168,7 +171,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 			$this->rulesAllKeysLoaded = TRUE;
 			$where = array( 'data_class=?', $data_class );
 		}
-
+		
 		if ( $this->rulesTableExists() and $data = $this->getRulesDataRaw() )
 		{			
 			foreach ( \IPS\rules\Data::roots( NULL, NULL, array( $where ) ) as $data_field )
@@ -388,8 +391,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		 * Always return a core value if it is available
 		 */
 		$value = parent::__get( $key );
-		
-		if ( $value !== NULL )
+		if ( $value !== NULL or array_key_exists( $key, $this->_data ) )
 		{
 			return $value;
 		}
