@@ -407,7 +407,7 @@ class _Rule extends \IPS\Node\Model
 		{
 			$values[ 'rule_ruleset_id' ] = $values[ 'rule_ruleset_id' ]->id;
 		}
-			
+		
 		parent::saveForm( $values );
 		
 		/**
@@ -797,11 +797,12 @@ class _Rule extends \IPS\Node\Model
 			}
 		}
 
-		if ( $this->parent() )
+		/* Synchronize ruleset_id with parent rule */
+		if ( $parent = $this->parent() )
 		{
-			if ( $this->ruleset_id != $this->parent()->ruleset_id )
+			if ( $this->ruleset_id != $parent->ruleset_id )
 			{
-				$this->ruleset_id = $this->parent()->ruleset_id;
+				$this->ruleset_id = $parent->ruleset_id;
 			}
 		}
 		
