@@ -397,9 +397,24 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		}
 		
 		/**
-		 * Look for a rules data value
+		 * Check if we can load rules data for this key
 		 */
-		return $this->getRulesDataWithPermission( $key );
+		if ( $this->rulesTableExists() )
+		{
+			/* Use 'r_' prefix to get rules data, bypassing permission checks */
+			if ( mb_substr( $key, 0, 2 ) == 'r_' and $this->rulesKeyExists( mb_substr( $key, 2 ) ) )
+			{
+				return $this->getRulesData( mb_substr( $key, 2 ) );
+			}
+			
+			/* Get rules data with a permission check */
+			if ( $this->rulesKeyExists( $key ) )
+			{
+				return $this->getRulesDataWithPermission( $key );
+			}
+		}
+		
+		return NULL;
 	}
 
 	/**
@@ -615,8 +630,10 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	
 	/**
 	 * Check for data table
+	 *
+	 * @return	bool
 	 */
-	protected function rulesTableExists()
+	public function rulesTableExists()
 	{
 		static $tableExists = array();
 		$table_name = \IPS\rules\Data::getTableName( get_class( $this ) );
@@ -627,6 +644,24 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		}
 		
 		return $tableExists[ $table_name ];
+	}
+	
+	/**
+	 * Check for existence of data key
+	 * 
+	 * @param 	string		$key		The key to check
+	 * @return	bool
+	 */
+	public function rulesKeyExists( $key )
+	{
+		static $keyExists = array();
+		
+		if ( isset( $keyExists[ get_class( $this ) ][ $key ] ) )
+		{
+			return $keyExists[ get_class( $this ) ][ $key ];
+		}
+		
+		return $keyExists[ get_class( $this ) ][ $key ] = $this->rulesTableExists() and \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key );
 	}
 
 }
