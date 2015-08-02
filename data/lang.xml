@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100109">
+ <app key="rules" version="100110">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -55,6 +55,8 @@
   <word key="data_tab_desc" js="0">Enter the name of the tab that this field should appear under on editing forms</word>
   <word key="data_required" js="0">Is this data required?</word>
   <word key="data_text_mode" js="0">Data Input Control</word>
+  <word key="data_value_options" js="0">Option Values</word>
+  <word key="data_value_default" js="0">Default Value</word>
   <word key="rules_numeric_math_operation" js="0">Value update method</word>
   <word key="rules_array_operation" js="0">Array update method</word>
   <word key="rules_node_data_tab" js="0">Rules Data</word>
