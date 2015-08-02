@@ -1224,7 +1224,10 @@ class _rulesets extends \IPS\Node\Controller
 		$dataNode->addAttribute( 'description',		$data->description );
 		$dataNode->addAttribute( 'key', 		$data->key );
 		$dataNode->addAttribute( 'text_mode',		$data->text_mode );
+		$dataNode->addAttribute( 'setting_key',		$data->setting_key );
+		$dataNode->addAttribute( 'value_default',	$data->value_default );
 		
+		$dataNode->addChild( 'value_options', $data->value_options );
 		$dataNode->addChild( 'configuration', $data->configuration );
 	}
 	
@@ -1604,6 +1607,10 @@ class _rulesets extends \IPS\Node\Controller
 		$data_field->tab		= (string)	$dataXML[ 'tab' ];
 		$data_field->use_mode		= (string)	$dataXML[ 'use_mode' ];
 		$data_field->text_mode		= (int)		$dataXML[ 'text_mode' ];
+		$data_field->setting_key	= (string)	$dataXML[ 'setting_key' ];
+		$data_field->value_default	= (string)	$dataXML[ 'value_default' ];
+		
+		$data_field->value_options	= (string)	$dataXML->value_options;
 		$data_field->configuration	= (string)	$dataXML->configuration;
 		
 		$data_field->save();

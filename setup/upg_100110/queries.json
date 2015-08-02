@@ -1,0 +1,42 @@
+{
+    "1": {
+        "method": "addColumn",
+        "params": [
+            "rules_data",
+            {
+                "name": "data_value_default",
+                "type": "TEXT",
+                "length": null,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "2": {
+        "method": "addColumn",
+        "params": [
+            "rules_data",
+            {
+                "name": "data_value_options",
+                "type": "TEXT",
+                "length": null,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    }
+}

@@ -25,6 +25,8 @@ const URL	= 5;
 const PHONE	= 6;
 const PASSWORD	= 7;
 const COLOR	= 8;
+const SELECT	= 9;
+const RADIO	= 10;
 
 /**
  * Node
@@ -317,12 +319,12 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$data_toggles = array
 		(
-			'object' 	=> array( 'data_use_mode', 'data_type_class', 'data_text_mode_unavailable' ),
-			'int'		=> array( 'data_use_mode', 'data_text_mode_unavailable' ),
-			'float'		=> array( 'data_use_mode', 'data_text_mode_unavailable' ),
-			'string' 	=> array( 'data_use_mode', 'data_text_mode', 'data_text_mode_wrap' ),
-			'bool'		=> array( 'data_use_mode', 'data_text_mode_unavailable' ),
-			'array' 	=> array( 'data_use_mode', 'data_type_class', 'data_text_mode_unavailable' ),
+			'object' 	=> array( 'data_use_mode', 'data_type_class', 'data_text_mode_unavailable', 'data_value_default_unusable' ),
+			'int'		=> array( 'data_use_mode', 'data_text_mode_unavailable', 'data_value_default_usable' ),
+			'float'		=> array( 'data_use_mode', 'data_text_mode_unavailable', 'data_value_default_usable' ),
+			'string' 	=> array( 'data_use_mode', 'data_text_mode', 'data_text_mode_wrap', 'data_value_default_usable' ),
+			'bool'		=> array( 'data_use_mode', 'data_text_mode_unavailable', 'data_value_default_usable' ),
+			'array' 	=> array( 'data_use_mode', 'data_type_class', 'data_text_mode_unavailable', 'data_value_default_unusable' ),
 		);
 		
 		/**
@@ -438,8 +440,8 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$data_use_toggles = array
 		(
-			'public' => array( 'data_tab', 'data_required', 'data_text_mode' ),
-			'admin' => array( 'data_tab', 'data_required', 'data_text_mode' ),
+			'public' => array( 'data_tab', 'data_required', 'data_text_mode', 'data_value_default' ),
+			'admin' => array( 'data_tab', 'data_required', 'data_text_mode', 'data_value_default' ),
 		);
 		
 		$data_text_modes = array
@@ -449,6 +451,15 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 			EDITOR 		=> 'Content Editor',
 			URL		=> 'Url Input',
 			EMAIL		=> 'Email Input',
+			PASSWORD	=> 'Password Input',
+			SELECT		=> 'Select Box',
+			RADIO		=> 'Radio Buttons',
+		);
+		
+		$data_text_mode_toggles = array
+		(
+			SELECT	=> array( 'data_value_options' ),
+			RADIO	=> array( 'data_value_options' ),
 		);
 		
 		$form->add( new \IPS\Helpers\Form\Select( 'data_class', $this->class ?: '-IPS-Member', FALSE, array( 'options' => $data_classes, 'disabled' => $field_locked, 'toggles' => $object_classes_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_class' ) );
@@ -463,7 +474,9 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
-		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes, 'toggles' => $data_text_mode_toggles ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
+		$form->add( new \IPS\Helpers\Form\Stack( 'data_value_options', json_decode( $this->value_options, TRUE ), FALSE, array( 'stackFieldType' => 'KeyValue' ), NULL, NULL, NULL, 'data_value_options' ) );
+		$form->add( new \IPS\Helpers\Form\Textarea( 'data_value_default', $this->value_default, FALSE, array(), NULL, "<div id='data_value_default_usable'>", "</div><span id='data_value_default_unusable' class='ipsMessage ipsMessage_warning'>Unsupported</span>", 'data_value_default' ) );
 		
 		parent::form( $form );
 	}
@@ -478,7 +491,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		$lang 		= \IPS\Member::loggedIn()->language();
 		$form_name 	= 'rules_data_' . $this->column_name;
-		$form_value 	= $hostObj ? $hostObj->getRulesData( $this->column_name ) : $values[ $form_name ];
+		$form_value 	= $hostObj ? $hostObj->getRulesData( $this->column_name ) : ( array_key_exists( $form_name, $values ) ? $values[ $form_name ] : $this->value_default );
 		
 		/* Language */
 		$lang->words[ $form_name ] 		= $this->name;
@@ -522,6 +535,37 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 						$formElements[ $form_name ] = new \IPS\Helpers\Form\Email( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
 						break;
 					
+					case PASSWORD:
+
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Password( $form_name, $form_value, $this->required, array(), NULL, NULL, NULL, $form_name );
+						break;
+						
+					case SELECT:
+						
+						$options = array();
+						if ( is_array( $value_options = json_decode( $this->value_options, TRUE ) ) )
+						{
+							foreach( $value_options as $option )
+							{
+								$options[ $option[ 'key' ] ] = $option[ 'value' ];
+							}
+						}
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Select( $form_name, $form_value, $this->required, array( 'options' => $options ), NULL, NULL, NULL, $form_name );
+						break;
+						
+					case RADIO:
+						
+						$options = array();
+						if ( is_array( $value_options = json_decode( $this->value_options, TRUE ) ) )
+						{
+							foreach( $value_options as $option )
+							{
+								$options[ $option[ 'key' ] ] = $option[ 'value' ];
+							}
+						}
+						$formElements[ $form_name ] = new \IPS\Helpers\Form\Radio( $form_name, $form_value, $this->required, array( 'options' => $options ), NULL, NULL, NULL, $form_name );
+						break;
+						
 					case TEXT:
 					default:
 					
@@ -673,6 +717,13 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		}
 		
 		$values[ 'data_configuration' ] = json_encode( $configuration );
+		$values[ 'data_value_options' ] = json_encode( $values[ 'data_value_options' ] );
+		
+		/* Default values are unsupported for some field types */
+		if ( in_array( $values[ 'data_type' ], array( 'object', 'array' ) ) )
+		{
+			$values[ 'data_value_default' ] = NULL;
+		}
 		
 		parent::saveForm( $values );
 	}
