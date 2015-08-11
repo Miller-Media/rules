@@ -400,29 +400,6 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$data_classes = array_replace_recursive( $data_classes, $object_classes );
 		unset( $data_classes[ 'General' ] );
 		
-		/**
-		 * Custom app values
-		 *
-		$data_app_values = array();
-		
-		foreach( \IPS\rules\Application::rulesExtensions( 'Values' ) as $app => $extensions )
-		{
-			$appName = $lang->get( '__app_' . $app );
-			
-			foreach( $extensions as $ext )
-			{
-				$rulesValues = $ext->values();
-				foreach( $rulesValues as $objectClass => $valuesTypes )
-				{
-					foreach( $valuesTypes as $value_key => $value )
-					{
-						$data_app_values[ $objectClass ][ $value_key ] = $appName . ' - ' . $value[ 'description' ];
-					}
-				}
-			}
-		}
-		*/
-		
 		$column_name = 'data_' . $this->column_name;
 		$field_locked = 
 		(

@@ -165,6 +165,15 @@ class _Custom extends \IPS\Node\Model
 	public function getButtons( $url, $subnode=FALSE )
 	{
 		$buttons = parent::getButtons( $url, $subnode );
+		
+		$buttons[ 'schedule' ] = array
+		(
+			'icon'	=> 'clock-o',
+			'title'	=> 'rules_schedule_custom_now',
+			'link'	=> \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule&do=newSchedule" )->setQueryString( array( 'custom_id' => $this->id ) ),
+			'data'	=> array(),
+		);
+		
 		return $buttons;
 	}
 	

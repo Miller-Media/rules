@@ -37,7 +37,7 @@ class _ScheduledActions extends \IPS\Task
 	 */
 	public function execute()
 	{
-		$scheduled_actions = \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=?', time() ), 'schedule_time ASC' );
+		$scheduled_actions = \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=? AND schedule_queued!=1', time() ), 'schedule_time ASC' );
 		foreach ( new \IPS\Patterns\ActiveRecordIterator( $scheduled_actions, 'IPS\rules\Action\Scheduled' ) as $action )
 		{
 			$action->execute();

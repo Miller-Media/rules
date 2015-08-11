@@ -1154,6 +1154,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "schedule_custom_id": {
+                "name": "schedule_custom_id",
+                "type": "VARCHAR",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {

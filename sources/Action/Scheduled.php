@@ -61,60 +61,180 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 	 */
 	public function execute( $deleteWhenDone=TRUE )
 	{
+		if ( $this->queued )
+		{
+			return;
+		}
+		else
+		{
+			$this->queued = TRUE;
+			$this->save();
+		}
+		
 		$action_data = json_decode( $this->data, TRUE );
 		
 		$args = array();
 		$event_args = array();
 
-		foreach ( (array) $action_data[ 'args' ] as $arg )
+		/**
+		 * Standard Scheduled Action
+		 */
+		if ( $this->action_id )
 		{
-			$args[] = \IPS\rules\Application::restoreArg( $arg );
-		}
-
-		foreach ( (array) $action_data[ 'event_args' ] as $key => $arg )
-		{
-			$event_args[ $key ] = \IPS\rules\Application::restoreArg( $arg );
-		}
-
-		try
-		{
-			$action = \IPS\rules\Action::load( $this->action_id );
-			$action->event()->thread = $this->thread;
-			$action->event()->parentThread = $this->parent_thread;
-
-			if ( isset( $action->definition[ 'callback' ] ) and is_callable( $action->definition[ 'callback' ] ) )
+			foreach ( (array) $action_data[ 'args' ] as $arg )
 			{
-				try
-				{
-					$result = call_user_func_array( $action->definition[ 'callback' ], array_merge( $args, array( $action->data[ 'configuration' ][ 'data' ], $event_args, $action ) ) );
+				$args[] = \IPS\rules\Application::restoreArg( $arg );
+			}
 
-					if ( $rule = $action->rule() and $rule->debug )
+			foreach ( (array) $action_data[ 'event_args' ] as $key => $arg )
+			{
+				$event_args[ $key ] = \IPS\rules\Application::restoreArg( $arg );
+			}
+
+			try
+			{
+				$action = \IPS\rules\Action::load( $this->action_id );
+				$action->event()->thread = $this->thread;
+				$action->event()->parentThread = $this->parent_thread;
+
+				if ( isset( $action->definition[ 'callback' ] ) and is_callable( $action->definition[ 'callback' ] ) )
+				{
+					try
 					{
-						\IPS\rules\Application::rulesLog( $rule->event(), $rule, $action, $result, 'Evaluated'  );
+						$result = call_user_func_array( $action->definition[ 'callback' ], array_merge( $args, array( $action->data[ 'configuration' ][ 'data' ], $event_args, $action ) ) );
+
+						if ( $rule = $action->rule() and $rule->debug )
+						{
+							\IPS\rules\Application::rulesLog( $rule->event(), $rule, $action, $result, 'Evaluated'  );
+						}
+					}
+					catch ( \Exception $e )
+					{
+						$event = $action->rule() ? $action->rule()->event() : NULL;
+						\IPS\rules\Application::rulesLog( $event, $action->rule(), $action, $e->getMessage(), 'Error Exception', 1 );
 					}
 				}
-				catch ( \Exception $e )
+				else
 				{
-					$event = $action->rule() ? $action->rule()->event() : NULL;
-					\IPS\rules\Application::rulesLog( $event, $action->rule(), $action, $e->getMessage(), 'Error Exception', 1 );
+					if ( $rule = $action->rule() )
+					{
+						\IPS\rules\Application::rulesLog( $rule->event(), $rule, $action, FALSE, 'Missing Callback', 1  );
+					}
 				}
 			}
-			else
-			{
-				if ( $rule = $action->rule() )
-				{
-					\IPS\rules\Application::rulesLog( $rule->event(), $rule, $action, FALSE, 'Missing Callback', 1  );
-				}
-			}
+			catch ( \OutOfRangeException $e ) { }
 		}
-		catch ( \OutOfRangeException $e ) {
+		
+		/**
+		 * Custom Scheduled Actions
+		 */
+		else if ( $this->custom_id )
+		{
+			foreach ( (array) $action_data[ 'args' ] as $key => $arg )
+			{
+				$args[ $key ] = \IPS\rules\Application::restoreArg( $arg );
+			}
+			
+			try
+			{
+				$action = \IPS\rules\Action\Custom::load( $this->custom_id );
+				$event = \IPS\rules\Event::load( 'rules', 'CustomActions', 'custom_action_' . $action->key );
+				
+				$deleteWhenDone = $action_data[ 'frequency' ] !== 'repeat';
+		
+				if ( $bulk_arg = $action_data[ 'bulk_option' ] )
+				{
+					foreach( $action->children() as $argument )
+					{
+						if ( $bulk_arg === 'custom_argument_' . $argument->id )
+						{
+							$bulkClass = $argument->class == 'custom' ? $argument->custom_class : str_replace( '-', '\\', $argument->class );
+							$records = iterator_to_array(
+								new \IPS\Patterns\ActiveRecordIterator(
+									\IPS\Db::i()->select( '*', $bulkClass::$databaseTable, array( $bulkClass::$databasePrefix . $bulkClass::$databaseColumnId . '>?', (int) $action_data[ 'bulk_counter' ] ), $bulkClass::$databasePrefix . $bulkClass::$databaseColumnId . ' ASC', (int) $action_data[ 'bulk_limit' ] ?: 100 ),
+									$bulkClass
+								)
+							);
+						}
+					}
+					
+					if ( $records )
+					{
+						$idField = $bulkClass::$databaseColumnId;
+						foreach ( $records as $record )
+						{
+							$args[ $bulk_arg ] = $record;
+							call_user_func_array( array( $event, 'trigger' ), array_values( $args ) );
+							$action_data[ 'bulk_counter' ] = $record->$idField;
+						}
+						
+						$this->data = json_encode( $action_data );
+					}
+					
+					if ( \IPS\Db::i()->select( 'COUNT(*)', $bulkClass::$databaseTable, array( $bulkClass::$databasePrefix . $bulkClass::$databaseColumnId . '>?', (int) $action_data[ 'bulk_counter' ] ) )->first() == 0 )
+					{
+						/* Reschedule */
+						$next_run = $this->time;
+						$action_data[ 'bulk_counter' ] = 0;
+						$this->data = json_encode( $action_data );
+						
+						while ( $next_run <= time() )
+						{
+							$interval = 	( (int) $action_data[ 'minutes' ] * 60 ) + 
+									( (int) $action_data[ 'hours' ] * 60 * 60 ) +
+									( (int) $action_data[ 'days' ] * 60 * 60 * 24 ) +
+									( (int) $action_data[ 'months' ] * 60 * 60 * 24 * 30 );
+									
+							/* If zero interval, add 5 minutes to current time and break */
+							if ( $interval <= 0 )
+							{
+								$next_run = time() + ( 60 * 5 );
+								break;
+							}
+							
+							$next_run += $interval;
+						}
+						
+						$this->time = $next_run;
+					}
+				}
+				else
+				{
+					call_user_func_array( array( $event, 'trigger' ), array_values( $args ) );
+					
+					/* Reschedule */
+					$next_run = $this->time;
+					
+					while ( $next_run < time() )
+					{
+						$interval = 	( (int) $action_data[ 'minutes' ] * 60 ) + 
+								( (int) $action_data[ 'hours' ] * 60 * 60 ) +
+								( (int) $action_data[ 'days' ] * 60 * 60 * 24 ) +
+								( (int) $action_data[ 'months' ] * 60 * 60 * 24 * 30 );
+								
+						/* If zero interval, add 5 minutes to current time and break */
+						if ( $interval <= 0 )
+						{
+							$next_run = time() + ( 60 * 5 );
+							break;
+						}
 
-
+					}
+					
+					$this->time = $next_run;
+				}
+			}
+			catch( \OutOfRangeException $e ) { }
 		}
 
 		if ( $deleteWhenDone )
 		{
 			$this->delete();
+		}
+		else
+		{
+			$this->queued = FALSE;
+			$this->save();
 		}
 	}
 	
