@@ -250,6 +250,11 @@ class _Core
 					'nullable' => TRUE,
 					'converter' => function( $content )
 					{
+						if ( $content instanceof \IPS\Content\Comment )
+						{
+							return $content->item()->mapped( 'title' );
+						}
+						
 						return $content->mapped( 'title' );
 					},
 				),
@@ -332,6 +337,18 @@ class _Core
 						return $content->author()->member_id;
 					},
 				),
+				'Url' => array
+				(
+					'token' => 'url',
+					'tokenValue' => function( $url ) { return (string) $url; },
+					'description' => 'The url',
+					'argtype' => 'object',
+					'class' => '\IPS\Http\Url',
+					'converter' => function( $content )
+					{
+						return $content->url();
+					},
+				),
 			),
 			'\IPS\Content\Item' => array
 			(
@@ -373,18 +390,6 @@ class _Core
 					'converter' => function( $item )
 					{
 						return (int) $item->mapped( 'views' );
-					},
-				),
-				'Url' => array
-				(
-					'token' => 'url',
-					'tokenValue' => function( $url ) { return (string) $url; },
-					'description' => 'The url',
-					'argtype' => 'object',
-					'class' => '\IPS\Http\Url',
-					'converter' => function( $item )
-					{
-						return $item->url();
 					},
 				),
 				'Followers' => array
