@@ -147,9 +147,9 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 					if ( isset( $configuration[ $containers ] ) and is_array( $configuration[ $containers ] ) )
 					{
 						$node_id = 0;
-						if ( isset( $item ) and $node = $item->containerWrapper() )
+						if ( isset( $container ) )
 						{
-							$node_id = $node->_id;
+							$node_id = $container->_id;
 						}
 						
 						if ( ! in_array( $node_id, $configuration[ $containers ] ) )
