@@ -1591,7 +1591,7 @@ class _Application extends \IPS\Application
 									$input_arg = NULL;
 									$arg_name_token = NULL;
 									$arg_name_description = NULL;
-									$tokenValue = NULL;
+									$tokenValue = '';
 									
 									/**
 									 * Building Token Values
@@ -1634,24 +1634,22 @@ class _Application extends \IPS\Application
 												
 												foreach( $input_arg as $_input_arg )
 												{
-													/* Standard conversion */
-													$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $_input_arg );
-													
-													/* Token formatter? */
-													if ( isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) and is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
+													if ( is_object( $_input_arg ) )
 													{
-														$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $_tokenValue );
+														/* Standard conversion */
+														$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $_input_arg );
+														
+														/* Token formatter? */
+														if ( isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) and is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
+														{
+															$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $_tokenValue );
+														}
+														
+														$tokenValues[] = (string) $_tokenValue;
 													}
-													
-													$tokenValues[] = (string) $_tokenValue;
 												}
 												
 												$tokenValue = implode( ', ', $tokenValues );
-											}
-											else
-											{
-												/* Empty arguments should produce an empty replacement so tokens aren't left laying around */
-												$tokenValue = '';
 											}
 											
 											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $replacements[ '~' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . '~' ] = $tokenValue;
