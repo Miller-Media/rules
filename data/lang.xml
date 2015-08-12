@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100110">
+ <app key="rules" version="100200">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -10,6 +10,7 @@
   <word key="menu__rules_rules_schedule" js="0">Scheduled Actions</word>
   <word key="ext__Definitions" js="0">Events, Conditions, and Actions Definition Groups</word>
   <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
+  <word key="module__rules_system" js="0">Rules System</word>
   <word key="notifications__rules_Notification" js="0">Rules Notifications</word>
   <word key="notifications__rules_notification" js="0">Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
@@ -63,7 +64,17 @@
   <word key="rules_profile_data_header" js="0">Custom Profile Data</word>
   <word key="data_column_not_unique" js="0">This key is already being used for another field</word>
   <word key="rules_data_column_invalid" js="0">Your data key contains invalid characters. Only lowercase alphanumerics (including underscores) are allowed.</word>
+  <word key="rules_fixed_arguments" js="0">Fixed Arguments</word>
+  <word key="rules_bulk_options" js="0">Bulk Processing Option</word>
+  <word key="rules_repeats" js="0">Repeats Every</word>
   <word key="rules_scheduled_actions" js="0">Scheduled Actions</word>
+  <word key="rules_schedule_custom_action" js="0">Custom Action Schedule</word>
+  <word key="rules_schedule_custom_now" js="0">Schedule Manually</word>
+  <word key="rules_schedule_custom_frequency" js="0">Action Frequency</word>
+  <word key="rules_schedule_custom_bulk" js="0">Bulk Process</word>
+  <word key="rules_schedule_custom_bulk_desc" js="0">If you select a bulk process argument, this action will be run repeatedly until every associated record in the system has been used as the argument.</word>
+  <word key="rules_schedule_bulk_limit" js="0">Batch Limit</word>
+  <word key="rules_schedule_bulk_limit_desc" js="0">Bulk processing is processed in batches so that large runs can be handled reliably.</word>
   <word key="custom_actions" js="0">Custom Actions</word>
   <word key="custom_action_title" js="0">Custom Action Name</word>
   <word key="custom_action_description" js="0">Description</word>
@@ -74,7 +85,7 @@
   <word key="argument_varname" js="0">Machine Name</word>
   <word key="argument_varname_desc" js="0"><![CDATA[The machine name can only be lowercase alphanumerics (including underscores). It needs to be unique to this action and will used as a variable name in action code.<br>( ex: member )]]></word>
   <word key="argument_type" js="0">Argument Type</word>
-  <word key="argument_class" js="0">Object Type</word>
+  <word key="argument_class" js="0">Value Type</word>
   <word key="argument_custom_class" js="0">Custom Object Classname</word>
   <word key="argument_custom_class_desc" js="0">Enter the classname of the object</word>
   <word key="argument_required" js="0">Required</word>
@@ -180,8 +191,17 @@
   <word key="rules_scheduled_schedule_time" js="0">Scheduled Date</word>
   <word key="rules_scheduled_schedule_action_id" js="0">Scheduled Action</word>
   <word key="rules_scheduled_schedule_unique_key" js="0">Keyphrase</word>
-  <word key="rules_scheduled_schedule_thread" js="0">Associated Rule</word>
+  <word key="rules_scheduled_schedule_thread" js="0">Scheduled By</word>
+  <word key="rules_scheduled_schedule_parent" js="0">Status</word>
   <word key="rules_scheduled_schedule_created" js="0">Created On</word>
+  <word key="schedule_pending" js="0">Pending</word>
+  <word key="schedule_locked" js="0">Locked</word>
+  <word key="schedule_running" js="0">Running</word>
+  <word key="schedule_filter_automated" js="0">Automated</word>
+  <word key="schedule_filter_manual" js="0">Manual</word>
+  <word key="schedule_filter_keyphrases" js="0">Keyphrased</word>
+  <word key="rules_onetime" js="0">One Time</word>
+  <word key="rules_recurring" js="0">Recurring</word>
   <word key="rules_choose_member" js="0">Type A Member Name</word>
   <word key="rules_choose_member2" js="0">Type A Member Name</word>
   <word key="rules_choose_members" js="0">Type Member Names</word>
