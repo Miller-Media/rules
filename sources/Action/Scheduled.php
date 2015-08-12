@@ -165,10 +165,10 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 						foreach ( $records as $record )
 						{
 							$args[ $bulk_arg ] = $record;
-							call_user_func_array( array( $event, 'trigger' ), array_values( $args ) );
 							$action_data[ 'bulk_counter' ] = $record->$idField;
 							$this->data = json_encode( $action_data );
 							$this->save();
+							call_user_func_array( array( $event, 'trigger' ), array_values( $args ) );
 						}
 						
 					}

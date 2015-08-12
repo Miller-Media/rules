@@ -10,6 +10,8 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 	exit;
 }
 
+const LOCKED_TIMEOUT = 900;
+
 /**
  * schedule
  */
@@ -75,7 +77,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 						$action = \IPS\rules\Action\Custom::load( $row[ 'schedule_custom_id' ] );
 						$scheduled_action = \IPS\rules\Action\Scheduled::constructFromData( $row );
 						$action_data = json_decode( $scheduled_action->data, TRUE );
-						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=custom&do=form&id={$action->custom_id}" ) . "'>{$action->title}</a> (" . ( $action_data[ 'frequency' ] == 'recurring' ? \IPS\Member::loggedIn()->language()->addToStack( 'rules_recurring' ) : \IPS\Member::loggedIn()->language()->addToStack( 'rules_onetime' ) ) . ")";
+						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=custom&do=form&id={$action->custom_id}" ) . "'>{$action->title}</a> (" . ( $action_data[ 'frequency' ] == 'repeat' ? \IPS\Member::loggedIn()->language()->addToStack( 'rules_recurring' ) : \IPS\Member::loggedIn()->language()->addToStack( 'rules_onetime' ) ) . ")";
 					}
 					catch ( \OutOfRangeException $e ) { }
 				}
@@ -108,7 +110,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			{
 				if ( $row[ 'schedule_queued' ] )
 				{
-					if ( $row[ 'schedule_queued' ] < time() - ( 60 * 15 ) )
+					if ( $row[ 'schedule_queued' ] < time() - \IPS\rules\modules\admin\rules\LOCKED_TIMEOUT )
 					{
 						$status = "<span style='color:red' data-ipsTooltip title='" . \IPS\Member::loggedIn()->language()->addToStack( 'schedule_locked' ) . " since " . (string) \IPS\DateTime::ts( $row[ 'schedule_queued' ] ) . "'><i class='fa fa-circle'></i></span>";
 					}
@@ -180,6 +182,8 @@ class _schedule extends \IPS\Dispatcher\Controller
 			$action = NULL;
 			$rule = NULL;
 			
+			$scheduled_action = \IPS\rules\Action\Scheduled::constructFromData( $row );
+			
 			try
 			{
 				$action = \IPS\rules\Action::load( $row[ 'schedule_action_id' ] );
@@ -201,6 +205,16 @@ class _schedule extends \IPS\Dispatcher\Controller
 				'link' => $self->url->setQueryString( array( 'do' => 'executeAction', 'id' => $row[ 'schedule_id' ] ) ),
 				'data' => array( 'confirm' => '' ),
 			);
+			
+			if ( $scheduled_action->queued and $scheduled_action->queued < time() - \IPS\rules\modules\admin\rules\LOCKED_TIMEOUT )
+			{
+				$buttons[ 'unlock' ] = array
+				(
+					'icon' => 'unlock',
+					'title' => 'Unlock Action',
+					'link' => $self->url->setQueryString( array( 'do' => 'unlockAction', 'id' => $row[ 'schedule_id' ] ) ),
+				);
+			}
 			
 			$buttons[ 'delete' ] = array
 			(
@@ -501,7 +515,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			$scheduled_action->data = json_encode( $action_data );
 			$scheduled_action->save();
 			
-			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule" ) );
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule&filter=schedule_filter_manual" ) );
 		}
 		
 		\IPS\Output::i()->title 	= $lang->addToStack( 'rules_schedule_custom_action' );
@@ -551,7 +565,31 @@ class _schedule extends \IPS\Dispatcher\Controller
 		$scheduled_action->execute();
 		
 		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule" ), 'rules_scheduled_action_executed' );
-	}	
+	}
+	
+	/**
+	 * Unlock frozen actions
+	 */
+	protected function unlockAction()
+	{
+		try
+		{
+			$scheduled_action = \IPS\rules\Action\Scheduled::load( \IPS\Request::i()->id );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			\IPS\Output::i()->error( 'node_error', '2RS22/C', 403 );
+		}
+		
+		if ( $scheduled_action->queued < time() - ( 60 * 15 ) )
+		{	
+			$scheduled_action->queued = 0;
+			$scheduled_action->save();
+		}
+		
+		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule&filter=schedule_filter_manual" ) );
+		
+	}
 	
 	/**
 	 * Execute Scheduled Action
