@@ -67,7 +67,7 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 		}
 		else
 		{
-			$this->queued = TRUE;
+			$this->queued = time();
 			$this->save();
 		}
 		
@@ -155,6 +155,7 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 									$bulkClass
 								)
 							);
+							break;
 						}
 					}
 					
@@ -166,9 +167,10 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 							$args[ $bulk_arg ] = $record;
 							call_user_func_array( array( $event, 'trigger' ), array_values( $args ) );
 							$action_data[ 'bulk_counter' ] = $record->$idField;
+							$this->data = json_encode( $action_data );
+							$this->save();
 						}
 						
-						$this->data = json_encode( $action_data );
 					}
 					
 					if ( \IPS\Db::i()->select( 'COUNT(*)', $bulkClass::$databaseTable, array( $bulkClass::$databasePrefix . $bulkClass::$databaseColumnId . '>?', (int) $action_data[ 'bulk_counter' ] ) )->first() == 0 )
@@ -233,7 +235,7 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 		}
 		else
 		{
-			$this->queued = FALSE;
+			$this->queued = 0;
 			$this->save();
 		}
 	}

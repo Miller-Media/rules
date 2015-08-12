@@ -37,8 +37,16 @@ class _schedule extends \IPS\Dispatcher\Controller
 		
 		/* Create the table */
 		$table = new \IPS\Helpers\Table\Db( 'rules_scheduled_actions', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=schedule' ) );
-		$table->include 	= array( 'schedule_time', 'schedule_action_id', 'schedule_thread', 'schedule_unique_key', 'schedule_created' );
+		$table->include 	= array( 'schedule_time', 'schedule_action_id', 'schedule_thread', 'schedule_created', 'schedule_unique_key', 'schedule_parent' );
 		$table->langPrefix 	= 'rules_scheduled_';
+		
+		$table->filters = array
+		(
+			'schedule_filter_keyphrases'	=> 'schedule_unique_key!=\'\'',
+			'schedule_filter_manual'	=> 'schedule_custom_id>0',
+			'schedule_filter_automated'	=> 'schedule_action_id>0',
+		);
+		
 		$table->parsers 	= array
 		(
 			'schedule_time'	=> function( $val )
@@ -51,30 +59,104 @@ class _schedule extends \IPS\Dispatcher\Controller
 			},
 			'schedule_action_id' => function( $val, $row )
 			{
-				try
+				if ( $val )
 				{
-					$action = \IPS\rules\Action::load( $val );
-					return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=actions&id={$val}&do=form" ) . "'>{$action->title}</a>";
+					try
+					{
+						$action = \IPS\rules\Action::load( $val );
+						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=actions&id={$val}&do=form" ) . "'>{$action->title}</a>";
+					}
+					catch ( \OutOfRangeException $e ) { }
 				}
-				catch ( \OutOfRangeException $e )
+				else if ( $row[ 'schedule_custom_id' ] )
 				{
-					return "Action Missing ( deleted )";
+					try
+					{
+						$action = \IPS\rules\Action\Custom::load( $row[ 'schedule_custom_id' ] );
+						$scheduled_action = \IPS\rules\Action\Scheduled::constructFromData( $row );
+						$action_data = json_decode( $scheduled_action->data, TRUE );
+						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=custom&do=form&id={$action->custom_id}" ) . "'>{$action->title}</a> (" . ( $action_data[ 'frequency' ] == 'recurring' ? \IPS\Member::loggedIn()->language()->addToStack( 'rules_recurring' ) : \IPS\Member::loggedIn()->language()->addToStack( 'rules_onetime' ) ) . ")";
+					}
+					catch ( \OutOfRangeException $e ) { }
 				}
+				
+				return "Unknown";
 			},
 			'schedule_thread' => function( $val, $row )
 			{
-				try
+				if ( $row[ 'schedule_action_id' ] )
 				{
-					$action = \IPS\rules\Action::load( $row[ 'schedule_action_id' ] );
-					if ( $rule = $action->rule() )
+					try
 					{
-						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&id={$rule->id}&do=form&tab=actions" ) . "'>{$rule->title}</a>";
+						$action = \IPS\rules\Action::load( $row[ 'schedule_action_id' ] );
+						if ( $rule = $action->rule() )
+						{
+							return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&id={$rule->id}&do=form&tab=actions" ) . "'>{$rule->title}</a>";
+						}
+					}
+					catch( \OutOfRangeException $e ) 
+					{
+						return "Automation Rule (removed)";
 					}
 				}
-				catch( \OutOfRangeException $e ) 
+				else if ( $row[ 'schedule_custom_id' ] )
 				{
-					return "No Rule Associated";
+					return "Manual Entry";
 				}
+			},
+			'schedule_parent' => function( $val, $row )
+			{
+				if ( $row[ 'schedule_queued' ] )
+				{
+					if ( $row[ 'schedule_queued' ] < time() - ( 60 * 15 ) )
+					{
+						$status = "<span style='color:red' data-ipsTooltip title='" . \IPS\Member::loggedIn()->language()->addToStack( 'schedule_locked' ) . " since " . (string) \IPS\DateTime::ts( $row[ 'schedule_queued' ] ) . "'><i class='fa fa-circle'></i></span>";
+					}
+					else
+					{
+						$status = "<span style='color:green' data-ipsTooltip title='" . \IPS\Member::loggedIn()->language()->addToStack( 'schedule_running' ) . " since " . (string) \IPS\DateTime::ts( $row[ 'schedule_queued' ] ) . "'><i class='fa fa-circle'></i></span>";
+					}
+				}
+				else
+				{
+					$status = "<span style='color:#ccc' data-ipsTooltip title='" . \IPS\Member::loggedIn()->language()->addToStack( 'schedule_pending' ) . "'><i class='fa fa-circle'></i></span>";
+				}
+				
+				if ( $row[ 'schedule_custom_id' ] )
+				{
+					try
+					{
+						$action = \IPS\rules\Action\Custom::load( $row[ 'schedule_custom_id' ] );
+						$scheduled_action = \IPS\rules\Action\Scheduled::constructFromData( $row );
+						$action_data = json_decode( $scheduled_action->data, TRUE );
+						
+						if ( $bulk_arg = $action_data[ 'bulk_option' ] )
+						{
+							foreach( $action->children() as $argument )
+							{
+								if ( $bulk_arg === 'custom_argument_' . $argument->id )
+								{
+									$bulkClass = $argument->class == 'custom' ? $argument->custom_class : str_replace( '-', '\\', $argument->class );
+									$total = \IPS\Db::i()->select( 'COUNT(*)', $bulkClass::$databaseTable )->first();
+									$completed = \IPS\Db::i()->select( 'COUNT(*)', $bulkClass::$databaseTable, array( $bulkClass::$databasePrefix . $bulkClass::$databaseColumnId . '<=?', (int) $action_data[ 'bulk_counter' ] ) )->first();
+									
+									if ( $completed == 0 )
+									{
+										$status .= " Waiting to bulk process <strong>{$total}</strong> records";
+									}
+									else
+									{
+										$status .= " <strong>{$completed}</strong> of <strong>{$total}</strong> total records (" . ( (int) ( 100 * ( $completed / $total ) ) ) . "%)";
+									}
+									break;
+								}
+							}
+						}
+					}
+					catch ( \OutOfRangeException $e ) { }
+				}
+				
+				return $status;
 			},
 			'schedule_unique_key' => function( $val, $row )
 			{
@@ -85,7 +167,9 @@ class _schedule extends \IPS\Dispatcher\Controller
 				
 				return $val;
 			},
-		);				
+		);
+		
+		
 
 		$table->sortBy = \IPS\Request::i()->sortby ?: 'schedule_time';
 		$table->sortDirection = \IPS\Request::i()->sortdirection ?: 'asc';
@@ -146,7 +230,6 @@ class _schedule extends \IPS\Dispatcher\Controller
 		};
 		$table->noSort = array( 'schedule_action_id', 'schedule_thread' );
 		
-
 		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'rules_scheduled_actions' );
 		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'global', 'core' )->block( 'title', (string) $table );
 	}
@@ -210,8 +293,8 @@ class _schedule extends \IPS\Dispatcher\Controller
 	
 		$frequency_options = array
 		(
-			'once' 		=> 'One Time',
-			'repeat' 	=> 'Recurring',
+			'once' 		=> 'rules_onetime',
+			'repeat' 	=> 'rules_recurring',
 		);
 		
 		$lang 		= \IPS\Member::loggedIn()->language();
