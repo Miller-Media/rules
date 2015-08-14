@@ -654,7 +654,7 @@ class _Application extends \IPS\Application
 								
 								if ( $formElement )
 								{
-									$formElement->error = NULL;
+									$formElement->noError();
 								}
 							}
 						}
@@ -2252,6 +2252,14 @@ class _Application extends \IPS\Application
 		
 		return static::rulesDefinitions( $definition_key );
 	}
+	
+	/**
+	 * Protect
+	 */
+	public function isProtected()
+	{
+		return LITE;
+	}	
 
 }
 
