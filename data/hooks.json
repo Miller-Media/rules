@@ -42,5 +42,9 @@
     "ipsCmsRecords": {
         "type": "C",
         "class": "\\IPS\\cms\\Records"
+    },
+    "ipsHelpersFormAbstract": {
+        "type": "C",
+        "class": "\\IPS\\Helpers\\Form\\FormAbstract"
     }
 }

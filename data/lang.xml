@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100200">
+ <app key="rules" version="100201">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -125,6 +125,10 @@
   <word key="rules_scheduled_action_executed" js="0">Scheduled Action Executed</word>
   <word key="rules_scheduled_action_deleted" js="0">Scheduled Action Deleted</word>
   <word key="rules_confirm_delete" js="0">Confirm Delete</word>
+  <word key="rules_execute" js="0">Execute Now</word>
+  <word key="rules_unlock_action" js="0">Unlock Action</word>
+  <word key="rules_reset_bulk" js="0">Reset Bulk Action</word>
+  <word key="rules_view_debug" js="0">View Debug Log</word>
   <word key="rule" js="0">Rule</word>
   <word key="rules" js="0">Rules</word>
   <word key="conditions" js="0">Conditions</word>
@@ -195,13 +199,14 @@
   <word key="rules_scheduled_schedule_parent" js="0">Status</word>
   <word key="rules_scheduled_schedule_created" js="0">Created On</word>
   <word key="schedule_pending" js="0">Pending</word>
-  <word key="schedule_locked" js="0">Locked</word>
+  <word key="schedule_locked" js="0">Unresponsive</word>
   <word key="schedule_running" js="0">Running</word>
   <word key="schedule_filter_automated" js="0">Automated</word>
   <word key="schedule_filter_manual" js="0">Manual</word>
   <word key="schedule_filter_keyphrases" js="0">Keyphrased</word>
   <word key="rules_onetime" js="0">One Time</word>
   <word key="rules_recurring" js="0">Recurring</word>
+  <word key="rules_bulk" js="0">Bulk</word>
   <word key="rules_choose_member" js="0">Type A Member Name</word>
   <word key="rules_choose_member2" js="0">Type A Member Name</word>
   <word key="rules_choose_members" js="0">Type Member Names</word>

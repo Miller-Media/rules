@@ -2259,7 +2259,7 @@ class _Application extends \IPS\Application
 	public function isProtected()
 	{
 		return LITE;
-	}	
+	}
 
 }
 
