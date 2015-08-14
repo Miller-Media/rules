@@ -77,7 +77,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 						$action = \IPS\rules\Action\Custom::load( $row[ 'schedule_custom_id' ] );
 						$scheduled_action = \IPS\rules\Action\Scheduled::constructFromData( $row );
 						$action_data = json_decode( $scheduled_action->data, TRUE );
-						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=custom&do=form&id={$action->custom_id}" ) . "'>{$action->title}</a> (" . ( $action_data[ 'frequency' ] == 'repeat' ? \IPS\Member::loggedIn()->language()->addToStack( 'rules_recurring' ) : \IPS\Member::loggedIn()->language()->addToStack( 'rules_onetime' ) ) . ")";
+						return "<a href='" . \IPS\Http\Url::internal( "app=rules&module=rules&controller=custom&do=form&id={$action->custom_id}" ) . "'>{$action->title}</a> (" . ( $action_data[ 'bulk_option' ] ? \IPS\Member::loggedIn()->language()->addToStack( 'rules_bulk' ) . " " . $action_data[ 'bulk_limit' ] . " / " : "" ) . ( $action_data[ 'frequency' ] == 'repeat' ? \IPS\Member::loggedIn()->language()->addToStack( 'rules_recurring' ) : \IPS\Member::loggedIn()->language()->addToStack( 'rules_onetime' ) ) . ")";
 					}
 					catch ( \OutOfRangeException $e ) { }
 				}
@@ -183,6 +183,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			$rule = NULL;
 			
 			$scheduled_action = \IPS\rules\Action\Scheduled::constructFromData( $row );
+			$action_data = json_decode( $scheduled_action->data, TRUE ) ?: array();
 			
 			try
 			{
@@ -201,7 +202,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			$buttons[ 'execute' ] = array
 			(
 				'icon' => 'caret-square-o-right',
-				'title' => 'Execute Now',
+				'title' => 'rules_execute',
 				'link' => $self->url->setQueryString( array( 'do' => 'executeAction', 'id' => $row[ 'schedule_id' ] ) ),
 				'data' => array( 'confirm' => '' ),
 			);
@@ -211,15 +212,26 @@ class _schedule extends \IPS\Dispatcher\Controller
 				$buttons[ 'unlock' ] = array
 				(
 					'icon' => 'unlock',
-					'title' => 'Unlock Action',
+					'title' => 'rules_unlock_action',
 					'link' => $self->url->setQueryString( array( 'do' => 'unlockAction', 'id' => $row[ 'schedule_id' ] ) ),
 				);
+			}
+			
+			if ( $action_data[ 'bulk_option' ] and $action_data[ 'bulk_counter' ] )
+			{
+				$buttons[ 'reset' ] = array
+				(
+					'icon' => 'refresh',
+					'title' => 'rules_reset_bulk',
+					'link' => $self->url->setQueryString( array( 'do' => 'resetAction', 'id' => $row[ 'schedule_id' ] ) ),
+					'data' => array( 'confirm' => '' ),
+				);			
 			}
 			
 			$buttons[ 'delete' ] = array
 			(
 				'icon' => 'trash',
-				'title' => 'Delete Action',
+				'title' => 'delete',
 				'link' => $self->url->setQueryString( array( 'do' => 'delete', 'id' => $row[ 'schedule_id' ] ) ),
 				'data' => array( 'confirm' => '' ),
 			);
@@ -231,7 +243,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 					$logid = \IPS\Db::i()->select( 'id', 'rules_logs', array( 'op_id=0 AND rule_parent=0 AND rule_id=? AND thread=?', $rule->id, $row[ 'schedule_thread' ] ) )->first();
 					$buttons[ 'debug' ] = array(
 						'icon'		=> 'bug',
-						'title'		=> 'View Debug Log',
+						'title'		=> 'rules_view_debug',
 						'id'		=> "{$row['schedule_id']}-debug",
 						'link'		=> \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=viewlog" )->setQueryString( array( 'logid' => $logid ) ),
 						'data'		=> array( 'ipsDialog' => '' ),
@@ -434,9 +446,9 @@ class _schedule extends \IPS\Dispatcher\Controller
 			
 			if ( $form_input )
 			{
-				if ( \IPS\Request::i()->rules_schedule_custom_bulk === $form_input->name )
+				if ( \IPS\Request::i()->rules_schedule_custom_bulk === $form_name )
 				{
-					$form_input->error = NULL;
+					$form_input->noError();
 				}
 				
 				$argument_inputs[] = $form_input;
@@ -461,7 +473,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			
 			if ( \IPS\Request::i()->rules_schedule_custom_bulk === '' )
 			{
-				$bulk_limit->error = FALSE;
+				$bulk_limit->noError();
 			}
 		}
 		
@@ -560,8 +572,13 @@ class _schedule extends \IPS\Dispatcher\Controller
 			\IPS\Output::i()->error( 'node_error', '2RS22/C', 403 );
 		}
 		
-		$scheduled_action->time = time();
-		$scheduled_action->save();
+		/* Set future scheduled dates to now */
+		if ( $scheduled_action->time > time() )
+		{
+			$scheduled_action->time = time();
+			$scheduled_action->save();
+		}
+		
 		$scheduled_action->execute();
 		
 		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule" ), 'rules_scheduled_action_executed' );
@@ -584,6 +601,33 @@ class _schedule extends \IPS\Dispatcher\Controller
 		if ( $scheduled_action->queued < time() - ( 60 * 15 ) )
 		{	
 			$scheduled_action->queued = 0;
+			$scheduled_action->save();
+		}
+		
+		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=schedule&filter=schedule_filter_manual" ) );
+		
+	}
+	
+	/**
+	 * Reset bulk actions
+	 */
+	protected function resetAction()
+	{
+		try
+		{
+			$scheduled_action = \IPS\rules\Action\Scheduled::load( \IPS\Request::i()->id );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			\IPS\Output::i()->error( 'node_error', '2RS22/C', 403 );
+		}
+		
+		$action_data = json_decode( $scheduled_action->data, TRUE );
+		
+		if ( $action_data[ 'bulk_option' ] and $action_data[ 'bulk_counter' ] )
+		{	
+			$action_data[ 'bulk_counter' ] = 0;
+			$scheduled_action->data = json_encode( $action_data );
 			$scheduled_action->save();
 		}
 		

@@ -70,7 +70,8 @@ class _logs extends \IPS\Dispatcher\Controller
 				return json_decode( $val );
 			},
 		);				
-		$table->sortBy = 'time';
+		$table->sortBy = 'id';
+		$table->sortDirection = 'desc';
 		$table->rowButtons = function( $row ) use ( $controllerUrl )
 		{	
 			$buttons = array();

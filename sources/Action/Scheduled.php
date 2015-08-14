@@ -138,10 +138,10 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 			try
 			{
 				$action = \IPS\rules\Action\Custom::load( $this->custom_id );
-				$event = \IPS\rules\Event::load( 'rules', 'CustomActions', 'custom_action_' . $action->key );
+				$event = \IPS\rules\Event::load( 'rules', 'CustomActions', 'custom_action_' . $action->key, TRUE );
+
+				$deleteWhenDone = $action_data[ 'frequency' ] !== 'repeat';			
 				
-				$deleteWhenDone = $action_data[ 'frequency' ] !== 'repeat';
-		
 				if ( $bulk_arg = $action_data[ 'bulk_option' ] )
 				{
 					foreach( $action->children() as $argument )
@@ -198,6 +198,10 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 						}
 						
 						$this->time = $next_run;
+					}
+					else
+					{
+						$deleteWhenDone = FALSE;
 					}
 				}
 				else

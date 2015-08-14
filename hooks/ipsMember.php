@@ -16,7 +16,7 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 			 * Rules may trigger core system functions that use \IPS\Member::loggedIn(), (i.e \IPS\Content\Item::setTags )
 			 * This prevents the script from crashing in API mode because the parent method attempts to start a session.
 			 */
-			if ( php_sapi_name() === 'cli' )
+			if ( ( ! isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) && ( in_array( php_sapi_name(), array( 'cli', 'cgi', 'cgi-fcgi' ) ) || ( is_numeric( $_SERVER[ 'argc' ] ) && $_SERVER[ 'argc' ] > 0 ) ) ) )
 			{
 				static::$loggedInMember = static::load( NULL );
 			}
