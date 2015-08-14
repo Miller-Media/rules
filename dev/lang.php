@@ -143,6 +143,10 @@ $lang = array(
 	'rules_scheduled_action_deleted'	=> "Scheduled Action Deleted",
 	
 	'rules_confirm_delete'			=> "Confirm Delete",
+	'rules_execute'				=> "Execute Now",
+	'rules_unlock_action'			=> "Unlock Action",
+	'rules_reset_bulk'			=> "Reset Bulk Action",
+	'rules_view_debug'			=> "View Debug Log",
 	
 	'rule'					=> "Rule",
 	'rules'					=> "Rules",
@@ -219,13 +223,14 @@ $lang = array(
 	'rules_scheduled_schedule_parent'	=> "Status",
 	'rules_scheduled_schedule_created'	=> "Created On",
 	'schedule_pending'			=> "Pending",
-	'schedule_locked'			=> "Locked",
+	'schedule_locked'			=> "Unresponsive",
 	'schedule_running'			=> "Running",
 	'schedule_filter_automated'		=> "Automated",
 	'schedule_filter_manual'		=> "Manual",
 	'schedule_filter_keyphrases'		=> "Keyphrased",
 	'rules_onetime'				=> "One Time",
 	'rules_recurring'			=> "Recurring",
+	'rules_bulk'				=> "Bulk",
 	
 	'rules_choose_member'			=> "Type A Member Name",
 	'rules_choose_member2'			=> "Type A Member Name",
