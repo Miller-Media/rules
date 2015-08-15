@@ -43,6 +43,24 @@ class _Application extends \IPS\Application
 	}
 	
 	/**
+	 * [Node] Custom Badge
+	 *
+	 * @return	NULL|array	Null for no badge, or an array of badge data (0 => CSS class type, 1 => language string, 2 => optional raw HTML to show instead of language string)
+	 */
+	public function get__badge()
+	{
+		if ( \IPS\rules\LITE )
+		{
+			return array(
+				0	=> 'ipsBadge ipsBadge_neutral',
+				1	=> 'Lite',
+			);
+		}
+		
+		return NULL;
+	}	
+	
+	/**
 	 * Argument Definition Presets
 	 *
 	 * @param	string	$key	The preset key to retrieve
