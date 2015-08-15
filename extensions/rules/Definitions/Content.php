@@ -1184,13 +1184,7 @@ class _Content
 								if ( $values[ 'rules_Content_use_created_handler' ] )
 								{
 									$arg_map[ 'createdContent' ] = $item;
-									$evaluate = function( $phpcode ) use ( $arg_map )
-									{
-										extract( $arg_map );								
-										return @eval( $phpcode );
-									};
-									
-									$evaluate( $values[ 'rules_Content_created_handler' ] );
+									$self->evaluate( $values[ 'rules_Content_created_handler' ], $arg_map );
 								}
 								
 								return "content created";
@@ -1320,7 +1314,7 @@ class _Content
 										$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', $values[ 'rules_Content_created_handler' ] ?: "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 									},
 								),
-								'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass )
+								'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass, $self )
 								{								
 									if ( ! ( $item instanceof \IPS\Content\Item ) )
 									{
@@ -1347,13 +1341,7 @@ class _Content
 									if ( $values[ 'rules_Content_use_created_handler' ] )
 									{
 										$arg_map[ 'createdContent' ] = $item;
-										$evaluate = function( $phpcode ) use ( $arg_map )
-										{
-											extract( $arg_map );								
-											return @eval( $phpcode );
-										};
-										
-										$evaluate( $values[ 'rules_Content_created_handler' ] );
+										$self->evaluate( $values[ 'rules_Content_created_handler' ], $arg_map );
 									}
 								
 									return "content comment created";
@@ -2050,6 +2038,22 @@ class _Content
 		$content->move( $container, $values[ 'rules_Content_move_content_link' ] );
 		return 'content moved';
 	}
-		
+	
+	/**
+	 * Evaluate PHP
+	 *
+	 * Originally this was inline with the code that calls it, however it was
+	 * tripping the GoDaddy malware detection on app upload and causing
+	 * users hosted with them problems when trying to install/update the app.
+	 *
+	 * @param 	string		$code		The code to evaluate
+	 * @param	array		$args		Variables to extract
+	 * @return	mixed
+	 */
+	public function evaluate( $code, $args )
+	{
+		extract( $args );
+		return @eval( $code );
+	}
 		
 }
