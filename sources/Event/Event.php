@@ -296,16 +296,14 @@ class _Event
 		}
 		catch ( \Exception $e )
 		{
-			/**
-			 * Uninstalled
-			 */
+			/* Uninstalled */
 			return $this->rulesCache = array();
 		}
 	}
 	
 	/* hasRules Cache */
 	public static $hasRules = array();
-	
+		
 	/**
 	 * Check if rules are attached to an event
 	 *
@@ -316,13 +314,21 @@ class _Event
 	 * @return	bool
 	 */
 	public static function hasRules( $app, $class, $key, $enabled=TRUE )
-	{
+	{	
 		if ( isset( static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ] ) )
 		{
 			return static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ];
 		}
 		
-		return static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ] = (bool) \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_event_app=? AND rule_event_class=? AND rule_event_key=? AND rule_enabled=1', $app, $class, $key ) ) );
+		try
+		{
+			return static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ] = (bool) \IPS\rules\Rule::roots( NULL, NULL, array( array( 'rule_event_app=? AND rule_event_class=? AND rule_event_key=? AND rule_enabled=1', $app, $class, $key ) ) );
+		}
+		catch( \Exception $e )
+		{
+			/* Uninstalled */
+			return static::$hasRules[ $app ][ $class ][ $key ][ (int) $enabled ] = FALSE;
+		}
 	}
 		
 }
