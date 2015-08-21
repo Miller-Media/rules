@@ -468,7 +468,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		$lang 		= \IPS\Member::loggedIn()->language();
 		$form_name 	= 'rules_data_' . $this->column_name;
-		$form_value 	= $hostObj ? $hostObj->getRulesData( $this->column_name ) : ( array_key_exists( $form_name, $values ) ? $values[ $form_name ] : $this->value_default );
+		$form_value 	= $hostObj ? $hostObj->getRulesData( $this->column_name ) : ( array_key_exists( $form_name, (array) $values ) ? $values[ $form_name ] : $this->value_default );
 		
 		/* Language */
 		$lang->words[ $form_name ] 		= $this->name;
