@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100202">
+ <app key="rules" version="100203">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -17,6 +17,7 @@
   <word key="rules_perm__label" js="0">Data Permissions</word>
   <word key="rules_perm__view" js="0">View Data</word>
   <word key="rules_perm__edit" js="0">Edit Data</word>
+  <word key="editor__rules_Generic" js="0">Rules Generic</word>
   <word key="r__rules" js="0">Rules Restrictions</word>
   <word key="r__rules_manage" js="0">Manage Rules</word>
   <word key="r__logs_manage" js="0">View Logs</word>
