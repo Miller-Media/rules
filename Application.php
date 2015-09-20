@@ -531,7 +531,7 @@ class _Application extends \IPS\Application
 	{
 		$_operations 		= array();
 		$lang			= \IPS\Member::loggedIn()->language();
-		$wrap_chosen_prefix	= "<div data-controller='rules.admin.ui.chosen'>";
+		$wrap_chosen_prefix	= "<div class='chosen-collapse' data-controller='rules.admin.ui.chosen'>";
 		$wrap_chosen_suffix	= "</div>";
 		$form->class 		.= " opformForm"; 
 		
@@ -620,7 +620,9 @@ class _Application extends \IPS\Application
 					$source_select->options[ 'options' ] = array();
 					
 					/**
-					 * Does the argument support a manual configuration
+					 * MANUAL CONFIGURATION
+					 *
+					 * Does the argument support a manual configuration?
 					 */
 					if 
 					( 
@@ -682,12 +684,15 @@ class _Application extends \IPS\Application
 					}
 					
 					/**
+					 * EVENT ARGUMENTS 
+					 *
 					 * Can the operation accept variable arguments?
 					 * Does the event have arguments to pass?
 					 * Are there any arguments to use?
 					 */
 					$event = $operation->event();
 					$_usable_arguments = static::usableEventArguments( $arg, $operation );
+					
 					if 
 					( 
 						isset( $arg[ 'argtypes' ] ) and 
@@ -696,7 +701,7 @@ class _Application extends \IPS\Application
 					)
 					{
 						$source_select->options[ 'options' ][ 'event' ] = 'operation_arg_source_event';
-										
+						
 						$usable_arguments 	= array();
 						$usable_toggles		= array();
 						$default_toggle_needed	= FALSE;
@@ -730,10 +735,10 @@ class _Application extends \IPS\Application
 							/* If it will be converted, change the item title to indicate that */
 							if ( $converter_class and $converter_key )
 							{
-								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . ' (' . $lang->addToStack( $converter_key ) . ')';
+								$lang->words[ $eventArgNameKey ] = ( $lang->checkKeyExists( $eventArgNameLang ) ? $lang->get( $eventArgNameLang ) : $eventArgNameLang ) . ' (' . ( $lang->checkKeyExists( 'rules_convert_' . $converter_key ) ? $lang->addToStack( 'rules_convert_' . $converter_key ) : $lang->addToStack( $converter_key ) ) . ')';
 							}
 							
-							$usable_arguments[ $event_arg_name ] = $eventArgNameKey;			
+							$usable_arguments[ $eventArgNameLang ][ $event_arg_name ] = $eventArgNameKey;			
 							
 							if ( isset( $event_argument[ 'nullable' ] ) and $event_argument[ 'nullable' ] )
 							{
@@ -760,7 +765,16 @@ class _Application extends \IPS\Application
 							$lang->words[ $argNameKey . '_eventArg' ] 		= $lang->get( 'use_event_argument' );
 							$lang->words[ $argNameKey . '_eventArg_useDefault' ] 	= $lang->get( 'use_event_argument_default' );
 							$lang->words[ $argNameKey . '_eventArg_useDefault_desc']= $lang->get( 'use_event_argument_default_desc' );
-														
+							
+							/* Reduce optgroups with only one choice to a single option */
+							foreach( $usable_arguments as $_k => $_v )
+							{
+								if ( is_array( $_v ) and count( $_v ) == 1 )
+								{
+									$usable_arguments[ $_k ] = array_shift( $_v );
+								}
+							}
+							
 							/* Event arg selector */
 							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix . $noticeHtml, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
 							
@@ -778,6 +792,8 @@ class _Application extends \IPS\Application
 					}
 					
 					/**
+					 * PHP CODE
+					 *
 					 * Are we allowed to use PHP Code?
 					 *
 					 * @TODO: implement group permissions, allow by default for now
@@ -1640,36 +1656,8 @@ class _Application extends \IPS\Application
 										
 										if ( isset( $arg_name_token ) )
 										{
-											if ( isset( $input_arg ) )
-											{
-												$tokenValues = array();
-												
-												/* Create array so single args and array args can be processed in the same way */
-												if ( ! is_array( $input_arg ) )
-												{
-													$input_arg = array( $input_arg );
-												}
-												
-												foreach( $input_arg as $_input_arg )
-												{
-													if ( is_object( $_input_arg ) )
-													{
-														/* Standard conversion */
-														$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'converter' ], $_input_arg );
-														
-														/* Token formatter? */
-														if ( isset( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) and is_callable( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ] ) )
-														{
-															$_tokenValue = call_user_func( $classConverters[ $converter_class ][ $converter_key ][ 'tokenValue' ], $_tokenValue );
-														}
-														
-														$tokenValues[] = (string) $_tokenValue;
-													}
-												}
-												
-												$tokenValue = implode( ', ', $tokenValues );
-											}
-											
+											/* Tokens will only be calculated if needed */
+											$tokenValue = new \IPS\rules\Event\Token( $input_arg, $classConverters[ $converter_class ][ $converter_key ] );	
 											$replacements[ '[' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . ']' ] = $replacements[ '~' . $arg_name_token . ":" . $classConverters[ $converter_class ][ $converter_key ][ 'token' ] . '~' ] = $tokenValue;
 										}
 									}

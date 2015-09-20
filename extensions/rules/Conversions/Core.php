@@ -653,6 +653,9 @@ class _Core
 		
 		$lang = \IPS\Member::loggedIn()->language();
 		
+		/**
+		 * Content Item Conversiosn
+		 */
 		foreach ( \IPS\Application::allExtensions( 'core', 'ContentRouter' ) as $router )
 		{
 			foreach ( $router->classes as $contentItemClass )

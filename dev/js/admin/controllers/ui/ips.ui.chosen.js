@@ -17,7 +17,7 @@
 				scope.find( 'select' )
 				.chosen(
 				{
-					disable_search_threshold: 30,
+					disable_search_threshold: 10,
 					search_contains: true,
 					include_group_label_in_selected: false
 				})
