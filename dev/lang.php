@@ -20,6 +20,8 @@ $lang = array(
 	'rules_perm__view'			=> "View Data",
 	'rules_perm__edit'			=> "Edit Data",
 	
+	'editor__rules_Generic'			=> "Rules Generic",
+	
 	// Rules Restrictions
 	'r__rules'				=> "Rules Restrictions",
 	'r__rules_manage'			=> "Manage Rules",

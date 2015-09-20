@@ -89,7 +89,7 @@ class _{class}
 					 * The description of the variable should be stored as a language string
 					 * in your lang.php with a key in the following format:
 					 *
-					 * '{app}_{class}_event_{event_key}_{variable1}' => 'Variable description'					 
+					 * '{app}_{class}_event_{event_key}_{variable1}' => 'Description of the event variable'					 
 					 */
 					'variable1' => array
 					(
@@ -372,6 +372,16 @@ class _{class}
 								return $values[ 'custom_arg_value' ];
 							},
 						),
+						
+						/**
+						 * Default Configuration Method
+						 *
+						 * The default configuration method for this argument will be to choose from event data. You
+						 * can override that if the preferred default configuration method should be different.
+						 *
+						 * Possible values: 'manual', 'event', 'phpcode'
+						 */
+						'default' => 'manual',
 					),	
 				),				
 			),
@@ -605,6 +615,16 @@ class _{class}
 								return $values[ 'custom_arg_value' ];
 							},
 						),
+						
+						/**
+						 * Default Configuration Method
+						 *
+						 * The default configuration method for this argument will be to choose from event data. You
+						 * can override that if the preferred default configuration method should be different.
+						 *
+						 * Possible values: 'manual', 'event', 'phpcode'
+						 */
+						'default' => 'manual',
 					),
 				),
 			),
