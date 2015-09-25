@@ -767,13 +767,21 @@ class _Application extends \IPS\Application
 							$lang->words[ $argNameKey . '_eventArg_useDefault_desc']= $lang->get( 'use_event_argument_default_desc' );
 							
 							/* Reduce optgroups with only one choice to a single option */
+							$single_options = array();
 							foreach( $usable_arguments as $_k => $_v )
 							{
 								if ( is_array( $_v ) and count( $_v ) == 1 )
 								{
-									$usable_arguments[ $_k ] = array_shift( $_v );
+									unset( $usable_arguments[ $_k ] );
+									foreach( $_v as $__k => $__v )
+									{
+										$single_options[ $__k ] = $__v;
+									}
 								}
 							}
+							
+							/* Put back together with single options at top */
+							$usable_arguments = array_merge( $single_options, $usable_arguments );
 							
 							/* Event arg selector */
 							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix . $noticeHtml, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
