@@ -663,5 +663,16 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		
 		return $keyExists[ get_class( $this ) ][ $key ] = $this->rulesTableExists() and \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key );
 	}
+	
+	/**
+	 * Get Active Record ID
+	 *
+	 * @return	int		The active record id
+	 */
+	public function get_activeid()
+	{
+		$idField = static::$databaseColumnId;
+		return $this->$idField;
+	}
 
 }

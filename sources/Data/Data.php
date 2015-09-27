@@ -97,7 +97,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	public static $modalForms = FALSE;
 	
 	/**
-	 * @brief	Original Key
+	 * @brief	Original Data
 	 */
 	public $originalData = array();
 	
@@ -208,7 +208,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 
 	}
-			
+	
 	/**
 	 * Init
 	 *
@@ -807,6 +807,17 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	}
 	
 	/**
+	 * Check if a class is a concrete active record
+	 */
+	public static function isConcreteRecord( $class )
+	{
+		$objectClass = str_replace( '-', '\\', $class );
+		try { $reflectedClass = new \ReflectionClass( $objectClass ); } catch( \ReflectionException $e ) { $reflectedClass = NULL; }
+		
+		return ( $reflectedClass !== NULL and ! $reflectedClass->isAbstract() and is_subclass_of( $objectClass, '\IPS\Patterns\ActiveRecord' ) );
+	}
+	
+	/**
 	 * Get Column Definition
 	 */
 	public static function columnDefinition( $type, $type_class, $column_name )
@@ -816,8 +827,8 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		switch ( $type )
 		{
 			case 'object':
-			
-				if ( ! $type_class )
+							
+				if ( ! static::isConcreteRecord( $type_class ) )
 				{
 					$field_type = 'MEDIUMTEXT';
 					$field_length = NULL;
@@ -936,13 +947,13 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function delete()
 	{		
-		parent::delete();
+		$result = parent::delete();
 		
 		try
 		{
 			\IPS\Db::i()->dropColumn( $this::getTableName( $this->class ), 'data_' . $this->column_name );
 		}
-		catch ( \IPS\Db\Exception $e ) {}
+		catch ( \IPS\Db\Exception $e ) { }
 		
 		/* If there are no data fields left, drop the table too */
 		if ( ! \IPS\Db::i()->select( 'COUNT(*)', 'rules_data', array( 'data_class=?', $this->class ) )->first() )
@@ -951,9 +962,10 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 			{
 				\IPS\Db::i()->dropTable( $this::getTableName( $this->class ) );
 			}
-			catch ( \IPS\Db\Exception $e ) {}
+			catch ( \IPS\Db\Exception $e ) { }
 		}
-				
+		
+		return $result;
 	}	
 	
 }

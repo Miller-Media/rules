@@ -222,5 +222,5 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 
 		return $result;
 	}
-
+	
 }

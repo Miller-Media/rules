@@ -44,6 +44,7 @@ class _RulesMember
 	 */
 	public function process( &$form, $member )
 	{
+		/* Rules Custom Data */
 		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $member::rulesDataClass() ) ) as $row )
 		{
 			$data_field = \IPS\rules\Data::constructFromData( $row );
@@ -54,6 +55,16 @@ class _RulesMember
 					$form->add( $element );
 				}
 			}
+		}
+		
+		/* Rules Custom Logs */
+		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=?', '-IPS-Member' ) ) ) as $log )
+		{
+			$tab_title = 'custom_log_' . $log->id;
+			\IPS\Member::loggedIn()->language()->words[ 'custom_log_' . $log->id ] = $log->title;
+			
+			$form->addTab( $tab_title );
+			$form->addHtml( $log->logsTable( $member ) );
 		}
 	}
 	

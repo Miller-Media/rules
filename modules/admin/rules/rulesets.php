@@ -1564,7 +1564,7 @@ class _rulesets extends \IPS\Node\Controller
 	{
 		$argument = new \IPS\rules\Action\Argument;
 		
-		$argument->custom_action_id	= $parent_id;
+		$argument->parent_id		= $parent_id;
 		$argument->name 		= (string) 	$argumentXML[ 'name' ];
 		$argument->type 		= (string) 	$argumentXML[ 'type' ];
 		$argument->class		= (string) 	$argumentXML[ 'class' ];

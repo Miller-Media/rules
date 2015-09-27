@@ -62,6 +62,16 @@ class _Argument extends \IPS\Node\Model
 	 */
 	public static $modalForms = FALSE;
 	
+	/** 
+	 * @brief	Reserved variable names
+	 */
+	public static $reservedWords = array();
+	
+	/**
+	 * @brief	Indicates if machine name needs to be unique to the argument class
+	 */
+	public static $uniqueToClass = FALSE;
+	
 	/**
 	 * @brief	Parent Node Class
 	 */
@@ -70,7 +80,7 @@ class _Argument extends \IPS\Node\Model
 	/**
 	 * @brief	Parent Node ID
 	 */
-	public static $parentNodeColumnId = 'custom_action_id';
+	public static $parentNodeColumnId = 'parent_id';
 	
 	/**
 	 *  Disable Copy Button
@@ -198,6 +208,8 @@ class _Argument extends \IPS\Node\Model
 	{
 		$self = $this;
 		$lang = \IPS\Member::loggedIn()->language();
+		$wrap_chosen_prefix	= "<div data-controller='rules.admin.ui.chosen'>";
+		$wrap_chosen_suffix	= "</div>";
 		
 		$form->add( new \IPS\Helpers\Form\Text( 'argument_name', $this->name, TRUE, array() ) );
 		
@@ -216,20 +228,33 @@ class _Argument extends \IPS\Node\Model
 					throw new \InvalidArgumentException( 'argument_name_invalid' );
 				}
 				
+				/* Check reserved words */
+				if ( in_array( $val, static::$reservedWords ) )
+				{
+					throw new \InvalidArgumentException( 'This name is reserved' );
+				}
+				
 				if ( $self->id )
 				{
-					$custom_action_id = $self->custom_action_id;
+					$parent_id = $self->parent_id;
 					$this_id = $self->id;
 				}
 				else
 				{
-					$custom_action_id = \IPS\Request::i()->parent;
+					$parent_id = \IPS\Request::i()->parent;
 					$this_id = 0;
 				}
 				
-				if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $val, $custom_action_id, $this_id ) )->first() )
+				/* Check uniqueness to parent */
+				if ( \IPS\Db::i()->select( 'COUNT(*)', static::$databaseTable, array( 'argument_varname=? AND argument_parent_id=? AND argument_id!=?', $val, $parent_id, $this_id ) )->first() )
 				{
 					throw new \InvalidArgumentException( 'argument_not_unique' );
+				}
+				
+				/* Check uniqueness to class */
+				if ( static::$uniqueToClass and \IPS\Db::i()->select( 'COUNT(*)', static::$databaseTable, array( 'argument_varname=? AND argument_class=? AND argument_id!=?', $val, $this->class, $this_id ) )->first() )
+				{
+					throw new \InvalidArgumentException( 'argument_not_unique_to_class' );					
 				}
 				
 			} ) );
@@ -295,20 +320,24 @@ class _Argument extends \IPS\Node\Model
 			
 			$object_classes[ $appname ] = $_object_classes;
 		}
-				
-		$form->add( new \IPS\Helpers\Form\Select( 'argument_type', $this->type, TRUE, array( 'options' => $argument_types, 'toggles' => array( 'object' => array( 'argument_class' ), 'array' => array( 'argument_class' ) ) ) ) );
-		$form->add( new \IPS\Helpers\Form\Select( 'argument_class', $this->class, FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'argument_custom_class' ) ) ), NULL, NULL, NULL, 'argument_class' ) );
-		$form->add( new \IPS\Helpers\Form\Text( 'argument_custom_class', $this->custom_class, FALSE, array(), NULL, NULL, NULL, 'argument_custom_class' ) );
-		$form->add( new \IPS\Helpers\Form\YesNo( 'argument_required', isset( $this->required ) ? $this->required : TRUE, FALSE ) );
+		
+		$form->add( new \IPS\Helpers\Form\Select( 'argument_type', $this->type, TRUE, array( 'options' => $argument_types, 'toggles' => array( 'object' => array( 'argument_class' ), 'array' => array( 'argument_class' ) ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'argument_class', $this->class, FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'argument_custom_class' ) ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'argument_class' ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'argument_custom_class', $this->custom_class, FALSE, array(), function( $val ) 
+		{
+			if ( $val )
+			{
+				if ( ! class_exists( $val ) )
+				{
+					throw new \InvalidArgumentException( 'Class does not exist' );
+				}
+			}
+		}, NULL, NULL, 'argument_custom_class' ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'argument_required', $this->required !== NULL ? $this->required : TRUE, FALSE ) );
 		
 		parent::form( $form );
 	}
-	
-	/**
-	 * Recursion Protection
-	 */
-	public $locked = FALSE;
-	
+		
 	/**
 	 * [Node] Save Add/Edit Form
 	 *
@@ -322,6 +351,7 @@ class _Argument extends \IPS\Node\Model
 		 */
 		if ( ! $values[ 'argument_varname' ] )
 		{
+			/* Standardize variable name */
 			$varname = mb_strtolower( $values[ 'argument_name' ] );
 			$varname = str_replace( ' ', '_', $varname );
 			$varname = preg_replace( '/[^a-z0-9_]/', '', $varname );
@@ -329,23 +359,30 @@ class _Argument extends \IPS\Node\Model
 			$varname = trim( $varname, '_' );
 			$varname = $varname ?: 'arg';
 			
+			/* Check reserved words */
+			if ( in_array( $varname, static::$reservedWords ) )
+			{
+				$varname = "log_" . $varname;
+			}
+			
 			if ( $this->id )
 			{
-				$custom_action_id = $this->custom_action_id;
+				$parent_id = $this->parent_id;
 				$this_id = $this->id;
 			}
 			else
 			{
-				$custom_action_id = \IPS\Request::i()->parent;
+				$parent_id = \IPS\Request::i()->parent;
 				$this_id = 0;
 			}
 			
+			$uniqueness = static::$uniqueToClass ? '' : ' AND argument_parent_id=' . $parent_id;			
 			$num = '';
-			while ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_arguments', array( 'argument_varname=? AND argument_custom_action_id=? AND argument_id!=?', $varname . $num, $custom_action_id, $this_id ) )->first() )
+			
+			while ( \IPS\Db::i()->select( 'COUNT(*)', static::$databaseTable, array( 'argument_varname=?' . $uniqueness . ' AND argument_id!=?', $varname . $num, $this_id ) )->first() )
 			{
-				/* Start at 1 */
-				if ( $num === '' ) { $num = 1; }
-				$num++;
+				/* Count up from 1 */
+				$num = $num ? $num + 1 : 1;
 			}
 			
 			$values[ 'argument_varname' ] = $varname . $num;
@@ -353,23 +390,5 @@ class _Argument extends \IPS\Node\Model
 		
 		parent::saveForm( $values );
 	}
-	
-	/**
-	 * [ActiveRecord] Save 
-	 */
-	public function save()
-	{
-		parent::save();
-	}
-		
-	/**
-	 * [ActiveRecord] Delete Record
-	 *
-	 * @return	void
-	 */
-	public function delete()
-	{		
-		return parent::delete();
-	}	
-	
+
 }

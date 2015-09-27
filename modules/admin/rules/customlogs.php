@@ -11,14 +11,14 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * custom
+ * customlogs
  */
-class _custom extends \IPS\Node\Controller
+class _customlogs extends \IPS\Node\Controller
 {
 	/**
 	 * Node Class
 	 */
-	protected $nodeClass = '\IPS\rules\Action\Custom';
+	protected $nodeClass = '\IPS\rules\Log\Custom';
 	
 	/**
 	 * @brief	If true, root cannot be turned into sub-items, and other items cannot be turned into roots

@@ -13,6 +13,7 @@ class rules_hook_ipsNodeController extends _HOOK_CLASS_
 	{
 		$form = parent::_addEditForm( $node );
 		
+		/* Rules Custom Data */
 		if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', $node::rulesDataClass() ) )->first() )
 		{
 			$form->addTab( 'rules_node_data_tab' );
@@ -44,6 +45,16 @@ class rules_hook_ipsNodeController extends _HOOK_CLASS_
 				}
 			}
 		}
+		
+		/* Rules Custom Logs */
+		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=?', $node::rulesDataClass() ) ) ) as $log )
+		{
+			$tab_title = 'custom_log_' . $log->id;
+			\IPS\Member::loggedIn()->language()->words[ 'custom_log_' . $log->id ] = $log->title;
+			
+			$form->addTab( $tab_title );
+			$form->addHtml( $log->logsTable( $member ) );
+		}		
 		
 		return $form;
 	}
