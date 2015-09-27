@@ -181,5 +181,25 @@
                 "binary": false
             }
         ]
+    },
+    "3": {
+        "method": "addColumn",
+        "params": [
+            "rules_data",
+            {
+                "name": "data_display_mode",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "automatic",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
     }
 }

@@ -408,6 +408,12 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 			\IPS\Db::i()->select( 'COUNT(*)', $this::getTableName( $this->class ), array( $column_name . ' > \'\' ') )->first()
 		);
 		
+		$data_display_options = array
+		(
+			'automatic'	=> 'Automatic',
+			'manual'	=> 'Manual Only',
+		);
+		
 		$data_use_options = array
 		(
 			'internal' 	=> 'Internal Use Only',
@@ -449,6 +455,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->add( new \IPS\Helpers\Form\Select( 'data_type', $this->type ?: 'int', TRUE, array( 'options' => $data_types, 'toggles' => $data_toggles, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
 		$form->add( new \IPS\Helpers\Form\Select( 'data_type_class', $this->type_class ?: '', FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'data_custom_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_type_class' ) );
 		
+		$form->add( new \IPS\Helpers\Form\Radio( 'data_display_mode', $this->display_mode ?: 'automatic', FALSE, array( 'options' => $data_display_options ), NULL, NULL, NULL, 'data_display_mode' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes, 'toggles' => $data_text_mode_toggles ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
@@ -640,6 +647,9 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	
 	/**
 	 * Get the value to save from submitted form values
+	 *
+	 * @param 	array	$values		The values from the form
+	 * @return	mixed
 	 */
 	public function valueFromForm( $values )
 	{
@@ -653,12 +663,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		return $form_value;
 	}
-	
-	/**
-	 * Recursion Protection
-	 */
-	public $locked = FALSE;
-	
+		
 	/**
 	 * [Node] Save Add/Edit Form
 	 *
