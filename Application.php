@@ -448,6 +448,156 @@ class _Application extends \IPS\Application
 				);
 
 			/**
+			 * Multiple Nodes
+			 */
+			case 'nodes' :
+			
+				return array
+				(
+					'form' => function( $form, $values ) use ( $field_name, $required, $options )
+					{
+						$items = array();
+						$nodeClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Node\Model' ) )
+						{
+							return array();
+						}
+						
+						foreach( (array) $values[ $field_name ] as $node_id )
+						{
+							if ( $node_id )
+							{
+								try
+								{
+									$items[] = $nodeClass::load( $node_id );
+								}
+								catch ( \Exception $e ) { }
+							}
+						}
+						
+						$form->add( new \IPS\Helpers\Form\Node( $field_name, $items, $required, array( 'multiple' => NULL, 'class' => $nodeClass ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values ) use ( $field_name, $options )
+					{
+						$nodeClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Node\Model' ) )
+						{
+							$values[ $field_name ] = NULL;
+						}
+						
+						$idField = $nodeClass::$databaseColumnId;
+						
+						$items = array();
+						foreach ( (array) $values[ $field_name ] as $node )
+						{
+							if ( $node instanceof $nodeClass )
+							{
+								$items[] = $node->$idField;
+							}
+						}
+						
+						$values[ $field_name ] = $items;
+					},
+					'getArg' => function( $values ) use ( $field_name, $options )
+					{
+						$items = array();
+						$nodeClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Content\Item' ) )
+						{
+							return NULL;
+						}
+					
+						$items = array();
+						foreach( (array) $values[ $field_name ] as $node_id )
+						{
+							try 
+							{ 
+								$items[] = $nodeClass::load( $node_id ); 
+							}
+							catch( \Exception $e ) { }
+						}
+						
+						return $items;
+					},
+				);
+			
+			/**
+			 * Single Node
+			 */
+			case 'node':
+			
+				return array
+				(
+					'form' => function( $form, $values ) use ( $field_name, $required, $options )
+					{
+						$items = array();
+						$nodeClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Node\Model' ) )
+						{
+							return array();
+						}
+						
+						foreach( (array) $values[ $field_name ] as $node_id )
+						{
+							if ( $node_id )
+							{
+								try
+								{
+									$items[] = $nodeClass::load( $node_id );
+								}
+								catch ( \Exception $e ) { }
+							}
+						}
+						
+						$form->add( new \IPS\Helpers\Form\Node( $field_name, $items, $required, array( 'multiple' => FALSE, 'class' => $nodeClass ), NULL, NULL, NULL, $field_name ) );
+						return array( $field_name );
+					},
+					'saveValues' => function( &$values ) use ( $field_name, $options )
+					{
+						$nodeClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Node\Model' ) )
+						{
+							$values[ $field_name ] = NULL;
+						}
+						
+						$idField = $nodeClass::$databaseColumnId;
+						
+						if ( $values[ $field_name ] instanceof $nodeClass )
+						{
+							$values[ $field_name ] = array( $values[ $field_name ]->$idField );
+						}
+					},
+					'getArg' => function( $values ) use ( $field_name, $options )
+					{
+						$items = array();
+						$nodeClass = $options[ 'class' ];
+						
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Content\Item' ) )
+						{
+							return NULL;
+						}
+					
+						$items = array();
+						foreach( (array) $values[ $field_name ] as $node_id )
+						{
+							try 
+							{ 
+								$items[] = $nodeClass::load( $node_id ); 
+							}
+							catch( \Exception $e ) { }
+						}
+						
+						return array_shift( $items );
+					},
+				);
+				
+			/**
 			 * Date
 			 */
 			case 'date':
@@ -2274,7 +2424,7 @@ class _Application extends \IPS\Application
 	{
 		return LITE;
 	}
-
+	
 }
 
 if ( defined( '\IPS\rules\LITE' ) or defined( '\IPS\rules\LIMIT' ) )
