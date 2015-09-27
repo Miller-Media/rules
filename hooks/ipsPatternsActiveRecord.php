@@ -627,6 +627,21 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		
 		return FALSE;
 	}
+		
+	/**
+	 * Get Associated Rules Data Fields
+	 *
+	 * @param	string		$perm		The permission to check for
+	 * @param	bool		$display	Check only for automatic display fields
+	 * @return	array
+	 */
+	public function rulesDataFields( $perm='view', $display=TRUE )
+	{
+		$display_mode = $display ? " AND data_display_mode='automatic'" : '';
+		$where = array( array( 'data_class=?' . $display_mode, static::rulesDataClass() ) );
+		
+		return \IPS\rules\Data::roots( $perm, NULL, $where );
+	}
 	
 	/**
 	 * Check for data table

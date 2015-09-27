@@ -605,78 +605,6 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	}
 	
 	/**
-	 * Get a display value from an object
-	 *
-	 * @param 	object		$obj		The object to convert into a display value
-	 * @return	string				The value to display
-	 */
-	public static function objDisplayValue( $obj )
-	{
-		if ( $obj instanceof \IPS\Member )
-		{
-			return "<a target='_blank' href='{$obj->url()}'>{$obj->name}</a>";
-		}
-		
-		/* Content */
-		else if ( $obj instanceof \IPS\Content )
-		{
-			$title = "Content";
-			
-			if ( $obj instanceof \IPS\Content\Comment )
-			{
-				if ( $item = $obj->item() )
-				{
-					$title = $item->mapped( 'title' );
-				}
-			}
-			else
-			{
-				$title = $obj->mapped( 'title ');
-			}
-			
-			if ( method_exists( $obj, 'url' ) and $obj->url() )
-			{
-				$title = "<a target='_blank' href='{$obj->url()}'>{$title}</a>";
-			}
-			
-			return $title;
-		}
-		
-		/* Nodes */
-		else if ( $obj instanceof \IPS\Node\Model )
-		{
-			$title = $obj->_title;
-			if ( method_exists( $obj, 'url' ) and $obj->url() )
-			{
-				$title = "<a target='_blank' href='{$obj->url()}'>{$title}</a>";
-			}
-			
-			return $title;
-		}
-		
-		else
-		{
-			$title = "Object (" . get_class( $obj ) . ")";
-			
-			if ( method_exists( $obj, '__toString' ) )
-			{
-				$title = (string) $obj;
-			}
-			else if ( $obj->title )
-			{
-				$title = $obj->title;
-			}
-			
-			if ( method_exists( $obj, 'url' ) and $obj->url() )
-			{
-				$title = "<a target='_blank' href='{$obj->url()}'>{$title}</a>";
-			}
-			
-			return $title;
-		}
-	}
-	
-	/**
 	 * Check for logs
 	 *
 	 * @param	object		$entity		The entity to count logs for
@@ -782,7 +710,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 						try
 						{
 							$obj = $objClass::load( $val );
-							return static::objDisplayValue( $obj );
+							return \IPS\rules\Data::dataDisplayValue( $obj );
 						}
 						catch( \OutOfRangeException $e ) 
 						{ 
@@ -792,26 +720,12 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 					else if ( $data->type == 'object' )
 					{
 						$obj = \IPS\rules\Application::restoreArg( json_decode( $val, TRUE ) );
-						return static::objDisplayValue( $obj );
+						return \IPS\rules\Data::dataDisplayValue( $obj );
 					}
 					else if ( $data->type == 'array' )
 					{
 						$array = \IPS\rules\Application::restoreArg( json_decode( $val, TRUE ) );
-						
-						$displayValues = array();
-						foreach( (array) $array as $value )
-						{
-							if ( is_object( $value ) )
-							{
-								$displayValues[] = static::objDisplayValue( $value );
-							}
-							else if ( is_string( $value ) or is_numeric( $value ) )
-							{
-								$displayValues[] = $value;
-							}
-						}
-						
-						return implode( ',', $displayValues );
+						return \IPS\rules\Data::dataDisplayValue( $array );
 					}
 					
 					return $val;

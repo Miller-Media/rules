@@ -1,0 +1,17 @@
+<ips:template parameters="$member" />
+
+{{if $dataFields = $member->rulesDataFields()}}
+	<div class='cProfileSidebarBlock ipsPad ipsBox ipsSpacer_bottom'>
+		<h2 class="ipsType_sectionHead ipsType_reset">
+			{lang="rules_profiledata_title"}
+		</h2>
+		<ul class="ipsDataList ipsDataList_reducedSpacing cProfileFields">
+		{{foreach $dataFields as $data}}
+			<li class="ipsDataItem">
+				<span class="ipsDataItem_generic ipsDataItem_size3 ipsType_break"><strong>{$data->_title}</strong></span>
+				<span class="ipsDataItem_main">{expression="\IPS\rules\Data::dataDisplayValue( $member->getRulesData( $data->column_name ) )" raw="true"}</span>
+			</li>
+		{{endforeach}}
+		</ul>
+	</div>
+{{endif}}

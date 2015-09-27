@@ -411,7 +411,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$data_display_options = array
 		(
 			'automatic'	=> 'Automatic',
-			'manual'	=> 'Manual Only',
+			'manual'	=> 'Manual',
 		);
 		
 		$data_use_options = array
@@ -455,7 +455,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->add( new \IPS\Helpers\Form\Select( 'data_type', $this->type ?: 'int', TRUE, array( 'options' => $data_types, 'toggles' => $data_toggles, 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
 		$form->add( new \IPS\Helpers\Form\Select( 'data_type_class', $this->type_class ?: '', FALSE, array( 'options' => $object_classes, 'toggles' => array( 'custom' => array( 'data_custom_class' ) ), 'disabled' => $field_locked ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, 'data_type_class' ) );
 		
-		$form->add( new \IPS\Helpers\Form\Radio( 'data_display_mode', $this->display_mode ?: 'automatic', FALSE, array( 'options' => $data_display_options ), NULL, NULL, NULL, 'data_display_mode' ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'data_display_mode', $this->display_mode ?: 'automatic', TRUE, array( 'options' => $data_display_options ), NULL, NULL, NULL, 'data_display_mode' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes, 'toggles' => $data_text_mode_toggles ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
@@ -936,6 +936,122 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		return 'rules_data_' . $table_suffix;
 	}
 	
+	/**
+	 * Get a display representation of some data
+	 *
+	 * @param 	mixed		$data		The data to convert into a display value
+	 * @return	string				The value to display
+	 */
+	public static function dataDisplayValue( $data )
+	{
+		/**
+		 * Standard data types
+		 */
+		if ( is_string( $data ) or is_numeric( $data ) )
+		{
+			return $data;
+		}
+		
+		/**
+		 * Boolean
+		 */
+		if ( is_bool( $data ) )
+		{
+			return $data ? "<i class='fa fa-check'></i>" : "<i class='fa fa-times'></i>";		
+		}
+		
+		/**
+		 * Arrays
+		 */
+		if ( is_array( $data ) )
+		{
+			$values = array();
+			foreach( $data as $value )
+			{
+				$display = static::dataDisplayValue( $value );
+				if ( $display !== NULL )
+				{
+					$values[] = $display;
+				}
+			}
+			
+			return implode( ', ', $values );
+		}
+		
+		/**
+		 * Objects
+		 */
+		if ( is_object( $data ) )
+		{	
+			/* Members */
+			if ( $data instanceof \IPS\Member )
+			{
+				return "<a target='_blank' href='{$data->url()}'>{$data->name}</a>";
+			}
+			
+			/* Content */
+			else if ( $data instanceof \IPS\Content )
+			{
+				$title = "Content";
+				
+				if ( $data instanceof \IPS\Content\Comment )
+				{
+					if ( $item = $data->item() )
+					{
+						$title = $item->mapped( 'title' );
+					}
+				}
+				else
+				{
+					$title = $data->mapped( 'title ');
+				}
+				
+				if ( method_exists( $data, 'url' ) and $data->url() )
+				{
+					$title = "<a target='_blank' href='{$data->url()}'>{$title}</a>";
+				}
+				
+				return $title;
+			}
+			
+			/* Nodes */
+			else if ( $data instanceof \IPS\Node\Model )
+			{
+				$title = $data->_title;
+				if ( method_exists( $data, 'url' ) and $data->url() )
+				{
+					$title = "<a target='_blank' href='{$data->url()}'>{$title}</a>";
+				}
+				
+				return $title;
+			}
+			
+			/* Unknown */
+			else
+			{
+				$title = "Object (" . get_class( $data ) . ")";
+				
+				if ( method_exists( $data, '__toString' ) )
+				{
+					$title = (string) $data;
+				}
+				else if ( $data->title )
+				{
+					$title = $data->title;
+				}
+				
+				if ( method_exists( $data, 'url' ) and $data->url() )
+				{
+					$title = "<a target='_blank' href='{$data->url()}'>{$title}</a>";
+				}
+				
+				return $title;
+			}
+		}
+		
+		return NULL;
+	}
+
 	/**
 	 * Clone
 	 */
