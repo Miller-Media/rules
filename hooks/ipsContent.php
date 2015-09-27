@@ -223,4 +223,31 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 		return $result;
 	}
 	
+	/**
+	 * Returns the content
+	 *
+	 * @return	string
+	 */
+	public function content()
+	{
+		if ( is_subclass_of( get_called_class(), '\IPS\Content\Comment' ) )
+		{
+			if ( $item = $this->item() and ! $item::$databaseColumnMap[ 'content' ] and $item->rulesDataFields() )
+			{
+				return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $item, parent::content() );
+			}
+		}
+		
+		if ( is_subclass_of( get_called_class(), '\IPS\Content\Item' ) )
+		{
+			if ( $this->rulesDataFields() )
+			{
+				return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $this, parent::content() );
+			}
+		}
+		
+		return parent::content();
+	}
+	
+	
 }

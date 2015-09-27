@@ -627,20 +627,49 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		
 		return FALSE;
 	}
-		
+	
+	/**
+	 * @brief	Cache for data fields
+	 */
+	protected static $dataFields = array();
+	
 	/**
 	 * Get Associated Rules Data Fields
 	 *
 	 * @param	string		$perm		The permission to check for
-	 * @param	bool		$display	Check only for automatic display fields
+	 * @param	bool		$displayOnly	Check only for fields set to automatic display
+	 * @param	bool		$withData	Return only fields for this record that have data
 	 * @return	array
 	 */
-	public function rulesDataFields( $perm='view', $display=TRUE )
+	public function rulesDataFields( $perm='view', $displayOnly=TRUE, $withData=TRUE )
 	{
-		$display_mode = $display ? " AND data_display_mode='automatic'" : '';
+		$cache_key = $withData ? md5( json_encode( array( static::rulesDataClass(), $perm, $displayOnly, $this->activeid ) ) ) : md5( json_encode( array( static::rulesDataClass(), $perm, $displayOnly ) ) );
+		
+		if ( isset( static::$dataFields[ $cache_key ] ) )
+		{
+			return static::$dataFields[ $cache_key ];
+		}
+	
+		$dataFields = array();
+		$display_mode = $displayOnly ? " AND data_display_mode='automatic'" : '';
 		$where = array( array( 'data_class=?' . $display_mode, static::rulesDataClass() ) );
 		
-		return \IPS\rules\Data::roots( $perm, NULL, $where );
+		if ( $withData )
+		{
+			foreach( \IPS\rules\Data::roots( $perm, NULL, $where ) as $data )
+			{
+				if ( $this->getRulesData( $data->column_name ) !== NULL )
+				{
+					$dataFields[] = $data;
+				}
+			}
+		}
+		else
+		{
+			$dataFields = \IPS\rules\Data::roots( $perm, NULL, $where );
+		}
+		
+		return static::$dataFields[ $cache_key ] = $dataFields;
 	}
 	
 	/**

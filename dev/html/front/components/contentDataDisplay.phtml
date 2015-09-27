@@ -1,0 +1,12 @@
+<ips:template parameters="$item, $content" />
+
+{$content|raw}
+<hr class="ipsHr">
+<ul class="ipsDataList ipsDataList_reducedSpacing">
+{{foreach $item->rulesDataFields() as $data}}
+	<li class="ipsDataItem">
+		<span class="ipsDataItem_generic ipsDataItem_size7 ipsType_break"><strong>{$data->_title}</strong></span>
+		<span class="ipsDataItem_main">{expression="\IPS\rules\Data::dataDisplayValue( $item->getRulesData( $data->column_name ) )" raw="true"}</span>
+	</li>
+{{endforeach}}
+</ul>
