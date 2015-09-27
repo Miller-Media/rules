@@ -665,6 +665,24 @@ class _Core
 					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
 					
 					/**
+					 * Add Converters For Content Item
+					 */
+					if ( isset ( $contentItemClass::$containerNodeClass ) )
+					{
+						$nodeClass = $contentItemClass::$containerNodeClass;
+						$node_type = rtrim( ucwords( $lang->get( $nodeClass::$nodeTitle ) ), "s" );
+						$map[ '\\' . ltrim( $contentItemClass, '\\' ) ][ $node_type ] = array
+						(
+							'argtype' => 'object',
+							'class' => '\\' . ltrim( $nodeClass, '\\' ),
+							'converter' => function( $item )
+							{
+								return $item->container();
+							},
+						);
+					}
+
+					/**
 					 * Add Converters For Comments
 					 */
 					if ( isset ( $contentItemClass::$commentClass ) )
