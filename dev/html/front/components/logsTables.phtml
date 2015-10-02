@@ -1,0 +1,25 @@
+<ips:template parameters="$logs, $activeTab, $usingIcons=FALSE, $tabArray=array()" />
+<div style="margin-bottom:20px">
+	<div class='ipsTabs ipsClearfix ipsJS_show{{if $usingIcons}} ipsTabs_withIcons{{endif}}' id='tabs_{$id}' data-ipsTabBar data-ipsTabBar-contentArea='#ipsTabs_content_{$id}'>
+		<a href='#tabs_{$id}' data-action='expandTabs'><i class='fa fa-caret-down'></i></a>
+		<ul role='tablist'>
+			{{foreach $logs as $name => $content}}
+				<li>
+					<a href='#ipsTabs_tabs_{$id}_{$id}_tab_{$name}_panel' id='{$id}_tab_{$name}' class="ipsTabs_item {{if $name == $activeTab}}ipsTabs_activeItem{{endif}}" role="tab" aria-selected="{{if $activeTab == $name}}true{{else}}false{{endif}}">
+						{{if isset($tabArray[$name]['icon'])}}<i class='fa fa-{$tabArray[$name]['icon']}'></i> {{endif}}{lang="$name"}
+					</a>
+				</li>
+			{{endforeach}}
+		</ul>
+	</div>
+	<div id='ipsTabs_content_{$id}' class=''>
+		{{foreach $logs as $name => $contents}}
+			<div id='ipsTabs_tabs_{$id}_{$id}_tab_{$name}_panel' class="ipsTabs_panel ipsPad" aria-labelledby="{$id}_tab_{$name}" aria-hidden="false">
+				<ul class='ipsForm ipsForm_vertical'>
+					<li class='ipsJS_hide'>{lang="$name"}</li>
+					{$contents|raw}
+				</ul>
+			</div>
+		{{endforeach}}
+	</div>
+</div>

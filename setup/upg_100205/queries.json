@@ -144,6 +144,34 @@
                         "zerofill": false,
                         "auto_increment": false,
                         "binary": false
+                    },
+                    "custom_log_limit": {
+                        "name": "custom_log_limit",
+                        "type": "INT",
+                        "length": 5,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "25",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
+                    },
+                    "custom_log_display_empty": {
+                        "name": "custom_log_display_empty",
+                        "type": "TINYINT",
+                        "length": 1,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "default": "0",
+                        "comment": "",
+                        "unsigned": false,
+                        "zerofill": false,
+                        "auto_increment": false,
+                        "binary": false
                     }
                 },
                 "indexes": {
@@ -162,6 +190,168 @@
         ]
     },
     "2": {
+	"method": "createTable",
+	"params": [
+	   {
+		"name": "rules_log_arguments",
+		"columns": {
+		    "argument_id": {
+			"name": "argument_id",
+			"type": "BIGINT",
+			"length": 20,
+			"decimals": null,
+			"values": [],
+			"allow_null": false,
+			"default": null,
+			"comment": "ID Number",
+			"unsigned": true,
+			"zerofill": false,
+			"auto_increment": true,
+			"binary": false
+		    },
+		    "argument_name": {
+			"allow_null": false,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": "",
+			"length": 255,
+			"name": "argument_name",
+			"type": "VARCHAR",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_type": {
+			"allow_null": false,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": "",
+			"length": 56,
+			"name": "argument_type",
+			"type": "VARCHAR",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_class": {
+			"allow_null": true,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": null,
+			"length": 255,
+			"name": "argument_class",
+			"type": "VARCHAR",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_required": {
+			"allow_null": false,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": "1",
+			"length": 1,
+			"name": "argument_required",
+			"type": "INT",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_parent_id": {
+			"allow_null": false,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": "0",
+			"length": 11,
+			"name": "argument_parent_id",
+			"type": "INT",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_weight": {
+			"allow_null": true,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": "0",
+			"length": 11,
+			"name": "argument_weight",
+			"type": "INT",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_custom_class": {
+			"allow_null": true,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": null,
+			"length": 255,
+			"name": "argument_custom_class",
+			"type": "VARCHAR",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_description": {
+			"allow_null": true,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": null,
+			"length": 1028,
+			"name": "argument_description",
+			"type": "VARCHAR",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    },
+		    "argument_varname": {
+			"allow_null": false,
+			"auto_increment": false,
+			"binary": false,
+			"comment": "",
+			"decimals": null,
+			"default": "",
+			"length": 56,
+			"name": "argument_varname",
+			"type": "VARCHAR",
+			"unsigned": false,
+			"values": [],
+			"zerofill": false
+		    }
+		},
+		"indexes": {
+		    "PRIMARY": {
+			"type": "primary",
+			"name": "PRIMARY",
+			"length": [
+			    null
+			],
+			"columns": [
+			    "argument_id"
+			]
+		    }
+		}
+	    }
+	]
+    },
+    "3": {
         "method": "changeColumn",
         "params": [
             "rules_arguments",
@@ -182,7 +372,7 @@
             }
         ]
     },
-    "3": {
+    "4": {
         "method": "addColumn",
         "params": [
             "rules_data",

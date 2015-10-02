@@ -62,23 +62,6 @@ abstract class rules_hook_ipsNodeModel extends _HOOK_CLASS_
 	}
 	
 	/**
-	 * [Node] Get Node Description
-	 *
-	 * @return	string|null
-	 */
-	protected function get__description()
-	{
-		$description = parent::get__description();
-		
-		if ( $this->rulesDataFields() )
-		{
-			return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->nodeDataDisplay( $this, $description );
-		}
-		
-		return $description;
-	}
-	
-	/**
 	 * [Node] Get content table description 
 	 *
 	 * @return	string

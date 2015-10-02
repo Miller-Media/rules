@@ -996,6 +996,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				
 				if ( $data instanceof \IPS\Content\Comment )
 				{
+					return 'comment';
 					if ( $item = $data->item() )
 					{
 						$title = $item->mapped( 'title' );
@@ -1003,7 +1004,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				}
 				else
 				{
-					$title = $data->mapped( 'title ');
+					$title = $data->mapped( 'title' );
 				}
 				
 				if ( method_exists( $data, 'url' ) and $data->url() )

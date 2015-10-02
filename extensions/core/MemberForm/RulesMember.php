@@ -58,7 +58,7 @@ class _RulesMember
 		}
 		
 		/* Rules Custom Logs */
-		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=?', '-IPS-Member' ) ) ) as $log )
+		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=? AND custom_log_enabled=1', '-IPS-Member' ) ) ) as $log )
 		{
 			$tab_title = 'custom_log_' . $log->id;
 			\IPS\Member::loggedIn()->language()->words[ 'custom_log_' . $log->id ] = $log->title;

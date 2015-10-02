@@ -215,7 +215,11 @@ class _Argument extends \IPS\Node\Model
 		
 		if ( $this->id )
 		{
-			$form->add( new \IPS\Helpers\Form\Text( 'argument_varname', $this->varname, TRUE, array(), function( $val ) use ( $self )
+			$reservedWords = static::$reservedWords;
+			$uniqueToClass = static::$uniqueToClass;
+			$databaseTable = static::$databaseTable;
+			
+			$form->add( new \IPS\Helpers\Form\Text( 'argument_varname', $this->varname, TRUE, array(), function( $val ) use ( $self, $reservedWords, $uniqueToClass, $databaseTable )
 			{
 				$val = str_replace( ' ', '_', $val );
 				$val = preg_replace( '/[^A-Za-z0-9_]/', '', $val );
@@ -229,7 +233,7 @@ class _Argument extends \IPS\Node\Model
 				}
 				
 				/* Check reserved words */
-				if ( in_array( $val, static::$reservedWords ) )
+				if ( in_array( $val, $reservedWords ) )
 				{
 					throw new \InvalidArgumentException( 'This name is reserved' );
 				}
@@ -246,13 +250,13 @@ class _Argument extends \IPS\Node\Model
 				}
 				
 				/* Check uniqueness to parent */
-				if ( \IPS\Db::i()->select( 'COUNT(*)', static::$databaseTable, array( 'argument_varname=? AND argument_parent_id=? AND argument_id!=?', $val, $parent_id, $this_id ) )->first() )
+				if ( \IPS\Db::i()->select( 'COUNT(*)', $databaseTable, array( 'argument_varname=? AND argument_parent_id=? AND argument_id!=?', $val, $parent_id, $this_id ) )->first() )
 				{
 					throw new \InvalidArgumentException( 'argument_not_unique' );
 				}
 				
 				/* Check uniqueness to class */
-				if ( static::$uniqueToClass and \IPS\Db::i()->select( 'COUNT(*)', static::$databaseTable, array( 'argument_varname=? AND argument_class=? AND argument_id!=?', $val, $this->class, $this_id ) )->first() )
+				if ( $uniqueToClass and \IPS\Db::i()->select( 'COUNT(*)', $databaseTable, array( 'argument_varname=? AND argument_class=? AND argument_id!=?', $val, $self->class, $this_id ) )->first() )
 				{
 					throw new \InvalidArgumentException( 'argument_not_unique_to_class' );					
 				}

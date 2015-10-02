@@ -270,9 +270,12 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$form->addHeader( 'custom_log_options' );
 		
+		$form->add( new \IPS\Helpers\Form\YesNo( 'custom_log_display_empty', $this->display_empty, TRUE, array() ) );
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_max_logs', $this->max_logs ?: 0, TRUE, array( 'unlimited' => 0 ) ) );
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_entity_max', $this->entity_max ?: 0, TRUE, array( 'unlimited' => 0 ) ) );
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_max_age', $this->max_age ?: 0, TRUE, array( 'unlimited' => 0 ) ) );
+		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_limit', $this->limit ?: 25, TRUE, array( 'min' => 1 ) ) );
+		
 
 		parent::form( $form );
 	}
@@ -510,11 +513,15 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 * @param	object		$entity		The entity the log is associated with
 	 * @param	string		$message	The message to log
 	 * @param	array		$data		Additional data to log
-	 * @return 	bool				Returns TRUE if log is created
+	 * @return 	bool				Returns TRUE if log is created, FALSE if log is disabled
 	 * @throws	\InvalidArgumentException
 	 */
 	public function createEntry( $entity, $message, $data=array() )
 	{
+		if ( ! $this->enabled )
+		{
+			return FALSE;
+		}
 		
 		if ( ! is_object( $entity ) or get_class( $entity ) !== ltrim( str_replace( '-', '\\', $this->class ), '\\' ) )
 		{
@@ -615,29 +622,35 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	}
 	
 	/**
+	 * Table JS Controller Flag
+	 */
+	protected static $tableControllerLoaded = FALSE;
+	
+	/**
 	 * Get logs for an entity
 	 *
-	 * @param	object		$entity		The entity to get the log table for	 
+	 * @param	object|NULL	$entity		The entity to get the log table for or NULL for all entities
+	 * @param	int|NULL	$limit		Override for the log page size
 	 */
-	public function logsTable( $entity, $limit=NULL )
+	public function logsTable( $entity=NULL, $limit=NULL )
 	{
-		$sortBy = \IPS\Request::i()->sortby ?: 'id';
-		$sortDirection = \IPS\Request::i()->sortdirection ?: 'desc';
-		$page = \IPS\Request::i()->page ?: 1;
+		$sortBy = \IPS\Request::i()->logsortby ?: ( \IPS\Request::i()->sortby ?: 'id' );
+		$sortDirection = \IPS\Request::i()->logsortdir ?: ( \IPS\Request::i()->sortdirection ?: 'desc' );
+		$page = \IPS\Request::i()->logpage ?: ( \IPS\Request::i()->page ?: 1 );
 	
 		/**
 		 * Process log table requests
 		 */
-		if ( \IPS\Request::i()->getlog )
+		if ( \IPS\Request::i()->log )
 		{
 			/* Ignore ajax requests not targeted at this log */
-			if ( $this->id != \IPS\Request::i()->getlog and \IPS\Request::i()->isAjax() )
+			if ( $this->id != \IPS\Request::i()->log and \IPS\Request::i()->isAjax() )
 			{
 				return '';
 			}
 			
 			/* This log is targeted */
-			if ( $this->id == \IPS\Request::i()->getlog )
+			if ( $this->id == \IPS\Request::i()->log )
 			{
 				/**
 				 * Process Commands
@@ -671,14 +684,39 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		 */
 		$self 		= $this;
 		$lang		= \IPS\Member::loggedIn()->language();
-		$controllerUrl 	= \IPS\Request::i()->url()->setQueryString( 'getlog', $this->id )->stripQueryString( 'logdo' )->stripQueryString( 'logid' );
-		$table 		= new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=? AND entity_id=?', $this->id, $entity->activeid ) );
 		
-		$table->tableTemplate = array( \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' ), 'table' );
+		/**
+		 * Current page controller is re-used on the admin side since we dont want to redirect to the entity url on the front end.
+		 * On the front end, our own controller is used to avoid conflicts with other paginated tables/content on the page.
+		 */
+		$controllerUrl 	= \IPS\Dispatcher::i()->controllerLocation == 'front' ? 
+			\IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}&entity={$entity->activeid}" ) : 
+			\IPS\Request::i()->url()->setQueryString( array( 'log' => NULL, 'logid' => NULL, 'logdo' => NULL ) );
+		
+		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' and ! static::$tableControllerLoaded )
+		{
+			\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_ui.js', 'rules', 'front' ) );
+			static::$tableControllerLoaded = TRUE;
+		}
+		
+		$entity_where 	= $entity ? ' AND entity_id=' . $entity->activeid : '';
+		
+		if ( $entity )
+		{
+			$table = new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=? AND entity_id=?', $this->id, $entity->activeid ) );
+			$table->include = array( 'logtime', 'message' );
+			$table->noSort = array( 'message' );
+		}
+		else
+		{
+			$table = new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=?', $this->id ) );
+			$table->include = array( 'logtime', 'entity_id', 'message' );		
+			$table->noSort = array( 'message', 'entity_id' );
+		}
+		
+		$table->tableTemplate = array( \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' ), 'logTable' );
 		$table->rowsTemplate = array( \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' ), 'rows' );
-		$table->include 	= array( 'logtime', 'message' );
 		$table->langPrefix 	= 'rules_custom_logs_table_';
-		$table->noSort 		= array( 'message' );
 		$table->sortBy 		= $sortBy;
 		$table->sortDirection 	= $sortDirection;
 		$table->page		= $page;
@@ -687,12 +725,29 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		{
 			$table->limit = $limit;
 		}
+		else
+		{
+			$table->limit = $this->limit ?: 25;
+		}
+		
+		$logObjClass = str_replace( '-', '\\', $this->class );
 		
 		$table->parsers 	= array
 		(
 			'logtime' => function( $val, $row )
 			{
 				return (string) \IPS\DateTime::ts( $val );
+			},
+			'entity_id' => function( $val, $row ) use ( $logObjClass )
+			{
+				try
+				{
+					$obj = $logObjClass::load( $val );
+					return \IPS\rules\Data::dataDisplayValue( $obj );
+				}
+				catch( \Exception $e ) { }
+
+				return $val;
 			},
 		);
 		
@@ -744,11 +799,12 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 			
 			if ( $self->can( 'delete' ) )
 			{
-				$buttons[ 'delete' ] = array(
+				$buttons[ 'delete' ] = array
+				(
 					'icon'		=> 'trash',
 					'title'		=> 'delete',
 					'id'		=> "{$row['id']}-delete",
-					'link'		=> $controllerUrl->setQueryString( array( 'logdo' => 'delete', 'logid' => $row[ 'id' ] ) ),
+					'link'		=> $controllerUrl->setQueryString( array( 'log' => $self->id, 'logdo' => 'delete', 'logid' => $row[ 'id' ] ) ),
 					'data'		=> array( 'delete' => '' ),
 				);
 			}
@@ -766,23 +822,24 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public static function allLogs( $entity, $limit=NULL )
 	{
-		$output = new \IPS\Helpers\Form;
-		$output->actionButtons = array();
-		$logs = array();
+		$output 	= array();
+		$activeTab 	= \IPS\Request::i()->logtab ? 'custom_log_' . \IPS\Request::i()->logtab : NULL;
+		$logs 		= 0;
 		
-		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=?', $entity::rulesDataClass() ) ) ) as $log )
+		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=? AND custom_log_enabled=1', $entity::rulesDataClass() ) ) ) as $log )
 		{
-			if ( $log->logCount( $entity ) )
+			if ( $log->display_empty or $log->logCount( $entity ) )
 			{
 				$tab_title = 'custom_log_' . $log->id;
+				$activeTab = $activeTab ?: $tab_title;
 				\IPS\Member::loggedIn()->language()->words[ 'custom_log_' . $log->id ] = $log->title;
 			
-				$output->addTab( $tab_title );
-				$output->addHtml( $logs[] = $log->logsTable( $entity, $limit ) );
+				$output[ $tab_title ] = $log->logsTable( $entity, $limit );
+				$logs++;
 			}
 		}
 		
-		return $logs ? $output : NULL;		
+		return $logs ? \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->logsTables( $output, $activeTab ) : NULL;		
 	}
 	
 }

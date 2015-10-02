@@ -47,7 +47,7 @@ class _ProfileLogs
 	 */
 	public function showTab()
 	{
-		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=?', '-IPS-Member' ) ) ) as $log )
+		foreach( \IPS\rules\Log\Custom::roots( 'view', NULL, array( array( 'custom_log_class=? AND custom_log_enabled=1', \IPS\Member::rulesDataClass() ) ) ) as $log )
 		{
 			if ( $log->logCount( $this->member ) )
 			{

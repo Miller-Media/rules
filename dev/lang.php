@@ -13,6 +13,7 @@ $lang = array(
 	'ext__Definitions'			=> "Events, Conditions, and Actions Definition Groups",
 	'ext__Conversions'			=> "Global Arguments and Object Conversion Mapping",
 	'module__rules_system'			=> "Rules System",
+	'module__rules_logs'			=> "Custom Logs",
 	
 	'notifications__rules_Notification'	=> "Rules Notifications",
 	'notifications__rules_notification'	=> "Automated Notifications",
@@ -34,7 +35,7 @@ $lang = array(
 	'r__logs_manage'			=> "View Logs",
 	'r__logs'				=> "Logs Restrictions",
 	'rules_logs'				=> "Rules Logs",
-	'rules_flush_logs'			=> "Flush Logs",
+	'rules_flush_logs'			=> "Flush System Log",
 	'rules_export_all'			=> "Export All",
 	'rules_export_enabled'			=> "Export Enabled",
 	'rules_manage_all_rules'		=> "Manage Rules",
@@ -42,6 +43,8 @@ $lang = array(
 	
 	'rules_overview'			=> "Rules Overview",
 	'rules_welcome'				=> "Welcome To Rules",
+	'rules_documentation'			=> "Documentation",
+	'rules_system_log'			=> "System Log",
 	
 	'rules_logs_table_id'			=> "Log ID",
 	'rules_logs_table_app'			=> "Event",
@@ -53,6 +56,7 @@ $lang = array(
 	
 	'rules_custom_logs_table_logtime'	=> "Log Time",
 	'rules_custom_logs_table_message'	=> "Log Message",
+	'rules_custom_logs_table_entity_id'	=> "Associated with",
 	
 	'custom_data'				=> "Custom Data Fields",
 	'data_name'				=> "Custom Data Title",
@@ -122,6 +126,10 @@ $lang = array(
 	'custom_log_entity_max_desc'		=> "If the maximum number of entries is reached for any specific entity, older logs for that entity will be discarded as new ones are added.",
 	'custom_log_max_age'			=> "Maximum Log Age",
 	'custom_log_max_age_desc'		=> "Log entries older than the specified number of days will be automatically discarded.",
+	'custom_log_limit'			=> "Logs Per Page",
+	'custom_log_limit_desc'			=> "Choose the number of logs that should show per page when this log is displayed.",
+	'custom_log_display_empty'		=> "Display When Empty",
+	'custom_log_display_empty_desc'		=> "If selected, this log will display even if it has no entries.",
 	'profile_rules_ProfileLogs'		=> "Logged Activity",
 	
 	'argument_name'				=> "Argument Name",
