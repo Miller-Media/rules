@@ -58,4 +58,24 @@ class _customlogs extends \IPS\Node\Controller
 		parent::execute();
 	}
 	
+	/**
+	 * Manage
+	 */
+	protected function manage()
+	{
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'documentation' ] = array(
+			'icon'	=> 'file',
+			'link'	=> \IPS\Http\Url::external( 'http://www.ipsguru.net/documentation/rules/general/customlogs' ),
+			'title'	=> 'rules_documentation',
+			'target' => '_blank',
+			'data' => array(),
+		);
+		
+		if ( ! \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->output .= '<div style="font-size:1.25em"><i class="fa fa-info"></i> Custom logs are used to create your own activity streams for members, content, and nodes.</div>';
+		}
+
+		parent::manage();
+	}
 }

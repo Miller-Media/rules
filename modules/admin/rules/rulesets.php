@@ -88,6 +88,14 @@ class _rulesets extends \IPS\Node\Controller
 			'data' => array( 'rules-overview' => true, 'ipsDialog' => true, 'ipsDialog-size' => 'medium', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack( 'rules_welcome' ) ),
 		);
 		
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'documentation' ] = array(
+			'icon'	=> 'file',
+			'link'	=> \IPS\Http\Url::external( 'http://www.ipsguru.net/documentation/rules' ),
+			'title'	=> 'rules_documentation',
+			'target' => '_blank',
+			'data' => array(),
+		);		
+		
 		/* Suppress "No Results" message since we show two trees back to back and it looks awkward */
 		\IPS\Member::loggedIn()->language()->words[ 'no_results' ] = '';
 		

@@ -25,6 +25,13 @@ class _schedule extends \IPS\Dispatcher\Controller
 	public function execute()
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'rules_manage' );
+		
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'chosen.jquery.js', 'rules', 'interface' ) );	
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'chosen.css', 'rules', 'admin' ) );
+		
+		/* Javascript Controller */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_ui.js', 'rules', 'admin' ) );
+		
 		parent::execute();
 	}
 	
@@ -36,6 +43,14 @@ class _schedule extends \IPS\Dispatcher\Controller
 	protected function manage()
 	{
 		$self = $this;
+		
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'documentation' ] = array(
+			'icon'	=> 'file',
+			'link'	=> \IPS\Http\Url::external( 'http://www.ipsguru.net/documentation/rules/general/scheduling' ),
+			'title'	=> 'rules_documentation',
+			'target' => '_blank',
+			'data' => array(),
+		);		
 		
 		/* Create the table */
 		$table = new \IPS\Helpers\Table\Db( 'rules_scheduled_actions', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=schedule' ) );
@@ -170,8 +185,6 @@ class _schedule extends \IPS\Dispatcher\Controller
 				return $val;
 			},
 		);
-		
-		
 
 		$table->sortBy = \IPS\Request::i()->sortby ?: 'schedule_time';
 		$table->sortDirection = \IPS\Request::i()->sortdirection ?: 'asc';
@@ -468,7 +481,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 			}
 			
 			$form->addHeader( 'rules_bulk_options' );
-			$form->add( new \IPS\Helpers\Form\Select( 'rules_schedule_custom_bulk', $action_data[ 'bulk_option' ], FALSE, array( 'options' => array_merge( array( '' => 'None' ), $bulk_options ), 'toggles' => $bulk_options_toggles ), NULL, NULL, NULL, 'rules_schedule_custom_bulk' ) );
+			$form->add( new \IPS\Helpers\Form\Select( 'rules_schedule_custom_bulk', $action_data[ 'bulk_option' ], FALSE, array( 'options' => array_merge( array( '' => 'None' ), $bulk_options ), 'toggles' => $bulk_options_toggles ), NULL, "<div data-controller='rules.admin.ui.chosen'>", "</div>", 'rules_schedule_custom_bulk' ) );
 			$form->add( $bulk_limit = new \IPS\Helpers\Form\Number( 'rules_schedule_bulk_limit', $action_data[ 'bulk_limit' ] ?: 500, TRUE, array( 'min' => 1 ), NULL, NULL, NULL, 'rules_schedule_bulk_limit' ) );
 			
 			if ( \IPS\Request::i()->rules_schedule_custom_bulk === '' )

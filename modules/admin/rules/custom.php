@@ -58,4 +58,25 @@ class _custom extends \IPS\Node\Controller
 		parent::execute();
 	}
 	
+	/**
+	 * Manage
+	 */
+	protected function manage()
+	{
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'documentation' ] = array(
+			'icon'	=> 'file',
+			'link'	=> \IPS\Http\Url::external( 'http://www.ipsguru.net/documentation/rules/general/customactions' ),
+			'title'	=> 'rules_documentation',
+			'target' => '_blank',
+			'data' => array(),
+		);		
+
+		if ( ! \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->output .= '<div style="font-size:1.25em"><i class="fa fa-info"></i> Custom actions are used to create your own processing routines that can be scheduled or used as rules actions.</div>';
+		}
+		
+		parent::manage();
+	}	
+	
 }

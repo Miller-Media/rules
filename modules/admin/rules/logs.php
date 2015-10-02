@@ -33,6 +33,47 @@ class _logs extends \IPS\Dispatcher\Controller
 	 */
 	protected function manage()
 	{		
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'flush' ] = array(
+			'icon'	=> 'trash',
+			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs&do=flushlogs' ),
+			'title'	=> 'rules_flush_logs',
+			'data' => array( 'confirm' => '', 'confirmMessage' => 'This will delete system logs only. All other logs will remain.' ),
+		);
+		
+		$tab = \IPS\Request::i()->tab ?: 'system';
+		$tabs = array( 'system' => \IPS\Member::loggedIn()->language()->addToStack( 'rules_system_log' ) );
+		
+		foreach( \IPS\rules\Log\Custom::roots() as $log )
+		{
+			$tabs[ 'log_' . $log->id ] = $log->title;
+			if ( \IPS\Request::i()->tab == 'log_' . $log->id )
+			{
+				$table = $log->logsTable();
+			}
+		}	
+		
+		if ( $tab == 'system' or ! isset( $table ) )
+		{
+			$table = $this->_systemLogsTable();
+		}
+		
+		if ( \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->output = "<div class='ipsPad'>{$table}</div>";
+		}
+		else
+		{
+			\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'rules_logs' );
+			\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'global', 'core' )->block( 'title', \IPS\Theme::i()->getTemplate( 'global', 'core' )->tabs( $tabs, $tab, "<div class='ipsPad'>{$table}</div>", \IPS\Request::i()->url(), 'tab', FALSE, TRUE ) );
+		}
+		
+	}
+	
+	/** 
+	 * Get system logs table
+	 */
+	protected function _systemLogsTable()
+	{
 		/* Create the table */
 		$controllerUrl 	= \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=viewlog" );
 		$table = new \IPS\Helpers\Table\Db( 'rules_logs', \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs' ), array( 'error>0 OR ( op_id=0 AND rule_parent=0 )' ) );
@@ -70,8 +111,8 @@ class _logs extends \IPS\Dispatcher\Controller
 				return json_decode( $val );
 			},
 		);				
-		$table->sortBy = 'id';
-		$table->sortDirection = 'desc';
+		$table->sortBy = \IPS\Request::i()->sortby ?: 'id';
+		$table->sortDirection = \IPS\Request::i()->sortdirection ?: 'desc';
 		$table->rowButtons = function( $row ) use ( $controllerUrl )
 		{	
 			$buttons = array();
@@ -91,17 +132,14 @@ class _logs extends \IPS\Dispatcher\Controller
 		};
 		$table->noSort = array( 'id', 'key', 'type', 'message', 'result' );
 		
-		\IPS\Output::i()->sidebar[ 'actions' ][ 'flush' ] = array(
-			'icon'	=> 'trash',
-			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs&do=flushlogs' ),
-			'title'	=> 'rules_flush_logs',
-			'data' => array( 'confirm' => '' ),
-		);
-		
-		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'rules_logs' );
-		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'global', 'core' )->block( 'title', (string) $table );
+		return $table;
 	}
 	
+	/**
+	 * Flush the system log
+	 *
+	 * @return 	void
+	 */
 	protected function flushlogs()
 	{
 		$db = \IPS\Db::i();
