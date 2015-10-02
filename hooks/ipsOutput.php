@@ -19,5 +19,24 @@ class rules_hook_ipsOutput extends _HOOK_CLASS_
 		\IPS\rules\Event::load( 'rules', 'System', 'browser_output' )->trigger( $output, $httpStatusCode, $contentType, $httpHeaders, $cacheThisPage, $pageIsCached );
 		return call_user_func_array( 'parent::sendOutput', func_get_args() );
 	}
+	
+	/**
+	 * Redirect
+	 *
+	 * @param	\IPS\Http\Url	$url			URL to redirect to
+	 * @param	string			$message		Optional message to display
+	 * @param	int				$httpStatusCode	HTTP Status Code
+	 * @param	bool			$forceScreen	If TRUE, an intermediate screen will be shown
+	 * @return	void
+	 */
+	public function redirect( $url, $message='', $httpStatusCode=301, $forceScreen=FALSE )
+	{
+		if ( static::$instance->inlineMessage )
+		{
+			$_SESSION[ 'inlineMessage' ] = static::$instance->inlineMessage;
+		}
+
+		return parent::redirect( $url, $message, $httpStatusCode, $forceScreen );
+	}
 
 }
