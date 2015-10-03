@@ -339,6 +339,10 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_max_age', $this->max_age ?: 0, TRUE, array( 'unlimited' => 0 ) ) );
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_limit', $this->limit ?: 25, TRUE, array( 'min' => 1 ) ) );
 		
+		$form->add( new \IPS\Helpers\Form\YesNo( 'custom_log_display_time', $this->display_time !== NULL ? $this->display_time : TRUE, FALSE, array( 'togglesOn' => array( 'custom_log_lang_time' ) ) ) );
+		$form->add( new \IPS\Helpers\Form\Text( 'custom_log_lang_time', $this->lang_time !== NULL ? $this->lang_time : \IPS\Member::loggedIn()->language()->get( 'rules_log_lang_time' ), FALSE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->get( 'rules_log_lang_time' ) ), NULL, NULL, NULL, 'custom_log_lang_time' ) ); 
+		$form->add( new \IPS\Helpers\Form\Text( 'custom_log_lang_message', $this->lang_message !== NULL ? $this->lang_message : \IPS\Member::loggedIn()->language()->get( 'rules_log_lang_message' ), FALSE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->get( 'rules_log_lang_message' ) ), NULL, NULL, NULL, 'custom_log_lang_message' ) ); 
+		
 
 		parent::form( $form );
 	}
@@ -767,14 +771,17 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		 */
 		$self 		= $this;
 		$lang		= \IPS\Member::loggedIn()->language();
+		$lang->words[ 'rules_custom_logs_table_' . $this->id . '_logtime' ] = $this->lang_time !== NULL ? $this->lang_time : $lang->get( 'rules_log_lang_time' );
+		$lang->words[ 'rules_custom_logs_table_' . $this->id . '_message' ] = $this->lang_message !== NULL ? $this->lang_message : $lang->get( 'rules_log_lang_message' );
+		$lang->words[ 'rules_custom_logs_table_' . $this->id . '_entity_id' ] = $lang->get( 'rules_log_lang_entity_id' );
 		
 		/**
 		 * Current page controller is re-used on the admin side since we dont want to redirect to the entity url on the front end.
 		 * On the front end, our own controller is used to avoid conflicts with other paginated tables/content on the page.
 		 */
-		$controllerUrl 	= \IPS\Dispatcher::i()->controllerLocation == 'front' ? 
-			\IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}&entity={$entity->activeid}" ) : 
-			\IPS\Request::i()->url()->setQueryString( array( 'log' => NULL, 'logid' => NULL, 'logdo' => NULL ) );
+		$controllerUrl = \IPS\Dispatcher::i()->controllerLocation == 'front' ? 
+		\IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}&entity={$entity->activeid}" ) : 
+		\IPS\Request::i()->url()->setQueryString( array( 'log' => NULL, 'logid' => NULL, 'logdo' => NULL ) );
 		
 		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' and ! static::$tableControllerLoaded )
 		{
@@ -787,19 +794,22 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		if ( $entity )
 		{
 			$table = new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=? AND entity_id=?', $this->id, $entity->activeid ) );
-			$table->include = array( 'logtime', 'message' );
+			if ( $this->display_time ) { $table->include[] = 'logtime'; }
+			$table->include[] = 'message';
 			$table->noSort = array( 'message' );
 		}
 		else
 		{
 			$table = new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=?', $this->id ) );
-			$table->include = array( 'logtime', 'entity_id', 'message' );		
+			if ( $this->display_time ) { $table->include[] = 'logtime'; }
+			$table->include[] = 'entity_id';
+			$table->include[] = 'message';
 			$table->noSort = array( 'message', 'entity_id' );
 		}
 		
-		$table->tableTemplate = array( \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' ), 'logTable' );
-		$table->rowsTemplate = array( \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' ), 'rows' );
-		$table->langPrefix 	= 'rules_custom_logs_table_';
+		$table->tableTemplate 	= array( \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' ), 'logTable' );
+		$table->rowsTemplate 	= array( \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' ), 'rows' );
+		$table->langPrefix 	= 'rules_custom_logs_table_' . $this->id . '_';
 		$table->sortBy 		= $sortBy;
 		$table->sortDirection 	= $sortDirection;
 		$table->page		= $page;
@@ -838,7 +848,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		{
 			if ( $data->can( 'view' ) )
 			{
-				$lang->words[ 'rules_custom_logs_table_data_' . $data->varname ] = $data->name;
+				$lang->words[ 'rules_custom_logs_table_' . $this->id . '_data_' . $data->varname ] = $data->name;
 				$table->include[] = 'data_' . $data->varname;
 				$table->parsers[ 'data_' . $data->varname ] = function( $val, $row ) use ( $data )
 				{

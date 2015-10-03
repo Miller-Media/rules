@@ -79,5 +79,65 @@
                 "binary": false
             }
         ]
+    },
+    "5": {
+        "method": "addColumn",
+        "params": [
+            "rules_custom_logs",
+            {
+                "name": "custom_log_display_time",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "6": {
+        "method": "addColumn",
+        "params": [
+            "rules_custom_logs",
+            {
+                "name": "custom_log_lang_time",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "7": {
+        "method": "addColumn",
+        "params": [
+            "rules_custom_logs",
+            {
+                "name": "custom_log_lang_message",
+                "type": "VARCHAR",
+                "length": 128,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
     }
 }
