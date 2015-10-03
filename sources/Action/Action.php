@@ -270,7 +270,15 @@ class _Action extends \IPS\Node\Model
 
 		$lang = \IPS\Member::loggedIn()->language();
 		$form->hiddenValues[ 'action_rule_id' ] = $this->rule->id;
-				
+		
+		$else_options = array
+		(
+			0 => 'rules_action_mode_standard',
+			1 => 'rules_action_mode_else',
+		);
+		
+		$form->add( new \IPS\Helpers\Form\Radio( 'action_else', $this->else, TRUE, array( 'options' => $else_options ), NULL, NULL, NULL, 'action_else' ) );
+
 		\IPS\rules\Application::opform( $form, $this, 'actions' );
 		
 		$scheduling_options = array
@@ -332,7 +340,7 @@ class _Action extends \IPS\Node\Model
 			$values[ 'action_schedule_date' ] = $values[ 'action_schedule_date' ]->getTimestamp();
 		}
 		
-		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id', 'action_schedule_mode', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months', 'action_schedule_date', 'action_schedule_customcode', 'action_schedule_key' ) );		
+		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id', 'action_else', 'action_schedule_mode', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months', 'action_schedule_date', 'action_schedule_customcode', 'action_schedule_key' ) );		
 		parent::saveForm( $values );
 		
 		/**

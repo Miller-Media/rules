@@ -106,9 +106,10 @@ class _Rule extends \IPS\Node\Model
 		}
 		
 		$conditions_count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_conditions', array( 'condition_rule_id=? AND condition_enabled=1', $this->id ) )->first();
-		$actions_count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_actions', array( 'action_rule_id=? AND action_enabled=1', $this->id ) )->first();
+		$actions_count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_actions', array( 'action_rule_id=? AND action_enabled=1 AND action_else=0', $this->id ) )->first();
+		$else_actions_count = \IPS\Db::i()->select( 'COUNT(*)', 'rules_actions', array( 'action_rule_id=? AND action_enabled=1 AND action_else=1', $this->id ) )->first();
 		
-		$description .= "<i class='fa fa-info'></i> Summary: {$conditions_count} Conditions / {$actions_count} Actions";
+		$description .= "<i class='fa fa-info'></i> Summary: {$conditions_count} Conditions / {$actions_count} Actions" . ( $else_actions_count ? " / {$else_actions_count} Else Actions" : "" );
 		return $description;
 	}
 		
@@ -296,6 +297,9 @@ class _Rule extends \IPS\Node\Model
 				</style>
 			" );
 			
+			/**
+			 * Rule Conditions
+			 */
 			$conditionClass		= '\IPS\rules\Condition';
 			$conditionController 	= new \IPS\rules\modules\admin\rules\conditions( NULL, $this );
 			$conditions 		= new \IPS\Helpers\Tree\Tree( 
@@ -308,19 +312,20 @@ class _Rule extends \IPS\Node\Model
 							array( $conditionController, '_getRootButtons' )
 						);
 			
-			/**
-			 * Replace form constructs with div's
-			 */
+			/* Replace form constructs with div's */
 			$conditionsTreeHtml = (string) $conditions;
 			$conditionsTreeHtml = str_replace( '<form ', '<div ', $conditionsTreeHtml );
 			$conditionsTreeHtml = str_replace( '</form>', '</div>', $conditionsTreeHtml );
 			$form->addHtml( $conditionsTreeHtml );
 			
+			/**
+			 * Rule Actions
+			 */
 			$form->addTab( 'rules_actions' );
 			$form->addHeader( 'rule_actions' );
 			
 			$actionClass		= '\IPS\rules\Action';
-			$actionController 	= new \IPS\rules\modules\admin\rules\actions( NULL, $this );
+			$actionController 	= new \IPS\rules\modules\admin\rules\actions( NULL, $this, \IPS\rules\ACTION_STANDARD );
 			$actions 		= new \IPS\Helpers\Tree\Tree( 
 							\IPS\Http\Url::internal( "app=rules&module=rules&controller=actions&rule={$this->id}" ),
 							$actionClass::$nodeTitle, 
@@ -331,16 +336,35 @@ class _Rule extends \IPS\Node\Model
 							array( $actionController, '_getRootButtons' )
 						);
 			
-			/**
-			 * Replace form constructs with div's
-			 */
+			/* Replace form constructs with div's */
 			$actionsTreeHtml = (string) $actions;
 			$actionsTreeHtml = str_replace( '<form ', '<div ', $actionsTreeHtml );
 			$actionsTreeHtml = str_replace( '</form>', '</div>', $actionsTreeHtml );
 			$form->addHtml( $actionsTreeHtml );
 			
+			/* Else Actions */
+			$form->addHeader( 'rules_actions_else' );
+			$form->addHtml( '<p class="ipsPad">' . \IPS\Member::loggedIn()->language()->addToStack( 'rules_actions_else_description' ) . '</p>' );
+			
+			$elseActionController 	= new \IPS\rules\modules\admin\rules\actions( NULL, $this, \IPS\rules\ACTION_ELSE );
+			$elseActions 		= new \IPS\Helpers\Tree\Tree( 
+							\IPS\Http\Url::internal( "app=rules&module=rules&controller=actions&rule={$this->id}" ),
+							$actionClass::$nodeTitle, 
+							array( $elseActionController, '_getRoots' ), 
+							array( $elseActionController, '_getRow' ), 
+							array( $elseActionController, '_getRowParentId' ), 
+							array( $elseActionController, '_getChildren' ), 
+							array( $elseActionController, '_getRootButtons' )
+						);
+			
+			/* Replace form constructs with div's */
+			$elseActionsTreeHtml = (string) $elseActions;
+			$elseActionsTreeHtml = str_replace( '<form ', '<div ', $elseActionsTreeHtml );
+			$elseActionsTreeHtml = str_replace( '</form>', '</div>', $elseActionsTreeHtml );
+			$form->addHtml( $elseActionsTreeHtml );			
+			
 			/**
-			 * Show debugging information about this rule if debugging is enabled
+			 * Show debugging console for this rule if debugging is enabled
 			 */
 			if ( $this->debug )
 			{
@@ -591,7 +615,7 @@ class _Rule extends \IPS\Node\Model
 					
 					if ( $conditionsValid or $conditionsCount === 0 )
 					{
-						foreach ( $this->actions() as $action )
+						foreach ( $this->actions( \IPS\rules\ACTION_STANDARD ) as $action )
 						{
 							if ( $action->enabled )
 							{
@@ -630,10 +654,28 @@ class _Rule extends \IPS\Node\Model
 						
 						return 'conditions met';
 					}
+					else
+					{
+						/* Else Actions */
+						foreach ( $this->actions( \IPS\rules\ACTION_ELSE ) as $action )
+						{
+							if ( $action->enabled )
+							{
+								call_user_func_array( array( $action, 'invoke' ), func_get_args() );
+							}
+							else
+							{
+								if ( $this->debug )
+								{
+									\IPS\rules\Application::rulesLog( $this->event(), $this, $action, '--', 'Action not taken (disabled)' );
+								}
+							}
+						}					
 					
-					$this->locked = FALSE;
+						$this->locked = FALSE;
 					
-					return 'conditions not met';
+						return 'conditions not met';
+					}
 				}
 				catch( \Exception $e )
 				{
@@ -714,19 +756,30 @@ class _Rule extends \IPS\Node\Model
 	/**
 	 * @brief	Cache for actions
 	 */
-	protected $actionCache = NULL;
+	protected $actionCache = array();
 	
 	/**
 	 * Retrieve actions assigned to this rule
+	 *
+	 * @param	int|NULL	$mode		Mode of actions to return
 	 */
-	public function actions()
+	public function actions( $mode=NULL )
 	{
-		if ( isset( $this->actionCache ) )
+		$cache_key = md5( json_encode( $mode ) );
+		
+		if ( isset( $this->actionCache[ $cache_key ] ) )
 		{
-			return $this->actionCache;
+			return $this->actionCache[ $cache_key ];
 		}
 		
-		return $this->actionCache = \IPS\rules\Action::roots( NULL, NULL, array( array( 'action_rule_id=?', $this->id ) ) );
+		$where = array( 'action_rule_id=?', $this->id );
+		
+		if ( $mode !== NULL )
+		{
+			$where = array( 'action_rule_id=? AND action_else=?', $this->id, $mode );
+		}
+		
+		return $this->actionCache[ $cache_key ] = \IPS\rules\Action::roots( NULL, NULL, array( $where ) );
 	}
 	
 	/**

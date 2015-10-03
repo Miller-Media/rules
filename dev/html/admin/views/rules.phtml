@@ -20,12 +20,18 @@
 			</li>
 			<li class='ipsPad_top'>
 				Actions: 
-				{{if $rule->actions()}}
-					{template="actions" app="rules" group="views" params="$rule->actions()"}
+				{{if $rule->actions( \IPS\rules\ACTION_STANDARD )}}
+					{template="actions" app="rules" group="views" params="$rule->actions( \IPS\rules\ACTION_STANDARD )"}
 				{{else}}
 					<strong>None</strong>
 				{{endif}}
 			</li>
+			{{if $rule->actions( \IPS\rules\ACTION_ELSE )}}
+			<li class='ipsPad_top'>
+				Else Actions: 
+				{template="actions" app="rules" group="views" params="$rule->actions( \IPS\rules\ACTION_ELSE )"}
+			</li>
+			{{endif}}
 		</ul>
 		{{if $rule->children()}}
 			{template="rules" app="rules" group="views" params="$rule->children(), FALSE"}

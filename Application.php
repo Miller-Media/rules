@@ -11,6 +11,9 @@
  
 namespace IPS\rules;
 
+const ACTION_STANDARD = 0;
+const ACTION_ELSE = 1;
+
 /**
  * Rules Application Class
  */

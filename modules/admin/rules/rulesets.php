@@ -969,9 +969,18 @@ class _rulesets extends \IPS\Node\Controller
 		}
 		
 		$actionsNode = $ruleNode->addChild( 'actions' );
-		foreach ( $rule->actions() as $action )
+		foreach ( $rule->actions( \IPS\rules\ACTION_STANDARD ) as $action )
 		{
 			$results = $this->_addActionExport( $action, $actionsNode );
+			
+			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
+			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
+		}
+		
+		$elseActionsNode = $ruleNode->addChild( 'elseActions' );
+		foreach ( $rule->actions( \IPS\rules\ACTION_ELSE ) as $action )
+		{
+			$results = $this->_addActionExport( $action, $elseActionsNode );
 			
 			$custom_actions = array_merge( $custom_actions, $results[ 'custom_actions' ] );
 			$custom_data = array_merge( $custom_data, $results[ 'custom_data' ] );
@@ -1121,6 +1130,7 @@ class _rulesets extends \IPS\Node\Controller
 		$actionNode->addAttribute( 'schedule_months',	$action->schedule_months );
 		$actionNode->addAttribute( 'schedule_key', 	$action->schedule_key );
 		$actionNode->addAttribute( 'footprint',		$action->footprint );
+		$actionNode->addAttribute( 'else',		$action->else );
 		
 		$actionNode->addChild( 'schedule_customcode', $action->schedule_customcode );
 		$actionNode->addChild( 'data', json_encode( $action->data ) );
@@ -1460,6 +1470,14 @@ class _rulesets extends \IPS\Node\Controller
 			}
 		}
 		
+		if ( $ruleXML->elseActions->action )
+		{
+			foreach ( $ruleXML->elseActions->action as $actionXML )
+			{
+				$this->_constructNewAction( $actionXML, $rule->id );
+			}
+		}
+		
 		if ( $ruleXML->rules->rule )
 		{
 			foreach ( $ruleXML->rules->rule as $_ruleXML )
@@ -1525,6 +1543,8 @@ class _rulesets extends \IPS\Node\Controller
 		$action->schedule_date		= (int)		$actionXML[ 'schedule_date' ];
 		$action->schedule_key		= (string)	$actionXML[ 'schedule_key' ];
 		$action->footprint		= (string)	$actionXML[ 'footprint' ];
+		$action->else			= (int)		$actionXML[ 'else' ];
+		
 		$action->schedule_customcode	= (string)	$actionXML->schedule_customcode;
 		$action->data 			= json_decode( (string) $actionXML->data );
 		$action->save();

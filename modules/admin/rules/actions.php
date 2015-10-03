@@ -21,17 +21,29 @@ class _actions extends \IPS\Node\Controller
 	protected $nodeClass = '\IPS\rules\Action';
 	
 	/**
+	 * @brief	Associated Rule
+	 */
+	protected $rule = NULL;
+	
+	/**
+	 * @brief	Action mode
+	 */
+	protected $actionMode = NULL;
+	
+	/**
 	 * Constructor
 	 *
 	 * @param	\IPS\Http\Url|NULL	$url		The base URL for this controller or NULL to calculate automatically
 	 * @return	void
 	 */
-	public function __construct( $url=NULL, $rule=NULL )
+	public function __construct( $url=NULL, $rule=NULL, $action_mode=NULL )
 	{
 		if ( isset ( $rule ) )
 		{
 			$this->rule = $rule;
 		}
+		
+		$this->actionMode = $action_mode;
 		
 		parent::__construct( $url );
 	}
@@ -142,7 +154,15 @@ class _actions extends \IPS\Node\Controller
 	{
 		$nodeClass = $this->nodeClass;
 		$rows = array();
-		foreach( $nodeClass::roots( NULL, NULL, array( array( 'action_rule_id=?', $this->rule->id ) ) ) as $node )
+		
+		$where = array( 'action_rule_id=?', $this->rule->id );
+		
+		if ( $this->actionMode !== NULL )
+		{
+			$where = array( 'action_rule_id=? AND action_else=?', $this->rule->id, $this->actionMode );
+		}
+		
+		foreach( $nodeClass::roots( NULL, NULL, array( $where ) ) as $node )
 		{
 			$rows[ $node->_id ] = $this->_getRow( $node );
 		}
@@ -159,7 +179,7 @@ class _actions extends \IPS\Node\Controller
 	{
 		$nodeClass = $this->nodeClass;
 		
-		if ( $nodeClass::canAddRoot() )
+		if ( $nodeClass::canAddRoot() and ! $this->actionMode )
 		{
 			return array( 'add' => array(
 				'icon'	=> 'plus',
@@ -168,6 +188,7 @@ class _actions extends \IPS\Node\Controller
 				'data'	=> ( $nodeClass::$modalForms ? array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack( 'rules_add_action' ) ) : array() )
 				) );
 		}
+		
 		return array();
 	}
 	
