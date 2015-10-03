@@ -32,12 +32,19 @@ class _logs extends \IPS\Dispatcher\Controller
 	 * @return	void
 	 */
 	protected function manage()
-	{		
+	{
 		\IPS\Output::i()->sidebar[ 'actions' ][ 'flush' ] = array(
 			'icon'	=> 'trash',
 			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs&do=flushlogs' ),
 			'title'	=> 'rules_flush_logs',
 			'data' => array( 'confirm' => '', 'confirmMessage' => 'This will delete system logs only. All other logs will remain.' ),
+		);
+		
+		\IPS\Output::i()->sidebar[ 'actions' ][ 'prune' ] = array(
+			'icon'	=> 'cut',
+			'link'	=> \IPS\Http\Url::internal( 'app=rules&module=rules&controller=logs&do=prunelogs' ),
+			'title'	=> 'rules_prune_logs',
+			'data' => array( 'confirm' => '', 'confirmMessage' => 'This will prune all custom logs according to their log settings.' ),
 		);
 		
 		$tab = \IPS\Request::i()->tab ?: 'system';
@@ -48,7 +55,7 @@ class _logs extends \IPS\Dispatcher\Controller
 			$tabs[ 'log_' . $log->id ] = $log->title;
 			if ( \IPS\Request::i()->tab == 'log_' . $log->id )
 			{
-				$table = $log->logsTable();
+				$table = $log->logsTable( NULL, 25 );
 			}
 		}	
 		
@@ -145,6 +152,22 @@ class _logs extends \IPS\Dispatcher\Controller
 		$db = \IPS\Db::i();
 		$db->delete( 'rules_logs' );
 		$db->query( "ALTER TABLE `{$db->prefix}rules_logs` AUTO_INCREMENT = 1" );
-		\IPS\Output::i()->redirect( $this->url->setQueryString( 'do', NULL ) );
+		\IPS\Output::i()->redirect( $this->url->setQueryString( 'do', NULL ), 'rules_logs_flushed' );
 	}
+	
+	/**
+	 * Prune custom logs
+	 *
+	 * @return 	void
+	 */
+	protected function prunelogs()
+	{
+		foreach( \IPS\rules\Log\Custom::roots() as $log )
+		{
+			$log->prune();
+		}
+		
+		\IPS\Output::i()->redirect( $this->url->setQueryString( 'do', NULL ), 'rules_logs_pruned' );
+	}
+	
 }

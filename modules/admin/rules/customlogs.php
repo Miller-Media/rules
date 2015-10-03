@@ -78,4 +78,17 @@ class _customlogs extends \IPS\Node\Controller
 
 		parent::manage();
 	}
+	
+	/**
+	 * Flush Log
+	 */
+	protected function flush()
+	{
+		\IPS\Session::i()->csrfCheck();
+		
+		$log = \IPS\rules\Log\Custom::loadAndCheckPerms( \IPS\Request::i()->log_id, 'delete' );
+		$log->flush();
+		
+		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=rules&module=rules&controller=customlogs" ), 'custom_log_flushed' );
+	}
 }

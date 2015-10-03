@@ -190,9 +190,57 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		$buttons = parent::getButtons( $url, $subnode );
 		
+		$delete = $buttons[ 'delete' ];
+		unset( $buttons[ 'delete' ] );
+		
+		$buttons[ 'view' ] = array
+		(
+			'icon'	=> 'eye',
+			'title'	=> 'rules_view_custom_log',
+			'link'	=> \IPS\Http\Url::internal( "app=rules&module=rules&controller=logs" )->setQueryString( array( 'tab' => 'log_' . $this->id ) ),
+			'data'	=> array(),
+		);		
+		
+		if ( $this->can( 'delete' ) )
+		{
+			$buttons[ 'flush' ] = array
+			(
+				'icon'	=> 'trash',
+				'title'	=> 'rules_flush_custom_log',
+				'link'	=> \IPS\Http\Url::internal( "app=rules&module=rules&controller=customlogs&do=flush" )->setQueryString( array( 'log_id' => $this->id ) )->csrf(),
+				'data'	=> array( 'confirm' => '', 'confirmMessage' => \IPS\Member::loggedIn()->language()->addToStack( 'rules_flush_confirm' ) ),
+			);
+		}
+		
+		if ( $this->canDelete() )
+		{
+			$buttons[ 'delete' ] = $delete;
+		}
+		
 		return $buttons;
 	}
 	
+	/**
+	 * Can Copy?
+	 */
+	public function canCopy()
+	{
+		return FALSE;
+	}
+	
+	/**
+	 * [Node] Custom Badge
+	 *
+	 * @return	NULL|array	Null for no badge, or an array of badge data (0 => CSS class type, 1 => language string, 2 => optional raw HTML to show instead of language string)
+	 */
+	protected function get__badge()
+	{
+		return array(
+			0	=> 'ipsBadge ipsBadge_neutral',
+			1	=> \IPS\Db::i()->select( 'COUNT(*)', static::getTableName( $this->class ), array( 'log_id=?', $this->id ) )->first(),
+		);
+	}
+
 	/**
 	 * [Node] Add/Edit Form
 	 *
@@ -270,6 +318,21 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$form->addHeader( 'custom_log_options' );
 		
+		$sort_options = array( 'id' => 'custom_log_logtime' );
+		
+		if ( $this->id )
+		{
+			foreach( $this->children() as $data )
+			{
+				if ( in_array( $data->type, array( 'int', 'float', 'string' ) ) )
+				{
+					$sort_options[ $data->varname ] = $data->name;
+				}
+			}
+		}
+		
+		$form->add( new \IPS\Helpers\Form\Select( 'custom_log_sortby', $this->sortby ?: 'id', TRUE, array( 'options' => $sort_options ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
+		$form->add( new \IPS\Helpers\Form\Select( 'custom_log_sortdir', $this->sortdir ?: 'desc', TRUE, array( 'options' => array( 'desc' => 'Descending', 'asc' => 'Ascending' ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );		
 		$form->add( new \IPS\Helpers\Form\YesNo( 'custom_log_display_empty', $this->display_empty, TRUE, array() ) );
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_max_logs', $this->max_logs ?: 0, TRUE, array( 'unlimited' => 0 ) ) );
 		$form->add( new \IPS\Helpers\Form\Number( 'custom_log_entity_max', $this->entity_max ?: 0, TRUE, array( 'unlimited' => 0 ) ) );
@@ -610,6 +673,26 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 			}
 		}
 	}
+
+	/**
+	 * Flush Logs
+	 *
+	 * @param 	object		$entity		The entity to flush logs for
+	 * @return 	void
+	 */
+	public function flush( $entity=NULL )
+	{		
+		if ( $entity )
+		{
+			/* Flush entity logs */
+			\IPS\Db::i()->delete( static::getTableName( $this->class ), array( 'log_id=? AND entity_id=?', $this->id, $entity->activeid ) );
+		}
+		else
+		{
+			/* Flush all logs */
+			\IPS\Db::i()->delete( static::getTableName( $this->class ), array( 'log_id=?', $this->id ) );		
+		}
+	}
 	
 	/**
 	 * Check for logs
@@ -634,10 +717,10 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function logsTable( $entity=NULL, $limit=NULL )
 	{
-		$sortBy = \IPS\Request::i()->logsortby ?: ( \IPS\Request::i()->sortby ?: 'id' );
-		$sortDirection = \IPS\Request::i()->logsortdir ?: ( \IPS\Request::i()->sortdirection ?: 'desc' );
+		$sortBy = \IPS\Request::i()->logsortby ?: ( \IPS\Request::i()->sortby ?: ( \IPS\Db::i()->checkForColumn( static::getTableName( $this->class ), 'data_' . $this->sortby ) ? 'data_' . $this->sortby : 'id' ) );
+		$sortDirection = \IPS\Request::i()->logsortdir ?: ( \IPS\Request::i()->sortdirection ?: ( $this->sortdir ?: 'desc' ) );
 		$page = \IPS\Request::i()->logpage ?: ( \IPS\Request::i()->page ?: 1 );
-	
+			
 		/**
 		 * Process log table requests
 		 */
@@ -786,7 +869,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 					return $val;
 				};
 				
-				if ( ! in_array( $data->type, array( 'int', 'float' ) ) )
+				if ( ! in_array( $data->type, array( 'int', 'float', 'string' ) ) )
 				{
 					$table->noSort[] = 'data_' . $data->varname;
 				}
@@ -805,7 +888,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 					'title'		=> 'delete',
 					'id'		=> "{$row['id']}-delete",
 					'link'		=> $controllerUrl->setQueryString( array( 'log' => $self->id, 'logdo' => 'delete', 'logid' => $row[ 'id' ] ) ),
-					'data'		=> array( 'delete' => '' ),
+					'data'		=> \IPS\Dispatcher::i()->controllerLocation == 'admin' ? array( 'delete' => '' ) : array( 'confirm' => '' ),
 				);
 			}
 			
