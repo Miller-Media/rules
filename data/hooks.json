@@ -46,5 +46,25 @@
     "ipsHelpersFormAbstract": {
         "type": "C",
         "class": "\\IPS\\Helpers\\Form\\FormAbstract"
+    },
+    "themCoreFrontProfile": {
+        "type": "S",
+        "class": "\\IPS\\Theme\\class_core_front_profile"
+    },
+    "themeForumsFrontTopics": {
+        "type": "S",
+        "class": "\\IPS\\Theme\\class_forums_front_topics"
+    },
+    "ipsDownloadsFile": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\File"
+    },
+    "themeCalendarFrontView": {
+        "type": "S",
+        "class": "\\IPS\\Theme\\class_calendar_front_view"
+    },
+    "ipsGalleryImage": {
+        "type": "C",
+        "class": "\\IPS\\gallery\\Image"
     }
 }

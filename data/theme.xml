@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <theme name="Default" author_name="Invision Power Services, Inc" author_url="http://www.invisionpower.com">
+ <template template_group="components" template_name="contentDataDisplay" template_data="$item, $content" template_location="front" template_app="rules"><![CDATA[
+{$content|raw}
+<hr class="ipsHr">
+<ul class="ipsDataList ipsDataList_reducedSpacing">
+{{foreach $item->rulesDataFields() as $data}}
+	<li class="ipsDataItem">
+		<span class="ipsDataItem_generic ipsDataItem_size7 ipsType_break"><strong>{$data->_title}</strong></span>
+		<span class="ipsDataItem_main">{expression="\IPS\rules\Data::dataDisplayValue( $item->getRulesData( $data->column_name ) )" raw="true"}</span>
+	</li>
+{{endforeach}}
+</ul>
+]]></template>
  <template template_group="components" template_name="eventHeader" template_data="$event, $tokens" template_location="admin" template_app="rules"><![CDATA[
 <div class='ipsMessage ipsMessage_info rulesMessage' data-controller="rules.admin.ui.tokens">
 	<span style='font-size:1.8em'>
@@ -25,6 +37,50 @@
 	</ul>
 		
 </div>]]></template>
+ <template template_group="components" template_name="logsTables" template_data="$logs, $activeTab, $usingIcons=FALSE, $tabArray=array()" template_location="front" template_app="rules"><![CDATA[<div style="margin-bottom:20px">
+	<div class='ipsTabs ipsClearfix ipsJS_show{{if $usingIcons}} ipsTabs_withIcons{{endif}}' id='tabs_{$id}' data-ipsTabBar data-ipsTabBar-contentArea='#ipsTabs_content_{$id}'>
+		<a href='#tabs_{$id}' data-action='expandTabs'><i class='fa fa-caret-down'></i></a>
+		<ul role='tablist'>
+			{{foreach $logs as $name => $content}}
+				<li>
+					<a href='#ipsTabs_tabs_{$id}_{$id}_tab_{$name}_panel' id='{$id}_tab_{$name}' class="ipsTabs_item {{if $name == $activeTab}}ipsTabs_activeItem{{endif}}" role="tab" aria-selected="{{if $activeTab == $name}}true{{else}}false{{endif}}">
+						{{if isset($tabArray[$name]['icon'])}}<i class='fa fa-{$tabArray[$name]['icon']}'></i> {{endif}}{lang="$name"}
+					</a>
+				</li>
+			{{endforeach}}
+		</ul>
+	</div>
+	<div id='ipsTabs_content_{$id}' class=''>
+		{{foreach $logs as $name => $contents}}
+			<div id='ipsTabs_tabs_{$id}_{$id}_tab_{$name}_panel' class="ipsTabs_panel ipsPad" aria-labelledby="{$id}_tab_{$name}" aria-hidden="false">
+				<ul class='ipsForm ipsForm_vertical'>
+					<li class='ipsJS_hide'>{lang="$name"}</li>
+					{$contents|raw}
+				</ul>
+			</div>
+		{{endforeach}}
+	</div>
+</div>]]></template>
+ <template template_group="components" template_name="logTable" template_data="$table, $headers, $rows, $quickSearch" template_location="front" template_app="rules"><![CDATA[<div data-controller="rules.front.ui.table">
+	{template="table" app="core" group="tables" location="admin" params="$table, $headers, $rows, $quickSearch"}
+</div>]]></template>
+ <template template_group="components" template_name="memberDataDisplay" template_data="$member" template_location="front" template_app="rules"><![CDATA[
+{{if $dataFields = $member->rulesDataFields()}}
+	<div class='cProfileSidebarBlock ipsPad ipsBox ipsSpacer_bottom'>
+		<h2 class="ipsType_sectionHead ipsType_reset">
+			{lang="rules_profiledata_title"}
+		</h2>
+		<ul class="ipsDataList ipsDataList_reducedSpacing cProfileFields">
+		{{foreach $dataFields as $data}}
+			<li class="ipsDataItem">
+				<span class="ipsDataItem_generic ipsDataItem_size3 ipsType_break"><strong>{$data->_title}</strong></span>
+				<span class="ipsDataItem_main">{expression="\IPS\rules\Data::dataDisplayValue( $member->getRulesData( $data->column_name ) )" raw="true"}</span>
+			</li>
+		{{endforeach}}
+		</ul>
+	</div>
+{{endif}}
+]]></template>
  <template template_group="components" template_name="missingEvent" template_data="$rule" template_location="admin" template_app="rules"><![CDATA[
 <div class='ipsMessage ipsMessage_error rulesMessage'>
 	{lang="rule_missing_notice"}
@@ -34,6 +90,18 @@
 	  <li>Event Key: {$rule->event_key}</li>
 	</ul>
 </div>]]></template>
+ <template template_group="components" template_name="nodeDataDisplay" template_data="$node, $content" template_location="front" template_app="rules"><![CDATA[
+{$content|raw}
+<hr class="ipsHr">
+<ul class="ipsDataList ipsDataList_reducedSpacing">
+{{foreach $node->rulesDataFields() as $data}}
+	<li class="ipsDataItem">
+		<span class="ipsDataItem_generic ipsDataItem_size7 ipsType_break"><strong>{$data->_title}</strong></span>
+		<span class="ipsDataItem_main">{expression="\IPS\rules\Data::dataDisplayValue( $node->getRulesData( $data->column_name ) )" raw="true"}</span>
+	</li>
+{{endforeach}}
+</ul>
+]]></template>
  <template template_group="components" template_name="ruleChild" template_data="$rule" template_location="admin" template_app="rules"><![CDATA[
 <div class='ipsMessage ipsMessage_warning rulesMessage'>
 	This rule will be evaluated only if the conditions of it's 
@@ -163,12 +231,18 @@
 			</li>
 			<li class='ipsPad_top'>
 				Actions: 
-				{{if $rule->actions()}}
-					{template="actions" app="rules" group="views" params="$rule->actions()"}
+				{{if $rule->actions( \IPS\rules\ACTION_STANDARD )}}
+					{template="actions" app="rules" group="views" params="$rule->actions( \IPS\rules\ACTION_STANDARD )"}
 				{{else}}
 					<strong>None</strong>
 				{{endif}}
 			</li>
+			{{if $rule->actions( \IPS\rules\ACTION_ELSE )}}
+			<li class='ipsPad_top'>
+				Else Actions: 
+				{template="actions" app="rules" group="views" params="$rule->actions( \IPS\rules\ACTION_ELSE )"}
+			</li>
+			{{endif}}
 		</ul>
 		{{if $rule->children()}}
 			{template="rules" app="rules" group="views" params="$rule->children(), FALSE"}

@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100203">
+ <app key="rules" version="100300">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
   <word key="menu__rules_rules_logs" js="0">Rules Logs</word>
   <word key="menu__rules_rules_custom" js="0">Custom Actions</word>
   <word key="menu__rules_rules_data" js="0">Custom Data Fields</word>
+  <word key="menu__rules_rules_customlogs" js="0">Custom Logs</word>
   <word key="menu__rules_rules_schedule" js="0">Scheduled Actions</word>
   <word key="ext__Definitions" js="0">Events, Conditions, and Actions Definition Groups</word>
   <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
   <word key="module__rules_system" js="0">Rules System</word>
+  <word key="module__rules_logs" js="0">Custom Logs</word>
   <word key="notifications__rules_Notification" js="0">Rules Notifications</word>
   <word key="notifications__rules_notification" js="0">Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
   <word key="rules_perm__label" js="0">Data Permissions</word>
   <word key="rules_perm__view" js="0">View Data</word>
   <word key="rules_perm__edit" js="0">Edit Data</word>
+  <word key="rules_log_perm__label" js="0">Log Permissions</word>
+  <word key="rules_log_perm__view" js="0">View Logs</word>
+  <word key="rules_log_perm__delete" js="0">Delete Logs</word>
+  <word key="rules_log_data_perm__label" js="0">Data Permissions</word>
+  <word key="rules_log_data_perm__view" js="0">View Logged Data</word>
   <word key="editor__rules_Generic" js="0">Rules Generic</word>
   <word key="r__rules" js="0">Rules Restrictions</word>
   <word key="r__rules_manage" js="0">Manage Rules</word>
   <word key="r__logs_manage" js="0">View Logs</word>
   <word key="r__logs" js="0">Logs Restrictions</word>
   <word key="rules_logs" js="0">Rules Logs</word>
-  <word key="rules_flush_logs" js="0">Flush Logs</word>
+  <word key="rules_flush_logs" js="0">Flush System Log</word>
+  <word key="rules_logs_flushed" js="0">System log has been flushed!</word>
+  <word key="rules_prune_logs" js="0">Prune Custom Logs</word>
+  <word key="rules_logs_pruned" js="0">Custom logs have been pruned!</word>
+  <word key="rules_flush_custom_log" js="0">Flush Log Entries</word>
+  <word key="rules_flush_confirm" js="0">This will flush all entries for this log. Are you sure you want to continue?</word>
+  <word key="rules_view_custom_log" js="0">View Log Entries</word>
+  <word key="custom_log_flushed" js="0">Log has been flushed!</word>
   <word key="rules_export_all" js="0">Export All</word>
   <word key="rules_export_enabled" js="0">Export Enabled</word>
   <word key="rules_manage_all_rules" js="0">Manage Rules</word>
   <word key="rules_manage_rule" js="0">Back To Rule</word>
   <word key="rules_overview" js="0">Rules Overview</word>
   <word key="rules_welcome" js="0">Welcome To Rules</word>
+  <word key="rules_documentation" js="0">Documentation</word>
+  <word key="rules_system_log" js="0">System Log</word>
   <word key="rules_logs_table_id" js="0">Log ID</word>
   <word key="rules_logs_table_app" js="0">Event</word>
   <word key="rules_logs_table_key" js="0">Rule</word>
@@ -37,6 +53,9 @@
   <word key="rules_logs_table_message" js="0">Status</word>
   <word key="rules_logs_table_result" js="0">Result</word>
   <word key="rules_logs_table_time" js="0">Time</word>
+  <word key="rules_log_lang_time" js="0">Log Time</word>
+  <word key="rules_log_lang_message" js="0">Log Message</word>
+  <word key="rules_log_lang_entity_id" js="0">Associated With</word>
   <word key="custom_data" js="0">Custom Data Fields</word>
   <word key="data_name" js="0">Custom Data Title</word>
   <word key="data_description" js="0">Description</word>
@@ -51,14 +70,17 @@
   <word key="data_type" js="0">Stored Data Type</word>
   <word key="data_type_class" js="0">Stored Data</word>
   <word key="data_custom_class" js="0">Custom Classname</word>
-  <word key="data_use_mode" js="0">Field Access Mode</word>
-  <word key="data_use_mode_desc" js="0">Public access will allow the field to be edited by any member with permission. Administrative access limits editing of the field to moderators with permission to edit the item.</word>
+  <word key="data_display_mode" js="0">Field Display Mode</word>
+  <word key="data_display_mode_desc" js="0">Automatic display will output the field data on the front end where it is appropriate ( inline with content, on member profile, etc. ). Manual will require you to use template tags in your theme to display field data. Note: template tags can still be used in automatic display mode.</word>
+  <word key="data_use_mode" js="0">Field Editing Mode</word>
+  <word key="data_use_mode_desc" js="0">Public mode will allow the field to be edited by any member with permission. Administrative mode will limit editing of the field to moderators with permission to moderate the item the data is associated with.</word>
   <word key="data_tab" js="0">Form Tab Name</word>
   <word key="data_tab_desc" js="0">Enter the name of the tab that this field should appear under on editing forms</word>
   <word key="data_required" js="0">Is this data required?</word>
   <word key="data_text_mode" js="0">Data Input Control</word>
   <word key="data_value_options" js="0">Option Values</word>
   <word key="data_value_default" js="0">Default Value</word>
+  <word key="rules_profiledata_title" js="0">Profile Data</word>
   <word key="rules_numeric_math_operation" js="0">Value update method</word>
   <word key="rules_array_operation" js="0">Array update method</word>
   <word key="rules_node_data_tab" js="0">Rules Data</word>
@@ -77,23 +99,54 @@
   <word key="rules_schedule_bulk_limit" js="0">Batch Limit</word>
   <word key="rules_schedule_bulk_limit_desc" js="0">Bulk processing is processed in batches so that large runs can be handled reliably.</word>
   <word key="custom_actions" js="0">Custom Actions</word>
+  <word key="custom_action_arguments" js="0">Action Arguments</word>
   <word key="custom_action_title" js="0">Custom Action Name</word>
   <word key="custom_action_description" js="0">Description</word>
   <word key="custom_actions_add_child" js="0">Add Action Argument</word>
   <word key="rules_tokens_description" js="0">You can type the names of tokens (include the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.</word>
+  <word key="custom_logs" js="0">Custom Logs</word>
+  <word key="custom_log_arguments" js="0">Log Arguments</word>
+  <word key="custom_log_title" js="0">Custom Log Name</word>
+  <word key="custom_log_description" js="0">Log Description</word>
+  <word key="custom_log_class" js="0">Log Associated With</word>
+  <word key="custom_logs_add_child" js="0">Add Loggable Argument</word>
+  <word key="rules_custom_log_message" js="0">Log Message</word>
+  <word key="rules_custom_log_entity" js="0">Associated Entity</word>
+  <word key="custom_log_options" js="0">Log Options</word>
+  <word key="custom_log_max_logs" js="0">Maximum Log Size</word>
+  <word key="custom_log_max_logs_desc" js="0">Once the log reaches the maximum size, old log entries will be discarded as new entries are added.</word>
+  <word key="custom_log_entity_max" js="0">Maximum Logs Per Entity</word>
+  <word key="custom_log_entity_max_desc" js="0">If the maximum number of entries is reached for any specific entity, older logs for that entity will be discarded as new ones are added.</word>
+  <word key="custom_log_max_age" js="0">Maximum Log Age</word>
+  <word key="custom_log_max_age_desc" js="0">Log entries older than the specified number of days will be automatically discarded.</word>
+  <word key="custom_log_limit" js="0">Logs Per Page</word>
+  <word key="custom_log_limit_desc" js="0">Choose the number of logs that should show per page when this log is displayed.</word>
+  <word key="custom_log_display_empty" js="0">Display When Empty</word>
+  <word key="custom_log_display_empty_desc" js="0">If selected, this log will display even if it has no entries.</word>
+  <word key="custom_log_sortby" js="0">Default Sort Column</word>
+  <word key="custom_log_sortdir" js="0">Default Sort Direction</word>
+  <word key="custom_log_logtime" js="0">Log Time</word>
+  <word key="custom_log_display_time" js="0">Show Log Time</word>
+  <word key="custom_log_display_time_desc" js="0">This setting controls whether the log time should be displayed in the log table.</word>
+  <word key="custom_log_lang_time" js="0">Log Time Title</word>
+  <word key="custom_log_lang_time_desc" js="0">This language will be used for the log time column title.</word>
+  <word key="custom_log_lang_message" js="0">Log Message Title</word>
+  <word key="custom_log_lang_message_desc" js="0">This language will be used for the log message column title.</word>
+  <word key="profile_rules_ProfileLogs" js="0">Logged Activity</word>
   <word key="argument_name" js="0">Argument Name</word>
   <word key="argument_name_desc" js="0">Human Friendly Name (i.e. Email Recipient)</word>
   <word key="argument_varname" js="0">Machine Name</word>
-  <word key="argument_varname_desc" js="0"><![CDATA[The machine name can only be lowercase alphanumerics (including underscores). It needs to be unique to this action and will used as a variable name in action code.<br>( ex: member )]]></word>
+  <word key="argument_varname_desc" js="0">The machine name can only be lowercase alphanumerics (including underscores). It will be used as a variable name in rules configurations.</word>
   <word key="argument_type" js="0">Argument Type</word>
   <word key="argument_class" js="0">Value Type</word>
   <word key="argument_custom_class" js="0">Custom Object Classname</word>
   <word key="argument_custom_class_desc" js="0">Enter the classname of the object</word>
   <word key="argument_required" js="0">Required</word>
-  <word key="argument_required_desc" js="0">Select whether your action will require this argument</word>
+  <word key="argument_required_desc" js="0">Select if this argument must be provided.</word>
   <word key="argument_description" js="0">Description</word>
-  <word key="argument_description_desc" js="0">Describe what this action argument is for. (ex: Member to send the email to )</word>
-  <word key="argument_not_unique" js="0">This machine name is already being used in this action</word>
+  <word key="argument_description_desc" js="0">Describe what this argument is for. (ex: Member to send the email to )</word>
+  <word key="argument_not_unique" js="0">This machine name is already being used</word>
+  <word key="argument_not_unique_to_class" js="0">This machine name is already being used by another parent</word>
   <word key="argument_name_invalid" js="0">This machine name contains invalid characters.  Only lowercase alphanumerics (including underscores) are allowed.</word>
   <word key="rulesets" js="0">Rules</word>
   <word key="ruleset_title" js="0">Ruleset Title</word>
@@ -120,6 +173,9 @@
   <word key="action_schedule_customcode__desc" js="0"><![CDATA[<ul><li><strong>object</strong>: An \IPS\DateTime Object</li><li><strong>int</strong>: A unix timestamp</li><li><strong>string</strong>: A date/time string</li></ul>]]></word>
   <word key="action_schedule_key" js="0">Unique Scheduling Keyphrase</word>
   <word key="action_schedule_key_desc" js="0"><![CDATA[Optional. Only one action will remain scheduled for any given keyphrase at a time. If an action is rescheduled, any previously scheduled actions with the same keyphrase will be removed.<br><strong>Note:</strong> Token replacements can be used in your keyphrase.]]></word>
+  <word key="action_else" js="0">Action Mode</word>
+  <word key="rules_action_mode_standard" js="0"><![CDATA[Standard - Perform when conditions on the rule <strong>ARE MET</strong>.]]></word>
+  <word key="rules_action_mode_else" js="0"><![CDATA[Else - Perform when conditions on the rule <strong>ARE NOT MET</strong>.]]></word>
   <word key="rules_editing_scheduled_action" js="0">Editing Scheduled Action</word>
   <word key="rules_scheduled_date" js="0">Date / Time Scheduled</word>
   <word key="rules_scheduled_action_updated" js="0">Scheduled Action Updated</word>
@@ -149,6 +205,8 @@
   <word key="rules_settings" js="0">Settings</word>
   <word key="rules_conditions" js="0">Conditions</word>
   <word key="rules_actions" js="0">Actions</word>
+  <word key="rules_actions_else" js="0">Else Actions</word>
+  <word key="rules_actions_else_description" js="0">These actions will be taken when the conditions on the rule ARE NOT MET.</word>
   <word key="rule_actions" js="0">Rule Actions</word>
   <word key="rule_conditions" js="0">Rule Conditions</word>
   <word key="rules_add_condition" js="0">Add New Condition</word>

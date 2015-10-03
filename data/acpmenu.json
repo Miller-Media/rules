@@ -18,6 +18,12 @@
             "do": "",
             "restriction": "rules_manage"
         },
+        "customlogs": {
+            "tab": "core",
+            "controller": "customlogs",
+            "do": "",
+            "restriction": "rules_manage"
+        },
         "schedule": {
             "tab": "core",
             "controller": "schedule",

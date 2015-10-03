@@ -665,6 +665,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "action_else": {
+                "name": "action_else",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
@@ -1344,20 +1358,6 @@
                 "values": [],
                 "zerofill": false
             },
-            "argument_custom_action_id": {
-                "name": "argument_custom_action_id",
-                "type": "INT",
-                "length": 11,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "0",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            },
             "argument_weight": {
                 "allow_null": true,
                 "auto_increment": false,
@@ -1413,6 +1413,20 @@
                 "unsigned": false,
                 "values": [],
                 "zerofill": false
+            },
+            "argument_parent_id": {
+                "name": "argument_parent_id",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
@@ -1670,6 +1684,20 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            },
+            "data_display_mode": {
+                "name": "data_display_mode",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "automatic",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {
@@ -1685,5 +1713,420 @@
             }
         },
         "comment": ""
+    },
+    "rules_custom_logs": {
+        "name": "rules_custom_logs",
+        "columns": {
+            "custom_log_id": {
+                "name": "custom_log_id",
+                "type": "BIGINT",
+                "length": 20,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "ID Number",
+                "unsigned": true,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            },
+            "custom_log_title": {
+                "name": "custom_log_title",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_weight": {
+                "name": "custom_log_weight",
+                "type": "INT",
+                "length": 5,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_description": {
+                "name": "custom_log_description",
+                "type": "TEXT",
+                "length": null,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_enabled": {
+                "name": "custom_log_enabled",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_key": {
+                "name": "custom_log_key",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_class": {
+                "name": "custom_log_class",
+                "type": "VARCHAR",
+                "length": 256,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_max_logs": {
+                "name": "custom_log_max_logs",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_entity_max": {
+                "name": "custom_log_entity_max",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_max_age": {
+                "name": "custom_log_max_age",
+                "type": "INT",
+                "length": 11,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_limit": {
+                "name": "custom_log_limit",
+                "type": "INT",
+                "length": 5,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "25",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_display_empty": {
+                "name": "custom_log_display_empty",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_sortby": {
+                "name": "custom_log_sortby",
+                "type": "VARCHAR",
+                "length": 256,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "id",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_sortdir": {
+                "name": "custom_log_sortdir",
+                "type": "VARCHAR",
+                "length": 4,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "desc",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_display_time": {
+                "name": "custom_log_display_time",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_lang_time": {
+                "name": "custom_log_lang_time",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "custom_log_lang_message": {
+                "name": "custom_log_lang_message",
+                "type": "VARCHAR",
+                "length": 128,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "type": "primary",
+                "name": "PRIMARY",
+                "columns": [
+                    "custom_log_id"
+                ],
+                "length": [
+                    null
+                ]
+            }
+        },
+        "comment": ""
+    },
+    "rules_log_arguments": {
+        "name": "rules_log_arguments",
+        "columns": {
+            "argument_id": {
+                "name": "argument_id",
+                "type": "BIGINT",
+                "length": 20,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "ID Number",
+                "unsigned": true,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            },
+            "argument_name": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 255,
+                "name": "argument_name",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_type": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 56,
+                "name": "argument_type",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_class": {
+                "allow_null": true,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": null,
+                "length": 255,
+                "name": "argument_class",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_required": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "1",
+                "length": 1,
+                "name": "argument_required",
+                "type": "INT",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_parent_id": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "0",
+                "length": 11,
+                "name": "argument_parent_id",
+                "type": "INT",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_weight": {
+                "allow_null": true,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "0",
+                "length": 11,
+                "name": "argument_weight",
+                "type": "INT",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_custom_class": {
+                "allow_null": true,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": null,
+                "length": 255,
+                "name": "argument_custom_class",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_description": {
+                "allow_null": true,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": null,
+                "length": 1028,
+                "name": "argument_description",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            },
+            "argument_varname": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 56,
+                "name": "argument_varname",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "type": "primary",
+                "name": "PRIMARY",
+                "length": [
+                    null
+                ],
+                "columns": [
+                    "argument_id"
+                ]
+            }
+        },
+        "collation": "utf8_unicode_ci",
+        "engine": "InnoDB"
     }
 }

@@ -61,9 +61,9 @@ $lang = array(
 	'rules_logs_table_result'		=> "Result",
 	'rules_logs_table_time'			=> "Time",
 	
-	'rules_custom_logs_table_logtime'	=> "Log Time",
-	'rules_custom_logs_table_message'	=> "Log Message",
-	'rules_custom_logs_table_entity_id'	=> "Associated with",
+	'rules_log_lang_time'			=> "Log Time",
+	'rules_log_lang_message'		=> "Log Message",
+	'rules_log_lang_entity_id'		=> "Associated With",
 	
 	'custom_data'				=> "Custom Data Fields",
 	'data_name'				=> "Custom Data Title",
@@ -140,6 +140,12 @@ $lang = array(
 	'custom_log_sortby'			=> "Default Sort Column",
 	'custom_log_sortdir'			=> "Default Sort Direction",
 	'custom_log_logtime'			=> "Log Time",
+	'custom_log_display_time'		=> "Show Log Time",
+	'custom_log_display_time_desc'		=> "This setting controls whether the log time should be displayed in the log table.",
+	'custom_log_lang_time'			=> "Log Time Title",
+	'custom_log_lang_time_desc'		=> "This language will be used for the log time column title.",
+	'custom_log_lang_message'		=> "Log Message Title",
+	'custom_log_lang_message_desc'		=> "This language will be used for the log message column title.",
 	'profile_rules_ProfileLogs'		=> "Logged Activity",
 	
 	'argument_name'				=> "Argument Name",
