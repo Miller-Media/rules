@@ -418,6 +418,29 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	}
 
 	/**
+	 * Set value in data store
+	 *
+	 * @see		\IPS\Patterns\ActiveRecord::save
+	 * @param	mixed	$key	Key
+	 * @param	mixed	$value	Value
+	 * @return	void
+	 */
+	public function __set( $key, $value )
+	{
+		/**
+		 * Core updates the "changed" array on any __set( $key, $value ).
+		 * We only want that to happen if the value has ACTUALLY changed.
+		 * This makes the changed array actually useful
+		 */
+		if( ! method_exists( $this, 'set_'.$key ) and $this->_data[ $key ] === $value )
+		{
+			return $value;
+		}
+		
+		return parent::__set( $key, $value );
+	}
+
+	/**
 	 * Set Rules Data
 	 *
 	 * @param 	string|NULL	$key		The data to retrieve/set
