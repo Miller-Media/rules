@@ -17,7 +17,8 @@ class rules_hook_ipsGalleryImage extends _HOOK_CLASS_
 			\IPS\Request::i()->app == 'gallery' and 
 			\IPS\Request::i()->module == 'gallery' and 
 			\IPS\Request::i()->controller == 'view' and 
-			\IPS\Request::i()->id == $this->activeid 
+			\IPS\Request::i()->id == $this->activeid and
+			\IPS\Request::i()->do != 'edit'
 		)
 		{
 			$value .= \IPS\rules\Log\Custom::allLogs( $this );

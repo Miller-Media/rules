@@ -230,19 +230,22 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function content()
 	{
-		if ( is_subclass_of( get_called_class(), '\IPS\Content\Comment' ) )
+		if ( \IPS\Request::i()->do !== 'edit' )
 		{
-			if ( $item = $this->item() and ! $item::$databaseColumnMap[ 'content' ] and $item->rulesDataFields() )
+			if ( is_subclass_of( get_called_class(), '\IPS\Content\Comment' ) )
 			{
-				return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $item, parent::content() );
+				if ( $item = $this->item() and ! $item::$databaseColumnMap[ 'content' ] and $item->rulesDataFields() )
+				{
+					return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $item, parent::content() );
+				}
 			}
-		}
-		
-		if ( is_subclass_of( get_called_class(), '\IPS\Content\Item' ) )
-		{
-			if ( $this->rulesDataFields() )
+			
+			if ( is_subclass_of( get_called_class(), '\IPS\Content\Item' ) )
 			{
-				return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $this, parent::content() );
+				if ( $this->rulesDataFields() )
+				{
+					return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $this, parent::content() );
+				}
 			}
 		}
 		
