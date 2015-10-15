@@ -1709,6 +1709,14 @@ class _Application extends \IPS\Application
 				static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
 			}
 		}
+		else
+		{
+			/**
+			 * Log non-invokable action
+			 */
+			$event = $operation->rule() ? $operation->rule()->event() : NULL;
+			static::rulesLog( $event, $operation->rule(), $operation, FALSE, 'Operation aborted. (Missing Definition)', 1 );		
+		}
 	}
 
 	/**
