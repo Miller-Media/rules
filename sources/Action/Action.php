@@ -135,14 +135,14 @@ class _Action extends \IPS\Node\Model
 		$extClass = '\IPS\\' . $this->app . '\extensions\rules\Definitions\\' . $this->class;
 		if ( class_exists( $extClass ) )
 		{
-			if ( isset( static::$actionsCache[ $app ][ $class ] ) )
+			if ( isset( static::$actionsCache[ $this->app ][ $this->class ] ) )
 			{
 				$actions = static::$actionsCache[ $this->app ][ $this->class ];
 			}
 			else
 			{
 				$ext = new $extClass;
-				$actions = static::$actionsCache[ $this->app ][ $this->class ] = method_exists( $ext, 'actions' ) ? $ext->actions() : array();
+				$actions = static::$actionsCache[ $this->app ][ $this->class ] = ( method_exists( $ext, 'actions' ) ? $ext->actions() : array() );
 			}			
 			
 			if ( isset ( $actions[ $this->key ] ) )

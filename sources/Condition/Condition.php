@@ -135,14 +135,14 @@ class _Condition extends \IPS\Node\Model
 		$extClass = '\IPS\\' . $this->app . '\extensions\rules\Definitions\\' . $this->class;
 		if ( class_exists( $extClass ) )
 		{
-			if ( isset( static::$conditionsCache[ $app ][ $class ] ) )
+			if ( isset( static::$conditionsCache[ $this->app ][ $this->class ] ) )
 			{
 				$conditions = static::$conditionsCache[ $this->app ][ $this->class ];
 			}
 			else
 			{
 				$ext = new $extClass;
-				$conditions = static::$conditionsCache[ $this->app ][ $this->class ] = method_exists( $ext, 'conditions' ) ? $ext->conditions() : array();
+				$conditions = static::$conditionsCache[ $this->app ][ $this->class ] = ( method_exists( $ext, 'conditions' ) ? $ext->conditions() : array() );
 			}
 			
 			if ( isset ( $conditions[ $this->key ] ) )
