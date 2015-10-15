@@ -112,7 +112,7 @@ class _CustomLogs
 		$lang 		= \IPS\Member::loggedIn()->language();
 		$actions 	= array();
 
-		foreach ( \IPS\rules\Log\Custom::roots() as $log )
+		foreach ( \IPS\rules\Log\Custom::roots( NULL ) as $log )
 		{
 			$entityConfig = NULL;
 			$objectClass = str_replace( '-', '\\', $log->class );
@@ -325,13 +325,18 @@ class _CustomLogs
 					}
 					
 					/* Create the entry */
-					$log->createEntry( $entity, $message, $logData );
-					
-					/* Trigger other rules */
-					$event = \IPS\rules\Event::load( 'rules', 'CustomLogs', 'custom_log_' . $log->key );
-					call_user_func_array( array( $event, 'trigger' ), func_get_args() );
-					
-					return "Entry logged to: {$log->title}";
+					if ( $log->createEntry( $entity, $message, $logData ) )
+					{
+						/* Trigger other rules */
+						$event = \IPS\rules\Event::load( 'rules', 'CustomLogs', 'custom_log_' . $log->key );
+						call_user_func_array( array( $event, 'trigger' ), func_get_args() );
+						
+						return "Entry logged to: {$log->title}";
+					}
+					else
+					{
+						return "Entry not logged (log disabled)";
+					}
 				},
 				'arguments' => $arguments,
 			);
