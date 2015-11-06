@@ -117,7 +117,7 @@ $lang = array(
 	'custom_action_title'			=> "Custom Action Name",
 	'custom_action_description'		=> "Description",
 	'custom_actions_add_child'		=> "Add Action Argument",
-	'rules_tokens_description'		=> "You can type the names of tokens (include the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.",
+	'rules_tokens_description'		=> "You can type the names of replacement tokens (including the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.<br><i class='fa fa-arrow-right'></i> Alternative token format: Replace the brackets with tildes ( ~ ) ( Example: ~token:name~ ) for use in places where brackets are problematic (such as urls).",
 	'custom_logs'				=> "Custom Logs",
 	'custom_log_arguments'			=> "Log Arguments",
 	'custom_log_title'			=> "Custom Log Name",

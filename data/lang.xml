@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100302">
+ <app key="rules" version="100303">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -103,7 +103,7 @@
   <word key="custom_action_title" js="0">Custom Action Name</word>
   <word key="custom_action_description" js="0">Description</word>
   <word key="custom_actions_add_child" js="0">Add Action Argument</word>
-  <word key="rules_tokens_description" js="0">You can type the names of tokens (include the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.</word>
+  <word key="rules_tokens_description" js="0"><![CDATA[You can type the names of replacement tokens (including the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.<br><i class='fa fa-arrow-right'></i> Alternative token format: Replace the brackets with tildes ( ~ ) ( Example: ~token:name~ ) for use in places where brackets are problematic (such as urls).]]></word>
   <word key="custom_logs" js="0">Custom Logs</word>
   <word key="custom_log_arguments" js="0">Log Arguments</word>
   <word key="custom_log_title" js="0">Custom Log Name</word>
