@@ -793,14 +793,14 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		if ( $entity )
 		{
-			$table = new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=? AND entity_id=?', $this->id, $entity->activeid ) );
+			$table = new \IPS\rules\Log\Table( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=? AND entity_id=?', $this->id, $entity->activeid ) );
 			if ( $this->display_time ) { $table->include[] = 'logtime'; }
 			$table->include[] = 'message';
 			$table->noSort = array( 'message' );
 		}
 		else
 		{
-			$table = new \IPS\Helpers\Table\Db( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=?', $this->id ) );
+			$table = new \IPS\rules\Log\Table( static::getTableName( $this->class ), $controllerUrl, array( 'log_id=?', $this->id ) );
 			if ( $this->display_time ) { $table->include[] = 'logtime'; }
 			$table->include[] = 'entity_id';
 			$table->include[] = 'message';
