@@ -1150,14 +1150,16 @@ class _Content
 									throw new \UnexpectedValueException( "author is not a valid member" );
 								}
 								
-								$now = \IPS\DateTime::ts( time() );
-								$item = $contentItemClass::createItem( $author, $author->ip_address, $now, $container );
+								/* Create item */
+								$item = $contentItemClass::createItem( $author, $author->ip_address, \IPS\DateTime::ts( time() ), $container );
 								
+								/* Set item title */
 								if ( $titleColumn = $contentItemClass::$databaseColumnMap[ 'title' ] )
 								{
 									$item->$titleColumn = $title;
 								}
 								
+								/* Save content to item if it supports it */
 								if ( $bodyColumn = $contentItemClass::$databaseColumnMap[ 'content' ] )
 								{
 									$item->$bodyColumn = $content;
@@ -1165,15 +1167,21 @@ class _Content
 								
 								$item->save();
 								
-								if ( $contentItemClass::$firstCommentRequired and isset ( $contentItemClass::$commentClass ) )
+								/* Save content as first comment if required */
+								if ( $contentItemClass::$firstCommentRequired and isset( $contentItemClass::$commentClass ) )
 								{
 									$commentClass = $contentItemClass::$commentClass;
-									$comment = $commentClass::create
-									(
-										$item, $content, TRUE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, $now
-									);
+									$comment = $commentClass::create( $item, $content, TRUE, $values[ 'rules_Content_guest_name' ], (bool) $values[ 'rules_Content_increase_posts' ], $author, $now	);
+									if ( isset( $contentItemClass::$databaseColumnMap[ 'first_comment_id' ] ) )
+									{
+										$firstCommentIdColumn = $contentItemClass::$databaseColumnMap[ 'first_comment_id' ];
+										$commentIdColumn = $commentClass::$databaseColumnId;
+										$item->$firstCommentIdColumn = $comment->$commentIdColumn;
+										$item->save();
+									}
 								}
 								
+								/* Save tags */
 								if ( ! empty ( $tags ) )
 								{
 									/* Set tags through our rules action to account for non-logged in members */
