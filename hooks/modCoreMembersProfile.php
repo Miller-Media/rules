@@ -20,7 +20,7 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 		$form = new \IPS\Helpers\Form;
 		
 		/* The basics */
-		$form->addtab( 'profile_edit_basic_tab', 'user');
+		$form->addTab( 'profile_edit_basic_tab', 'user');
 		$form->addHeader( 'profile_edit_basic_header' );
 		if( \IPS\Settings::i()->post_titlechange != -1 and ( isset( \IPS\Settings::i()->post_titlechange ) and $this->member->member_posts >= \IPS\Settings::i()->post_titlechange ) )
 		{
@@ -36,6 +36,10 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 				'yyyy'	=> \IPS\Theme::i()->getTemplate( 'members', 'core', 'global' )->bdayForm_year( $element->name, $element->value, $element->error ),
 			) );
 		} ) ) );
+		if ( \IPS\Settings::i()->profile_comments and $this->member->canAccessModule( \IPS\Application\Module::get( 'core', 'status' ) ) )
+		{
+			$form->add( new \IPS\Helpers\Form\YesNo( 'enable_status_updates', $this->member->pp_setting_count_comments ) );
+		}
 
 		/* Profile fields */
 		try
@@ -110,6 +114,13 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 				$this->member->member_title = $values['member_title'];
 			}
 
+			if( $values['bday']  and ( ( $values['bday']['day'] and !$values['bday']['month'] ) or ( $values['bday']['month'] and !$values['bday']['day'] ) ) )
+			{
+				$form->error = \IPS\Member::loggedIn()->language()->addToStack( 'bday_month_and_day_required' );
+				\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'forms', 'core' )->editContentForm( \IPS\Member::loggedIn()->language()->addToStack( 'profile_edit' ), $form );
+				return;
+			}
+
 			if ( $values['bday'] and $values['bday']['day'] and $values['bday']['month'] )
 			{
 				$this->member->bday_day		= $values['bday']['day'];
@@ -121,6 +132,20 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 				$this->member->bday_day = NULL;
 				$this->member->bday_month = NULL;
 				$this->member->bday_year = NULL;
+			}
+			
+			if ( isset( $values['enable_status_updates'] ) )
+			{
+				$this->member->pp_setting_count_comments = $values['enable_status_updates'];
+				
+				if ( $values['enable_status_updates'] )
+				{
+					\IPS\Content\Search\Index::i()->massUpdate( 'IPS\core\Statuses\Status', NULL, NULL, '*', NULL, NULL, $this->member->member_id );
+				}
+				else
+				{
+					\IPS\Content\Search\Index::i()->massUpdate( 'IPS\core\Statuses\Status', NULL, NULL, '', NULL, NULL, $this->member->member_id );
+				}
 			}
 			
 			/* Profile Fields */
@@ -147,11 +172,13 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 				{
 					$profileFields[ "field_{$id}" ] = $field::stringValue( $values[ $field->name ] );
 
-					if ( $fields instanceof \IPS\Helpers\Form\Editor )
+					if ( $field instanceof \IPS\Helpers\Form\Editor )
 					{
-						$field->claimAttachments( $this->id );
+						\IPS\core\ProfileFields\Field::load( $id )->claimAttachments( $this->member->member_id );
 					}
 				}
+				
+				$this->member->changedCustomFields = $profileFields;
 			}
 
 			/**
@@ -191,8 +218,8 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 			}
 
 			/* Save */
-			$this->member->save();
 			\IPS\Db::i()->replace( 'core_pfields_content', $profileFields );
+			$this->member->save();
 
 			\IPS\Output::i()->redirect( $this->member->url() );
 		}
@@ -200,7 +227,14 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 		/* Set Session Location */
 		\IPS\Session::i()->setLocation( $this->member->url(), array(), 'loc_editing_profile', array( $this->member->name => FALSE ) );
 		
-		\IPS\Output::i()->output = $form->customTemplate( array( call_user_func_array( array( \IPS\Theme::i(), 'getTemplate' ), array( 'forms', 'core' ) ), 'popupTemplate' ) );
+		if ( \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->output = $form->customTemplate( array( call_user_func_array( array( \IPS\Theme::i(), 'getTemplate' ), array( 'forms', 'core' ) ), 'popupTemplate' ) );
+		}
+		else
+		{
+			\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'forms', 'core' )->editContentForm( \IPS\Member::loggedIn()->language()->addToStack( 'profile_edit' ), $form );
+		}
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'editing_profile', FALSE, array( 'sprintf' => array( $this->member->name ) ) );
 		\IPS\Output::i()->breadcrumb[] = array( NULL, \IPS\Member::loggedIn()->language()->addToStack( 'editing_profile', FALSE, array( 'sprintf' => array( $this->member->name ) ) ) );
 	}

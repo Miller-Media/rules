@@ -81,7 +81,7 @@ class _rules extends \IPS\Node\Controller
 		
 		parent::manage();
 	}
-	 
+	
 	/**
 	 * Add/Edit Form
 	 *
@@ -240,7 +240,7 @@ class _rules extends \IPS\Node\Controller
 				$title = "<span class='ipsBadge ipsBadge_neutral'>Rule</span> " . $title;
 			}
 		}
-										
+		
 		return \IPS\Theme::i()->getTemplate( 'trees', 'core' )->row(
 			$this->url,
 			$id,
@@ -258,6 +258,6 @@ class _rules extends \IPS\Node\Controller
 			$this->_descriptionHtml,
 			$node->canAdd()
 		);
-	}	
+	}
 	
 }

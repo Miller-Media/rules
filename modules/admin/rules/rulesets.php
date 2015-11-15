@@ -1300,11 +1300,14 @@ class _rulesets extends \IPS\Node\Controller
 			\IPS\Output::i()->error( 'xml_upload_invalid', '2RI00/C', 403, '' );
 		}
 		
-		if ( \IPS\rules\LITE )
+		/**
+		 * @LITE VERSION: Prevent broken imports
+		 */
+		if ( \IPS\Application::load( 'rules' )->isProtected() )
 		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() + ( $importCount = $this->_importRulesCount( $import ) ) > \IPS\rules\LIMIT )
+			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() + ( $importCount = $this->_importRulesCount( $import ) ) > \IPS\rules\Secure\RULELIMIT )
 			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules. This import contains ' . $importCount . ' rules.', 'RULES', 200, '' );
+				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\Secure\RULELIMIT . ' rules. This import contains ' . $importCount . ' rules.', 'RULES', 200, '' );
 				exit;
 			}
 		}
@@ -1646,7 +1649,6 @@ class _rulesets extends \IPS\Node\Controller
 		$data_field->save();
 		
 		return $data_field;
-	}
-		
+	}		
 	
 }

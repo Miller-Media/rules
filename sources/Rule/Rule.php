@@ -7,7 +7,6 @@
  * @since		6 Feb 2015
  */
 
-
 namespace IPS\rules;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
@@ -20,7 +19,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Node
  */
-class _Rule extends \IPS\Node\Model
+class _Rule extends \IPS\rules\Secure\Rule
 {
 	/**
 	 * @brief	[ActiveRecord] Multiton Store
@@ -181,19 +180,7 @@ class _Rule extends \IPS\Node\Model
 	{	
 		$events 	= array();
 		$event_missing 	= FALSE;
-		
-		/**
-		 * @LITE VERSION: Restrict amount of rules available in lite version
-		 */
-		if ( \IPS\rules\LITE and ! $this->id )
-		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= \IPS\rules\LIMIT )
-			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules.', 'RULES', 200, '' );
-				exit;
-			}
-		}
-		
+				
 		$form->addTab( 'rules_settings' );
 		
 		/**
@@ -765,21 +752,7 @@ class _Rule extends \IPS\Node\Model
 	 */
 	public function actions( $mode=NULL )
 	{
-		$cache_key = md5( json_encode( $mode ) );
-		
-		if ( isset( $this->actionCache[ $cache_key ] ) )
-		{
-			return $this->actionCache[ $cache_key ];
-		}
-		
-		$where = array( 'action_rule_id=?', $this->id );
-		
-		if ( $mode !== NULL )
-		{
-			$where = array( 'action_rule_id=? AND action_else=?', $this->id, $mode );
-		}
-		
-		return $this->actionCache[ $cache_key ] = \IPS\rules\Action::roots( NULL, NULL, array( $where ) );
+		return parent::actions( $mode );
 	}
 	
 	/**
@@ -800,18 +773,6 @@ class _Rule extends \IPS\Node\Model
 			return;
 		}
 	
-		/**
-		 * @LITE VERSION: Restrict amount of rules available in lite version
-		 */
-		if ( \IPS\rules\LITE )
-		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= \IPS\rules\LIMIT )
-			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules.', 'RULES', 200, '' );
-				exit;
-			}
-		}
-		
 		$oldId = $this->id;
 		parent::__clone();
 		
@@ -838,18 +799,6 @@ class _Rule extends \IPS\Node\Model
 	 */
 	public function save()
 	{
-		/**
-		 * @LITE VERSION: Restrict amount of rules available in lite version
-		 */
-		if ( \IPS\rules\LITE and $this->_new )
-		{
-			if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_rules' )->first() >= \IPS\rules\LIMIT )
-			{
-				\IPS\Output::i()->error( 'Lite version restricted to a maximum of ' . \IPS\rules\LIMIT . ' rules.', 'RULES', 200, '' );
-				exit;
-			}
-		}
-
 		/* Synchronize ruleset_id with parent rule */
 		if ( $parent = $this->parent() )
 		{

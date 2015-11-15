@@ -17,7 +17,7 @@ const ACTION_ELSE = 1;
 /**
  * Rules Application Class
  */
-class _Application extends \IPS\Application
+class _Application extends \IPS\rules\Secure\Application
 {
 
 	/**
@@ -52,7 +52,7 @@ class _Application extends \IPS\Application
 	 */
 	public function get__badge()
 	{
-		if ( \IPS\rules\LITE )
+		if ( $this->isProtected() )
 		{
 			return array(
 				0	=> 'ipsBadge ipsBadge_neutral',
@@ -1930,24 +1930,7 @@ class _Application extends \IPS\Application
 	 */
 	public static function classCompliant( $class, $classes )
 	{
-		$compliant = FALSE;
-		
-		foreach ( (array) $classes as $_class )
-		{
-			if ( ltrim( $_class, '\\' ) === ltrim( $class, '\\' ) )
-			{
-				$compliant = TRUE;
-				break;
-			}
-			
-			if ( is_subclass_of( $class, $_class ) )
-			{
-				$compliant = TRUE;
-				break;
-			}
-		}
-		
-		return $compliant;
+		return parent::classCompliant( $class, $classes );
 	}
 	
 	/**
@@ -2427,23 +2410,5 @@ class _Application extends \IPS\Application
 		
 		return static::rulesDefinitions( $definition_key );
 	}
-	
-	/**
-	 * Protect
-	 */
-	public function isProtected()
-	{
-		return LITE;
-	}
-	
 }
 
-if ( defined( '\IPS\rules\LITE' ) or defined( '\IPS\rules\LIMIT' ) )
-{
-	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
-	print "Rules license error.";
-	exit;
-}
-
-const LITE = FALSE;
-const LIMIT = 10;
