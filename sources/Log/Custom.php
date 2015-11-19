@@ -721,17 +721,24 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function logsTable( $entity=NULL, $limit=NULL )
 	{
-		$sortBy = \IPS\Request::i()->logsortby ?: ( \IPS\Request::i()->sortby ?: ( \IPS\Db::i()->checkForColumn( static::getTableName( $this->class ), 'data_' . $this->sortby ) ? 'data_' . $this->sortby : 'id' ) );
-		$sortDirection = \IPS\Request::i()->logsortdir ?: ( \IPS\Request::i()->sortdirection ?: ( $this->sortdir ?: 'desc' ) );
-		$page = \IPS\Request::i()->logpage ?: ( \IPS\Request::i()->page ?: 1 );
-			
+		/* Set table defaults */
+		$sortBy = \IPS\Db::i()->checkForColumn( static::getTableName( $this->class ), 'data_' . $this->sortby ) ? 'data_' . $this->sortby : 'id';
+		$sortDirection = $this->sortdir ?: 'desc';
+		$page = 1;
+		
+		/* Ignore ajax requests not targeted at any particular log */
+		if ( \IPS\Request::i()->isAjax() and ! \IPS\Request::i()->log )
+		{
+			return '';
+		}
+		
 		/**
 		 * Process log table requests
 		 */
 		if ( \IPS\Request::i()->log )
 		{
 			/* Ignore ajax requests not targeted at this log */
-			if ( $this->id != \IPS\Request::i()->log and \IPS\Request::i()->isAjax() )
+			if ( \IPS\Request::i()->isAjax() and $this->id != \IPS\Request::i()->log )
 			{
 				return '';
 			}
@@ -739,6 +746,11 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 			/* This log is targeted */
 			if ( $this->id == \IPS\Request::i()->log )
 			{
+				/* Update table parameters */
+				$sortBy = \IPS\Request::i()->logsortby ?: ( \IPS\Request::i()->sortby ?: $sortBy );
+				$sortDirection = \IPS\Request::i()->logsortdir ?: ( \IPS\Request::i()->sortdirection ?: $sortDirection );
+				$page = \IPS\Request::i()->logpage ?: ( \IPS\Request::i()->page ?: $page );
+				
 				/**
 				 * Process Commands
 				 */
@@ -756,14 +768,6 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 						}
 				}
 			}
-			
-			/* This log is NOT targeted */
-			else
-			{
-				$sortBy = 'id';
-				$sortDirection = 'desc';
-				$page = 1;
-			}
 		}
 		
 		/**
@@ -776,17 +780,21 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$lang->words[ 'rules_custom_logs_table_' . $this->id . '_entity_id' ] = $lang->get( 'rules_log_lang_entity_id' );
 		
 		/**
-		 * Current page controller is re-used on the admin side since we dont want to redirect to the entity url on the front end.
 		 * On the front end, our own controller is used to avoid conflicts with other paginated tables/content on the page.
+		 * Current page controller is re-used on the admin side since we dont want to redirect to the entity url on the front end.
 		 */
-		$controllerUrl = \IPS\Dispatcher::i()->controllerLocation == 'front' ? 
-		\IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}&entity={$entity->activeid}" ) : 
-		\IPS\Request::i()->url()->setQueryString( array( 'log' => NULL, 'logid' => NULL, 'logdo' => NULL ) );
-		
-		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' and ! static::$tableControllerLoaded )
+		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' )
 		{
-			\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_ui.js', 'rules', 'front' ) );
-			static::$tableControllerLoaded = TRUE;
+			$controllerUrl = \IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}&entity={$entity->activeid}" );
+			if ( ! static::$tableControllerLoaded )
+			{
+				\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_ui.js', 'rules', 'front' ) );
+				static::$tableControllerLoaded = TRUE;
+			}
+		}
+		else
+		{
+			$controllerUrl = \IPS\Request::i()->url()->setQueryString( array( 'log' => NULL, 'logid' => NULL, 'logdo' => NULL ) );
 		}
 		
 		$entity_where 	= $entity ? ' AND entity_id=' . $entity->activeid : '';

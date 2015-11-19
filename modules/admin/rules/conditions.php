@@ -1,6 +1,5 @@
 <?php
 
-
 namespace IPS\rules\modules\admin\rules;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
