@@ -8,7 +8,7 @@
  * @since		07 Feb 2015
  * @version		
  */
- 
+
 namespace IPS\rules;
 
 const ACTION_STANDARD = 0;
@@ -509,7 +509,7 @@ class _Application extends \IPS\rules\Secure\Application
 						$items = array();
 						$nodeClass = $options[ 'class' ];
 						
-						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Content\Item' ) )
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Node\Model' ) )
 						{
 							return NULL;
 						}
@@ -581,7 +581,7 @@ class _Application extends \IPS\rules\Secure\Application
 						$items = array();
 						$nodeClass = $options[ 'class' ];
 						
-						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Content\Item' ) )
+						if ( ! class_exists( $nodeClass ) or ! is_subclass_of( $nodeClass, '\IPS\Node\Model' ) )
 						{
 							return NULL;
 						}
@@ -954,10 +954,6 @@ class _Application extends \IPS\rules\Secure\Application
 					
 					/**
 					 * PHP CODE
-					 *
-					 * Are we allowed to use PHP Code?
-					 *
-					 * @TODO: implement group permissions, allow by default for now
 					 */
 					if ( isset( $arg[ 'argtypes' ] ) )
 					{
@@ -1055,7 +1051,7 @@ class _Application extends \IPS\rules\Secure\Application
 				}
 			}
 		}
-
+		
 		/**
 		 * Process Values
 		 *
@@ -1196,13 +1192,18 @@ class _Application extends \IPS\rules\Secure\Application
 			{
 				if ( isset( $operation->definition[ 'arguments' ] ) and is_array( $operation->definition[ 'arguments' ] ) )
 				{
+					/* Put together the argument list needed by this operation */
 					foreach ( $operation->definition[ 'arguments' ] as $arg_name => $arg )
 					{
 						$argument_missing 	= FALSE;
 						$argNameKey 		= $operation->app . '_' . $operation->class . '_' . $optype . '_' . $operation->key . '_' . $arg_name;
 						
+						/* Check which source the user has configured for the argument data */
 						switch ( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] )
 						{
+							/**
+							 * Grab argument from event
+							 */
 							case 'event':
 							
 								/**
@@ -1335,6 +1336,9 @@ class _Application extends \IPS\rules\Secure\Application
 								}			
 								break;
 							
+							/**
+							 * Grab manual entry argument
+							 */
 							case 'manual':
 							
 								/**
@@ -1351,7 +1355,10 @@ class _Application extends \IPS\rules\Secure\Application
 									$argument_missing = TRUE;
 								}
 								break;
-								
+							
+							/**
+							 * Calculate an argument using PHP
+							 */
 							case 'phpcode':
 							
 								$evaluate = function( $phpcode ) use ( $arg_map )
@@ -1378,13 +1385,13 @@ class _Application extends \IPS\rules\Secure\Application
 										
 										$php_arg_type = $type_map[ gettype( $argVal ) ];
 										
-										/* Simple definitions with no processing callbacks */
+										/* Simple definitions with no value processing callbacks */
 										if ( in_array( $php_arg_type, $arg[ 'argtypes' ] ) or in_array( 'mixed', $arg[ 'argtypes' ] ) )
 										{
 											$operation_args[] = $argVal;
 										}
 										
-										/* Complex definitions, check for processing callbacks */
+										/* Complex definitions, check for value processing callbacks */
 										else if ( isset( $arg[ 'argtypes' ][ $php_arg_type ] ) )
 										{
 											if ( isset ( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) and is_callable( $arg[ 'argtypes' ][ $php_arg_type ][ 'converter' ] ) )
@@ -1548,10 +1555,13 @@ class _Application extends \IPS\rules\Secure\Application
 					}
 				}
 				
+				/**
+				 * Now that we have our argument list, time to execute the operation callback
+				 */
 				if ( isset ( $operation->definition[ 'callback' ] ) and is_callable( $operation->definition[ 'callback' ] ) )
 				{
 					/**
-					 * Token Replacements on Operation Args
+					 * Perform token replacements on string value arguments
 					 */
 					$tokens = static::getTokens( $event, $arg_map );
 					foreach ( $operation_args as &$_operation_arg )
@@ -1682,7 +1692,7 @@ class _Application extends \IPS\rules\Secure\Application
 					catch ( \Exception $e ) 
 					{
 						/**
-						 * Log Exceptions
+						 * Log exceptions that happen during operation execution
 						 */
 						$event = $operation->rule() ? $operation->rule()->event() : NULL;
 						$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
@@ -1701,7 +1711,7 @@ class _Application extends \IPS\rules\Secure\Application
 			catch ( \Exception $e )
 			{
 				/**
-				 * Log Exceptions
+				 * Log exceptions that happen during argument preparation
 				 */
 				$event = $operation->rule() ? $operation->rule()->event() : NULL;
 				$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
@@ -2276,7 +2286,7 @@ class _Application extends \IPS\rules\Secure\Application
 			foreach ( $event->data[ 'arguments' ] as $_event_arg_name => $_event_arg )
 			{
 				$eventArgNameKey = $event->app . '_' . $event->class . '_event_' . $event->key . '_' . $_event_arg_name;
-				$_event_arg_list[] = "<strong>{$_p}{$_event_arg_name}</strong> - " . \ucfirst( mb_strtolower( $lang->get( $eventArgNameKey ) ) ) . ( ( isset( $_event_arg[ 'nullable' ] ) and $_event_arg[ 'nullable' ] ) ? " ( may be NULL )" : "" );
+				$_event_arg_list[] = "<strong>{$_p}{$_event_arg_name}</strong> - " . ( $lang->checkKeyExists( $eventArgNameKey ) ? \ucfirst( mb_strtolower( $lang->get( $eventArgNameKey ) ) ) : $eventArgNameKey ) . ( ( isset( $_event_arg[ 'nullable' ] ) and $_event_arg[ 'nullable' ] ) ? " ( may be NULL )" : "" );
 			}
 		}
 		
