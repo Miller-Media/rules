@@ -37,7 +37,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	}
 	
 	/**
-	 * Find Member
+	 * Content Autocomplete Lookup
 	 *
 	 * @retun	void
 	 */

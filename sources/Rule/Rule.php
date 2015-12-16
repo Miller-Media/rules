@@ -16,6 +16,9 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 	exit;
 }
 
+/* Make sure application class is loaded */
+class_exists( 'IPS\rules\Application' );
+
 /**
  * Node
  */
@@ -553,7 +556,7 @@ class _Rule extends \IPS\rules\Secure\Rule
 	 * Invoke Rule
 	 */
 	public function invoke()
-	{
+	{		
 		if ( $this->enabled )
 		{
 			if ( ! $this->locked )
