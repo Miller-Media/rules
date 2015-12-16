@@ -75,6 +75,13 @@ class _Members
 					'member' => $memberArg,					
 				),
 			),
+			'member_not_spammer' => array
+			( 
+				'arguments' => array
+				( 
+					'member' => $memberArg,
+				),
+			),
 			'memberSync_onValidate' => array
 			( 
 				'arguments' => array
@@ -91,6 +98,20 @@ class _Members
 				),
 			),
 			'memberSync_onDelete' => array
+			( 
+				'arguments' => array
+				( 
+					'member' => $memberArg,
+				),
+			),
+			'member_banned' => array
+			( 
+				'arguments' => array
+				( 
+					'member' => $memberArg,
+				),
+			),
+			'member_unbanned' => array
 			( 
 				'arguments' => array
 				( 

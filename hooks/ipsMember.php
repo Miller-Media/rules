@@ -51,5 +51,43 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 		
 		\IPS\rules\Event::load( 'rules', 'Members', 'content_recounted' )->trigger( $this, $this->member_posts );
 	}
+	
+	/**
+	 * Unflag as spammer
+	 *
+	 * @return	void
+	 */
+	public function unflagAsSpammer()
+	{
+		parent::unflagAsSpammer();
+		
+		\IPS\rules\Event::load( 'rules', 'Members', 'member_not_spammer' )->trigger( $this );
+	}
+	
+	/**
+	 * Set banned
+	 *
+	 * @param	string	$value	Value
+	 * @return	void
+	 */
+	public function set_temp_ban( $value )
+	{
+		if ( $this->temp_ban == 0 and $value != 0 )
+		{
+			/* Banned */
+			parent::set_temp_ban( $value );
+			\IPS\rules\Event::load( 'rules', 'Members', 'member_banned' )->trigger( $this );
+			return;
+		}
+		else if ( $this->temp_ban != 0 and $value == 0 )
+		{
+			/* Unbanned */
+			parent::set_temp_ban( $value );
+			\IPS\rules\Event::load( 'rules', 'Members', 'member_unbanned' )->trigger( $this );
+			return;
+		}
+		
+		parent::set_temp_ban( $value );
+	}	
 
 }
