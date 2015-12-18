@@ -96,6 +96,9 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 				$action = \IPS\rules\Action::load( $this->action_id );
 				$action->event()->thread = $this->thread;
 				$action->event()->parentThread = $this->parent_thread;
+				
+				/* Set the root thread for which deferred actions should be executed */
+				$action->event()->rootThread = $this->thread;
 
 				if ( isset( $action->definition[ 'callback' ] ) and is_callable( $action->definition[ 'callback' ] ) )
 				{

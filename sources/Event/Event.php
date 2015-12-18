@@ -139,6 +139,13 @@ class _Event
 			throw new \BadMethodCallException( \IPS\Member::loggedIn()->language()->get( 'rules_event_not_found' ) );
 		}
 	}
+	
+	/**
+	 * Root Thread ID
+	 *
+	 * This is the thread for which deferred actions should be executed
+	 */
+	public $rootThread = NULL;
 		
 	/**
 	 * Thread ID
@@ -205,16 +212,16 @@ class _Event
 					}				
 				}
 			}
-				
+			
 			$this->thread = $this->parentThread;
 			$this->parentThread = $parentThread;
-						
+			
 			/** 
 			 * Deferred Actions
 			 *
 			 * Only execute deferred actions at the root thread level
 			 */
-			if ( $this->thread === NULL )
+			if ( $this->thread === $this->rootThread )
 			{
 			
 				$this->locked = TRUE;
@@ -255,7 +262,7 @@ class _Event
 				$this->locked = FALSE;
 				
 				/* Reset threads */
-				$this->thread = $this->parentThread = NULL;
+				$this->thread = $this->parentThread = $this->rootThread = NULL;
 			}			
 		}
 	}
