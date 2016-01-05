@@ -6,11 +6,11 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	/**
 	 * Hide
 	 *
-	 * @param	\IPS\Member|NULL	$member	The member doing the action (NULL for currently logged in member)
-	 * @param	string				$reason	Reason
+	 * @param	\IPS\Member|NULL|FALSE	$member	The member doing the action (NULL for currently logged in member, FALSE for no member)
+	 * @param	string					$reason	Reason
 	 * @return	void
 	 */
-	public function hide( \IPS\Member $member=NULL, $reason=NULL )
+	public function hide( $member, $reason=NULL )
 	{
 		$result = call_user_func_array( 'parent::hide', func_get_args() );
 		
@@ -31,7 +31,7 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 * @param	\IPS\Member|NULL	$member	The member doing the action (NULL for currently logged in member)
 	 * @return	void
 	 */
-	public function unhide( $member=NULL )
+	public function unhide( $member )
 	{
 		$result = call_user_func_array( 'parent::unhide', func_get_args() );
 		
