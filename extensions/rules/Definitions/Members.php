@@ -157,6 +157,47 @@ class _Members
 	{
 		return array
 		(
+			'check_member' => array
+			(
+				'callback' 	=> array( $this, 'checkMember' ),
+				'configuration' => array
+				(
+					'form' => function( $form, $values )
+					{
+						$members = array();
+						foreach( (array) $values[ 'rules_choose_members' ] as $member_id )
+						{
+							if ( $member_id )
+							{
+								try
+								{
+									$members[] = \IPS\Member::load( $member_id );
+								}
+								catch ( \Exception $e ) {}
+							}
+						}
+						
+						$form->add( new \IPS\Helpers\Form\Member( 'rules_choose_members', $members, TRUE, array( 'multiple' => NULL ), NULL, NULL, NULL, 'rules_choose_members' ) );
+					},
+					'saveValues' => function( &$values )
+					{	
+						$members = array();
+						foreach ( (array) $values[ 'rules_choose_members' ] as $member )
+						{
+							$members[] = $member->member_id;
+						}
+						$values[ 'rules_choose_members' ] = $members;
+					},
+				),
+				'arguments'	=> array
+				(
+					'member' => array
+					(
+						'argtypes' => \IPS\rules\Application::argPreset( 'member' ),
+						'required' => TRUE,
+					),
+				),
+			),
 			'member_has_group' => array
 			(
 				'configuration' => array
@@ -565,13 +606,30 @@ class _Members
 	 ***     CONDITIONS	***
 	 ***			***/
 	
+	/**
+	 * Check a member
+	 * 
+	 * @return	bool
+	 */
+	public function checkMember( $member, $values )
+	{
+		$members = (array) $values[ 'rules_choose_members' ];
+		
+		if ( ! $member instanceof \IPS\Member )
+		{
+			return FALSE;
+		}
+		
+		return in_array( $member->member_id, $members );
+	}
+	
 	
 	/**
 	 * Check Member Groups
 	 */
 	public function checkMemberGroup( $member, $values )
 	{
-		if ( ! is_object( $member ) or ! ( $member instanceof \IPS\Member ) )
+		if ( ! $member instanceof \IPS\Member )
 		{
 			return FALSE;
 		}
@@ -584,7 +642,7 @@ class _Members
 	 */
 	public function checkMemberAttributes( $member, $values )
 	{
-		if ( ! ( $member instanceof \IPS\Member ) )
+		if ( ! $member instanceof \IPS\Member )
 		{
 			return FALSE;
 		}
