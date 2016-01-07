@@ -714,21 +714,24 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	}
 	
 	/**
+	 * @brief	Key Exists Cache
+	 */
+	protected static $keyExists = array();	
+	
+	/**
 	 * Check for existence of data key
 	 * 
 	 * @param 	string		$key		The key to check
 	 * @return	bool
 	 */
 	public function rulesKeyExists( $key )
-	{
-		static $keyExists = array();
-		
-		if ( isset( $keyExists[ get_class( $this ) ][ $key ] ) )
+	{		
+		if ( isset( static::$keyExists[ get_class( $this ) ][ $key ] ) )
 		{
-			return $keyExists[ get_class( $this ) ][ $key ];
+			return static::$keyExists[ get_class( $this ) ][ $key ];
 		}
-		
-		return $keyExists[ get_class( $this ) ][ $key ] = $this->rulesTableExists() and \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key );
+
+		return static::$keyExists[ get_class( $this ) ][ $key ] = ( $this->rulesTableExists() and \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key ) );
 	}
 	
 	/**
