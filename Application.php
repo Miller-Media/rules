@@ -818,10 +818,25 @@ class _Application extends \IPS\rules\Secure\Application
 								$formElement = NULL;
 								foreach ( $form->elements as $tab => $elements )
 								{
+									/* Quick look */
 									if ( isset( $elements[ $el ] ) )
 									{
 										$formElement = $elements[ $el ];
 										break;
+									}
+									
+									/* Sometimes, the added html id may not be the same as the element name (i.e. editors) */
+									foreach( $elements as $element )
+									{
+										if 
+										( 
+											( $element->htmlId and $el == $element->htmlId ) or 
+											( ! $element->htmlId and $el == $form->id . '_' . $element->name )
+										)
+										{
+											$formElement = $element;
+											break 2;
+										}
 									}
 								}
 								
@@ -1697,7 +1712,7 @@ class _Application extends \IPS\rules\Secure\Application
 						$event = $operation->rule() ? $operation->rule()->event() : NULL;
 						$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
 						$file = array_pop( $paths );
-						static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
+						static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Operation Callback Exception', 1 );
 					}
 				}
 				else
@@ -1716,7 +1731,7 @@ class _Application extends \IPS\rules\Secure\Application
 				$event = $operation->rule() ? $operation->rule()->event() : NULL;
 				$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
 				$file = array_pop( $paths );
-				static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
+				static::rulesLog( $event, $operation->rule(), $operation, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, "Argument Callback Exception ({$arg_name})", 1 );
 			}
 		}
 		else
