@@ -167,7 +167,7 @@ class _Event
 	 */
 	public function trigger()
 	{
-		if ( ! $this->locked )
+		if ( ! $this->locked and ! \IPS\rules\Application::$shutDown )
 		{
 			/* Don't do this during an upgrade */
 			if( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation === 'setup' )
@@ -223,48 +223,60 @@ class _Event
 			 */
 			if ( $this->thread === $this->rootThread )
 			{
-			
-				$this->locked = TRUE;
-				
-				while ( $deferred = array_shift( $this->actionStack ) )
-				{
-					$action 		= $deferred[ 'action' ];
-					$this->thread 		= $deferred[ 'thread' ];
-					$this->parentThread 	= $deferred[ 'parentThread' ];
-					
-					/**
-					 * Execute the action
-					 */					
-					try
-					{
-						$action->locked = TRUE;
-						
-						$result = call_user_func_array( $action->definition[ 'callback' ], array_merge( $deferred[ 'args' ], array( $action->data[ 'configuration' ][ 'data' ], $deferred[ 'event_args' ], $action ) ) );					
-						
-						$action->locked = FALSE;
-						
-						if ( $rule = $action->rule() and $rule->debug )
-						{
-							\IPS\rules\Application::rulesLog( $this, $rule, $action, $result, 'Evaluated' );
-						}
-					}
-					catch( \Exception $e )
-					{
-						/**
-						 * Log Exceptions
-						 */
-						$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
-						$file = array_pop( $paths );
-						\IPS\rules\Application::rulesLog( $this, $action->rule(), $action, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Error Exception', 1 );
-					}
-				}
-				
-				$this->locked = FALSE;
-				
-				/* Reset threads */
-				$this->thread = $this->parentThread = $this->rootThread = NULL;
+				$actions = $this->actionStack;
+				$this->actionStack = array();
+				$this->executeDeferred( $actions );
 			}			
 		}
+	}
+	
+	/**
+	 * Execute Deferred
+	 *
+	 * @param	array		$actions		Deferred actions to execute
+	 * @return	void
+	 */
+	public function executeDeferred( $actions )
+	{
+		$this->locked = TRUE;
+		
+		while ( $deferred = array_shift( $actions ) )
+		{
+			$action 		= $deferred[ 'action' ];
+			$this->thread 		= $deferred[ 'thread' ];
+			$this->parentThread 	= $deferred[ 'parentThread' ];
+			
+			/**
+			 * Execute the action
+			 */					
+			try
+			{
+				$action->locked = TRUE;
+				
+				$result = call_user_func_array( $action->definition[ 'callback' ], array_merge( $deferred[ 'args' ], array( $action->data[ 'configuration' ][ 'data' ], $deferred[ 'event_args' ], $action ) ) );					
+				
+				$action->locked = FALSE;
+				
+				if ( $rule = $action->rule() and $rule->debug )
+				{
+					\IPS\rules\Application::rulesLog( $this, $rule, $action, $result, 'Evaluated' );
+				}
+			}
+			catch( \Exception $e )
+			{
+				/**
+				 * Log Exceptions
+				 */
+				$paths = explode( '/', str_replace( '\\', '/', $e->getFile() ) );
+				$file = array_pop( $paths );
+				\IPS\rules\Application::rulesLog( $this, $action->rule(), $action, $e->getMessage() . '<br>Line: ' . $e->getLine() . ' of ' . $file, 'Operation Callback Exception', 1 );
+			}
+		}
+		
+		$this->locked = FALSE;
+		
+		/* Reset threads */
+		$this->thread = $this->parentThread = $this->rootThread = NULL;	
 	}
 	
 	/**

@@ -232,14 +232,21 @@ class _Action extends \IPS\Node\Model
 			if ( $this->schedule_mode == 0 )
 			{
 				return array(
-					0	=> 'ipsBadge ipsBadge_intermediary',
+					0	=> 'ipsBadge ipsBadge_positive',
 					2	=> 'Immediately',
 				);
+			}
+			else if ( $this->schedule_mode == 5 )
+			{
+				return array(
+					0	=> 'ipsBadge ipsBadge_positive',
+					2	=> 'Defer To Page End',
+				);				
 			}
 			else
 			{
 				return array(
-					0	=> 'ipsBadge ipsBadge_positive',
+					0	=> 'ipsBadge ipsBadge_intermediary',
 					2	=> '<i class="fa fa-clock-o fa-lg"></i> Schedule',
 				);
 			}
@@ -285,6 +292,7 @@ class _Action extends \IPS\Node\Model
 		(
 			0 => 'rules_action_execution_now',
 			1 => 'rules_action_execution_defer',
+			5 => 'rules_action_execution_end',
 			2 => 'rules_action_execution_future',
 			3 => 'rules_action_execution_date',
 			4 => 'rules_action_execution_custom',

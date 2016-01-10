@@ -34,6 +34,16 @@ class _Application extends \IPS\rules\Secure\Application
 	 * Global Arguments
 	 */
 	public static $globalArguments = NULL;
+	
+	/**
+	 * @brief	Action Queue
+	 */
+	public static $actionQueue = array();
+	
+	/**
+	 * @brief	Application Shutdown Flag
+	 */
+	public static $shutDown = FALSE;
 		
 	/**
 	 * [Node] Get Node Icon
@@ -1663,6 +1673,26 @@ class _Application extends \IPS\rules\Secure\Application
 									}
 									break;
 									
+								/**
+								 * At the end of the page load
+								 */
+								case 5:
+									$future_time = -1;
+									$result = '__suppress__';
+									static::$actionQueue[] = array
+									(
+										'event'	=> $event,
+										'action' => array
+										(
+											'action' 	=> $operation,
+											'args' 	 	=> $operation_args,
+											'event_args' 	=> $arg_map,
+											'thread' 	=> $event->thread,
+											'parent' 	=> $event->parentThread,
+										),
+									);
+									break;
+									
 							}
 							
 							if ( $future_time > time() )
@@ -2434,6 +2464,29 @@ class _Application extends \IPS\rules\Secure\Application
 		}
 		
 		return static::rulesDefinitions( $definition_key );
+	}
+	
+	/**
+	 * Shutdown Rules: Executed queued actions
+	 *
+	 * @return	void
+	 */ 
+	public static function shutDown()
+	{
+		/* No more events should be triggered from this point forward */
+		static::$shutDown = TRUE;
+		
+		/**
+		 * Run end of page queued actions
+		 */
+		while( $queued = array_shift( static::$actionQueue ) )
+		{
+			$event = $queued[ 'event' ];
+			$action = array( $queued[ 'action' ] );
+			
+			$event->executeDeferred( $action );
+		}
+	
 	}
 }
 
