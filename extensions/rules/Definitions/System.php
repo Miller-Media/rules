@@ -120,7 +120,7 @@ class _System
 								return $values[ 'rules_Comparisons_number1' ];
 							},
 						),
-					),	
+					),
 					'number2' => array
 					(
 						'default' => 'manual',
@@ -263,7 +263,8 @@ class _System
 				(
 					'form' => function( $form, $values, $condition )
 					{
-						$compare_options = array(
+						$compare_options = array
+						(
 							'boolean'	=> 'Value is a Boolean (TRUE/FALSE)',
 							'string' 	=> 'Value is a String',
 							'integer'	=> 'Value is a Integer',
@@ -308,7 +309,8 @@ class _System
 				(
 					'form' => function( $form, $values, $condition )
 					{
-						$compare_options = array(
+						$compare_options = array
+						(
 							'lengthgreater'	=> 'Array length is greater than',
 							'lengthless' 	=> 'Array length is less than',
 							'lengthequal'	=> 'Array length is equal to',
@@ -599,6 +601,19 @@ class _System
 			'create_conversation' => array
 			(
 				'callback' 	=> array( $this, 'createConversation' ),	
+				'configuration' => array
+				(
+					'form' => function( &$form, $values, $operation )
+					{
+						$participation_modes = array
+						(
+							0 => 'rules_participation_all',
+							1 => 'rules_participation_individual',
+						);
+						
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_participation_mode', (int) $values[ 'rules_participation_mode' ], TRUE, array( 'options' => $participation_modes ), NULL, NULL, NULL, 'rules_participation_mode' ) );
+					},
+				),
 				'arguments'	=> array
 				(
 					'creator' => array
@@ -874,7 +889,7 @@ class _System
 		}
 		
 		$email = \IPS\Email::buildFromContent( $subject, $message );
-		$email->send( $recipients, NULL, $bcc_recipients );
+		$email->send( $recipients, array(), $bcc_recipients );
 		return "email sent";
 	}
 	
@@ -892,28 +907,51 @@ class _System
 		{
 			return "no participants specified";
 		}
-
-		$conversation = \IPS\core\Messenger\Conversation::createItem( $creator, $creator->ip_address, \IPS\DateTime::ts( time() ) );
-		$conversation->title = $subject;
-		$conversation->is_system = TRUE;
-		$conversation->save();
-		
-		$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
-		$conversation->first_msg_id = $_message->id;
 		
 		if ( ! is_array( $participants ) )
 		{
 			$participants = array( $participants );
 		}
 		
-		foreach ( $participants as $participant )
+		if ( $values[ 'rules_participation_mode' ] == 1 )
 		{
-			$conversation->authorize( $participant );
-		}
-		
-		$conversation->save();
+			/* Create a separate conversation with all participants */
+			foreach( $participants as $participant )
+			{
+				$conversation = \IPS\core\Messenger\Conversation::createItem( $creator, $creator->ip_address, \IPS\DateTime::ts( time() ) );
+				$conversation->title = $subject;
+				$conversation->is_system = TRUE;
+				$conversation->save();
 				
-		return "conversation started with " . $conversation->activeParticipants . " participants";
+				$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
+				$conversation->first_msg_id = $_message->id;
+				
+				$conversation->authorize( $participant );				
+				$conversation->save();
+			}
+			
+			return "individual conversations started with " . count( $participants ) . " participants";
+		}
+		else
+		{
+			/* Create a single conversation and include all participants */
+			$conversation = \IPS\core\Messenger\Conversation::createItem( $creator, $creator->ip_address, \IPS\DateTime::ts( time() ) );
+			$conversation->title = $subject;
+			$conversation->is_system = TRUE;
+			$conversation->save();
+			
+			$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
+			$conversation->first_msg_id = $_message->id;
+			
+			foreach ( $participants as $participant )
+			{
+				$conversation->authorize( $participant );
+			}
+			
+			$conversation->save();
+			
+			return "conversation started with " . $conversation->activeParticipants . " participants";
+		}
 	}
 	
 	/**
@@ -974,7 +1012,7 @@ class _System
 			$notification->member 		= $recipient;
 			$notification->item 		= $action;
 			$notification->notification_app = \IPS\Application::load( 'rules' );
-			$notification->notification_key = 'rules_notification';
+			$notification->notification_key = 'rules_notifications';
 			$notification->member_data 	= array
 			(
 				'title' 	=> $title,
