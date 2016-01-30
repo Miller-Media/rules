@@ -266,6 +266,7 @@ class _Members
 							'followers'		=> 'rules_member_attribute_followers',
 							'reputation'		=> 'rules_member_attribute_reputation',
 							'posts'			=> 'rules_member_attribute_posts',
+							'pviews'		=> 'rules_member_attribute_profile_views',
 							'joined'		=> 'rules_member_attribute_joined',
 							'birthdate'		=> 'rules_member_attribute_birthdate',
 							'last_activity'		=> 'rules_member_attribute_last_activity',
@@ -277,6 +278,7 @@ class _Members
 							'followers'		=> array( 'rules_Members_attribute_compare_type_value', 'rules_Members_attribute_compare_value' ),
 							'reputation'		=> array( 'rules_Members_attribute_compare_type_value', 'rules_Members_attribute_compare_value' ),
 							'posts'			=> array( 'rules_Members_attribute_compare_type_value', 'rules_Members_attribute_compare_value' ),
+							'pviews'		=> array( 'rules_Members_attribute_compare_type_value', 'rules_Members_attribute_compare_value' ),
 							'joined'		=> array( 'rules_Members_attribute_compare_type_date' ),
 							'joined'		=> array( 'rules_Members_attribute_compare_type_date' ),
 							'birthdate'		=> array( 'rules_Members_attribute_compare_type_date' ),
@@ -669,6 +671,11 @@ class _Members
 			
 				$amount = $member->member_posts;
 				break;
+				
+			case 'pviews':
+			
+				$amount = $member->members_profile_views;
+				break;
 			
 			case 'joined':
 			
@@ -696,12 +703,12 @@ class _Members
 				break;
 		}
 		
-		
 		switch ( $values[ 'rules_Members_member_attribute' ] )
 		{
 			case 'followers':
 			case 'reputation':
 			case 'posts':
+			case 'pviews':
 			
 				$value = $values[ 'rules_Members_attribute_compare_value' ];
 				switch( $values[ 'rules_Members_attribute_compare_type_value' ] )
