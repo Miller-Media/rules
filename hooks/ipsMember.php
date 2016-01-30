@@ -88,6 +88,52 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 		}
 		
 		parent::set_temp_ban( $value );
-	}	
+	}
+
+	/**
+	 * Add profile visitor
+	 *
+	 * @param   \IPS\Member $visitor	Member that viewed profile
+	 * @return	void
+	 */
+	public function addVisitor( $visitor )
+	{
+		parent::addVisitor( $visitor );
+		
+		\IPS\rules\Event::load( 'rules', 'Members', 'profile_visit' )->trigger( $this, $visitor );
+	}
+
+	/**
+	 * @brief	Member Profile Data Caching
+	 */
+	public static $rulesProfileDataCache = array();
+	
+	/**
+	 * Get Stored Profile Data
+	 *
+	 * @param	int	$field_id	The field id to fetch data for
+	 * @return	mixed
+	 */
+	public function rulesProfileData( $field_id )
+	{
+		if ( ! $this->member_id )
+		{
+			return NULL;
+		}
+		
+		if ( ! isset( static::$rulesProfileDataCache[ $this->member_id ] ) )
+		{
+			try
+			{
+				static::$rulesProfileDataCache[ $this->member_id ] = \IPS\Db::i()->select( '*', 'core_pfields_content', array( 'member_id = ?', $this->member_id ) )->first();
+			}
+			catch( \UnderflowException $e )
+			{
+				static::$rulesProfileDataCache[ $this->member_id ] = array();
+			}
+		}
+		
+		return $profileFields[ $this->member_id ][ 'field_' . $field_id ];
+	}
 
 }
