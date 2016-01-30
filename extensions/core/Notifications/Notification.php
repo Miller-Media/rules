@@ -34,7 +34,7 @@ class _Notification
 	{
 		return array
 		(
-			'rules_notification'	=> array( 'default' => array( 'inline' ), 'disabled' => array( 'email' ) ),
+			'rules_notifications'	=> array( 'default' => array( 'inline' ), 'disabled' => array( 'email' ) ),
 		);
 	}
 	
@@ -44,7 +44,7 @@ class _Notification
 	 * @param	\IPS\Notification\Inline	$notification	The notification
 	 * @return	array
 	 */
-	public function parse_rules_notification( $notification )
+	public function parse_rules_notifications( $notification )
 	{
 		$url = $content = $author = NULL;
 		$data = $notification->member_data;
