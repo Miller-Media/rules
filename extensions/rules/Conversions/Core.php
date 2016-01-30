@@ -164,15 +164,23 @@ class _Core
 				),				
 				'Joined Date' => array
 				(
+					'token' => 'joined',
+					'description' => 'Joined date',
 					'argtype' => 'object',
 					'class' => '\IPS\DateTime',
 					'converter' => function( $member )
 					{
-						return \IPS\DateTime::ts( $member->joined );
+						return $member->joined;
+					},
+					'tokenValue' => function( $date )
+					{
+						return (string) $date;
 					},
 				),
 				'Birthday' => array
 				(
+					'token' => 'birthday',
+					'description' => 'Birthday',
 					'argtype' => 'object',
 					'class' => '\IPS\DateTime',
 					'nullable' => TRUE,
@@ -180,10 +188,16 @@ class _Core
 					{
 						return $member->birthday;
 					},
+					'tokenValue' => function( $date )
+					{
+						return (string) $date;
+					},
 				),
 				'Age' => array
 				(
+					'token' => 'age',
 					'argtype' => 'int',
+					'description' => 'Age',
 					'nullable' => TRUE,
 					'converter' => function( $member )
 					{
@@ -203,8 +217,8 @@ class _Core
 				'Url' => array
 				(
 					'token' => 'url',
-					'tokenValue' => function( $url ) { return (string) $url; },
 					'description' => 'The url',
+					'tokenValue' => function( $url ) { return (string) $url; },
 					'argtype' => 'object',
 					'class' => '\IPS\Http\Url',
 					'converter' => function( $member )
@@ -232,11 +246,17 @@ class _Core
 				),
 				'Last Activity' => array
 				(
+					'token' => 'lastactivity',
+					'description' => 'Last activity',
 					'argtype' => 'object',
 					'class' => '\IPS\DateTime',
 					'converter' => function( $member )
 					{
 						return \IPS\DateTime::ts( $member->last_activity );
+					},
+					'tokenValue' => function( $date )
+					{
+						return (string) $date;
 					},
 				),
 			),
@@ -485,12 +505,7 @@ class _Core
 					'converter' => function( $node )
 					{
 						$title = $node->_title;
-						$lang = \IPS\Member::loggedIn()->language();
-						if ( isset( $lang->outputStack[ $title ] ) )
-						{
-							$title = $lang->get( $lang->outputStack[ $title ][ 'key' ] );
-						}
-						
+						\IPS\Lang::load( \IPS\Lang::defaultLanguage() )->parseOutputForDisplay( $title );						
 						return $title;
 					},
 				),
@@ -718,6 +733,181 @@ class _Core
 				}
 			}
 		}
+		
+		/**
+		 * Custom Member Profile Fields
+		 */
+		
+		/* Cheap way to make sure profile fields are in the data store */
+		\IPS\core\ProfileFields\Field::fieldsForContentView();
+		foreach ( \IPS\Data\Store::i()->profileFields[ 'fields' ] as $group_id => $fields )
+		{
+			foreach( $fields as $field_id => $fieldrow )
+			{
+				$field = \IPS\core\ProfileFields\Field::constructFromData( $fieldrow );
+				
+				/* resets */
+				$argtype = 'mixed';
+				$argclass = NULL;
+				$token = 'field_' . $field_id;
+				$tokenValue = NULL;
+				$converter = function( $member ) use ( $field_id )
+				{							
+					return $member->rulesProfileData( $field_id );
+				};
+				
+				switch( $field->type )
+				{
+					case 'Text':
+					case 'Password':
+					case 'Email':
+					case 'Codemirror':
+					case 'Tel':
+					case 'TextArea':
+					case 'Color':
+					case 'Editor':
+					case 'Radio':
+					
+						$argtype = 'string';
+						break;
+						
+					case 'Checkbox':
+					case 'YesNo':
+					
+						$argtype = 'bool';
+						$converter = function( $member ) use ( $field_id )
+						{
+							if ( $fieldData = $member->rulesProfileData( $field_id ) )
+							{
+								return (bool) $fieldData;
+							}
+						};
+						$tokenValue = function( $bool )
+						{
+							return $bool ? "Yes" : "No";
+						};
+						break;
+						
+					case 'Date':
+					
+						$argtype = 'object';
+						$argclass = '\IPS\DateTime';
+						$converter = function( $member ) use ( $field_id )
+						{
+							if ( $fieldData = $member->rulesProfileData( $field_id ) )
+							{
+								return \IPS\DateTime::ts( $fieldData );
+							}
+						};
+						break;
+						
+					case 'Number':
+					case 'Rating':
+					
+						$argtype = 'float';
+						break;
+						
+					case 'Address':
+					
+						$token = NULL;
+						$argtype = 'object';
+						$argclass = '\IPS\GeoLocation';
+						$converter = function( $member ) use ( $field_id )
+						{
+							if ( $fieldData = $member->rulesProfileData( $field_id ) )
+							{
+								return \IPS\GeoLocation::buildFromJson( $fieldData );
+							}
+						};
+						break;
+						
+					case 'Member':
+					
+						$argtype = 'object';
+						$argclass = '\IPS\Member';
+						$converter = function( $member ) use ( $field_id )
+						{
+							if ( $fieldData = $member->rulesProfileData( $field_id ) )
+							{
+								try
+								{
+									return \IPS\Member::load( $fieldData );
+								}
+								catch( \OutOfRangeException $e ) { }
+							}
+						};
+						$tokenValue = function( $member )
+						{
+							return $member->name;
+						};
+						break;
+						
+					case 'Url':
+					
+						$argtype = 'object';
+						$argclass = '\IPS\Http\Url';
+						$converter = function( $member ) use ( $field_id )
+						{
+							if ( $fieldData = $member->rulesProfileData( $field_id ) )
+							{
+								return new \IPS\Http\Url( $fieldData );
+							}
+						};
+						break;
+						
+					case 'Select':
+					case 'CheckboxSet':
+
+						$options = json_decode( $field->content, TRUE );
+						if ( $field->multiple )
+						{
+							$argtype = 'array';
+							$converter = function( $member ) use ( $field_id, $options )
+							{
+								if ( $fieldData = $member->rulesProfileData( $field_id ) )
+								{
+									$values = array();
+									$_selections = explode( ',', $fieldData );
+									foreach( $_selections as $_selection )
+									{
+										$values[ $_selection ] = $options[ $_selection ];
+									}
+									
+									return $values;
+								}
+							};
+							$tokenValue = function( $array )
+							{
+								return implode( ', ', $array );
+							};
+						}
+						else
+						{
+							$argtype = 'string';
+							$converter = function( $member ) use ( $field_id, $options )
+							{
+								if ( $fieldData = $member->rulesProfileData( $field_id ) )
+								{
+									return $options[ $fieldData ];
+								}
+							};
+						}
+						break;
+					
+				}
+				
+				$map[ '\IPS\Member' ][ 'core_pfield_' . $field->id ] = array
+				(
+					'token' => $token,
+					'tokenValue' => $tokenValue,
+					'argtype' => $argtype,
+					'class' => $argclass,
+					'description' => $field->_title . ' (profile field)',
+					'converter' => $converter,
+					'nullable' => TRUE,
+				);
+			}
+		}		
 		
 		return $map;
 	}
