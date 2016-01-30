@@ -241,7 +241,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, array( 'multiple' => NULL ), NULL, NULL, NULL, $field_name ) );
+						$options[ 'multiple' ] = NULL;
+						
+						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name )
@@ -258,8 +260,11 @@ class _Application extends \IPS\rules\Secure\Application
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
 						{
-							try { $members[] = \IPS\Member::load( $member_id ); }
-							catch( \Exception $e ) {}
+							if ( $member_id )
+							{
+								try { $members[] = \IPS\Member::load( $member_id ); }
+								catch( \Exception $e ) {}
+							}
 						}
 						
 						return $members;
@@ -288,7 +293,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, array( 'multiple' => 1 ), NULL, NULL, NULL, $field_name ) );
+						$options[ 'multiple' ] = 1;
+						
+						$form->add( new \IPS\Helpers\Form\Member( $field_name, $members, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name )
@@ -303,8 +310,11 @@ class _Application extends \IPS\rules\Secure\Application
 						$members = array();
 						foreach( (array) $values[ $field_name ] as $member_id )
 						{
-							try { $members[] = \IPS\Member::load( $member_id ); }
-							catch( \Exception $e ) { }
+							if ( $member_id )
+							{
+								try { $members[] = \IPS\Member::load( $member_id ); }
+								catch( \Exception $e ) { }
+							}
 						}
 						return array_shift( $members );
 					},
@@ -339,7 +349,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, array( 'multiple' => NULL, 'class' => $itemClass ), NULL, NULL, NULL, $field_name ) );
+						$options[ 'multiple' ] = NULL;
+						
+						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name, $options )
@@ -417,7 +429,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, array( 'multiple' => 1, 'class' => $itemClass ), NULL, NULL, NULL, $field_name ) );
+						$options[ 'multiple' ] = 1;
+						
+						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name, $options )
@@ -489,7 +503,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$form->add( new \IPS\Helpers\Form\Node( $field_name, $items, $required, array( 'multiple' => NULL, 'class' => $nodeClass ), NULL, NULL, NULL, $field_name ) );
+						$options[ 'multiple' ] = TRUE;
+						
+						$form->add( new \IPS\Helpers\Form\Node( $field_name, $items, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name, $options )
@@ -567,7 +583,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$form->add( new \IPS\Helpers\Form\Node( $field_name, $items, $required, array( 'multiple' => FALSE, 'class' => $nodeClass ), NULL, NULL, NULL, $field_name ) );
+						$options[ 'multiple' ] = FALSE;
+						
+						$form->add( new \IPS\Helpers\Form\Node( $field_name, $items, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name, $options )
@@ -620,7 +638,7 @@ class _Application extends \IPS\rules\Secure\Application
 					'form' => function( $form, $values, $operation ) use ( $field_name, $required, $options )
 					{
 						$values[ $field_name ] = $values[ $field_name ] ?: time();
-						$form->add( new \IPS\Helpers\Form\Date( $field_name, \IPS\DateTime::ts( $values[ $field_name ] ), $required, array( 'time' => $options[ 'time' ] ), NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Date( $field_name, \IPS\DateTime::ts( $values[ $field_name ] ), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values, $operation ) use ( $field_name )
@@ -645,7 +663,7 @@ class _Application extends \IPS\rules\Secure\Application
 				(
 					'form' => function( $form, $values ) use ( $field_name, $required )
 					{
-						$form->add( new \IPS\Helpers\Form\Stack( $field_name, $values[ $field_name ] ?: array(), $required, array(), NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Stack( $field_name, $values[ $field_name ] ?: array(), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'getArg' => function( $values ) use ( $field_name )
@@ -663,7 +681,7 @@ class _Application extends \IPS\rules\Secure\Application
 				(
 					'form' => function( $form, $values, $action ) use ( $field_name, $required )
 					{
-						$form->add( new \IPS\Helpers\Form\Url( $field_name, new \IPS\Http\Url( $values[ $field_name ] ), $required, array(), NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Url( $field_name, new \IPS\Http\Url( $values[ $field_name ] ), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name )
@@ -995,11 +1013,11 @@ class _Application extends \IPS\rules\Secure\Application
 								{
 									if ( isset ( $_type_def[ 'description' ] ) )
 									{
-										$_arg_list[] = "<strong>{$_type}</strong>: {$_type_def[ 'description' ]}";
+										$_arg_list[] = "<strong>{$_type}</strong>" . ( $_type_def[ 'class' ] ? ' (' . implode( ',', (array) $_type_def[ 'class' ] ) . ')' : '' ) . ": {$_type_def[ 'description' ]}";
 									}
 									else
 									{
-										$_arg_list[] = "<strong>{$_type}</strong>";
+										$_arg_list[] = "<strong>{$_type}</strong>" . ( $_type_def[ 'class' ] ? ' (' . implode( ',', (array) $_type_def[ 'class' ] ) . ')' : '' );
 									}
 								}
 								else
