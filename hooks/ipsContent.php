@@ -172,14 +172,15 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 		{
 			$result = call_user_func_array( 'parent::save', func_get_args() );
 			
+			\IPS\rules\Event::load( 'rules', 'Content', 'content_created' )->trigger( $this );
 			\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $this->_data, TRUE );
 			
 			$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
 			if ( ! $classEvent->placeholder )
 			{
+				\IPS\rules\Event::load( 'rules', 'Content', 'content_created_' . md5( get_class( $this ) ) )->trigger( $this );
 				$classEvent->trigger( $this, $this->_data, TRUE );
 			}
-
 		}
 		else
 		{
