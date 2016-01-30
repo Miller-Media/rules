@@ -39,6 +39,13 @@ class _Content
 	
 		$content_events = array
 		(
+			'content_created' => array
+			(
+				'arguments' => array
+				( 
+					'content' 	=> array( 'argtype' => 'object', 'class' => '\IPS\Content' ),
+				),			
+			),
 			'content_updated' => array
 			( 
 				'arguments' => array
@@ -245,6 +252,7 @@ class _Content
 			'contentClass' 	=> '\\' . ltrim( $contentClass, '\\' ),
 		) );
 		
+		$this->buildEvent( $app_events, 'content_created', $build_data );
 		$this->buildEvent( $app_events, 'content_updated', $build_data );
 		$this->buildEvent( $app_events, 'content_approved', $build_data );
 
