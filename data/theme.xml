@@ -213,7 +213,7 @@
  <template template_group="views" template_name="rules" template_data="$rules, $top=TRUE" template_location="admin" template_app="rules"><![CDATA[
 {{foreach $rules as $rule}}
 <div class="ipsPad">
-	<div class="ipsCode">
+	<div class="ipsCode" style="white-space:normal">
 		<i class='fa fa-legal'></i> {{if $top}}Rule:{{else}}Subrule:{{endif}} <strong>{$rule->title}</strong> {{if ! $rule->enabled}}<span class="ipsTree_toggleDisable ipsBadge ipsBadge_negative">Disabled</span>{{endif}}
 		<ul>
 			{{if $top}}

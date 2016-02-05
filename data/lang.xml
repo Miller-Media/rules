@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100306">
+ <app key="rules" version="100310">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -14,7 +14,7 @@
   <word key="module__rules_system" js="0">Rules System</word>
   <word key="module__rules_logs" js="0">Custom Logs</word>
   <word key="notifications__rules_Notification" js="0">Rules Notifications</word>
-  <word key="notifications__rules_notification" js="0">Automated Notifications</word>
+  <word key="notifications__rules_notifications" js="0">Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
   <word key="rules_perm__label" js="0">Data Permissions</word>
   <word key="rules_perm__view" js="0">View Data</word>
@@ -158,9 +158,10 @@
   <word key="ruleset_description" js="0">Rule Set Description</word>
   <word key="ruleset_creator" js="0">Created By</word>
   <word key="action_schedule_mode" js="0">Action should be executed</word>
-  <word key="action_schedule_mode_desc" js="0">Actions that are executed immediately can affect the conditions of other rules operating on the same event. In some cases this is desirable, but is generally not recommended as it can lead to unexpected rule results.</word>
+  <word key="action_schedule_mode_desc" js="0"><![CDATA[Immediate actions are taken before other rules on the same event are evaluated.<br>Actions executed at the end of the event allow actions to queue while other rules on the same event are tested.<br>Actions selected to execute at the end of the page load will queue until all events are finished.<br>Actions selected to happen at a future time will be queued and executed via cron.]]></word>
   <word key="rules_action_execution_now" js="0">Immediately</word>
-  <word key="rules_action_execution_defer" js="0">At the end of the event (recommended)</word>
+  <word key="rules_action_execution_defer" js="0">At the end of the event (default)</word>
+  <word key="rules_action_execution_end" js="0">At the end of the page load</word>
   <word key="rules_action_execution_future" js="0">Fixed amount of time in the future</word>
   <word key="rules_action_execution_date" js="0">A specific date in the future</word>
   <word key="rules_action_execution_custom" js="0">A calculated date and time</word>
@@ -225,8 +226,8 @@
 							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>]]></word>
   <word key="condition_not" js="0">NOT</word>
   <word key="condition_not_desc" js="0">Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.</word>
-  <word key="rules_event_argument_optional_notice" js="0">The event has indicated that this data may sometimes be empty. The good news is that this argument is optional for the operation. However, you may still provide an alternative value to use in case it is not provided by the event.</word>
-  <word key="rules_event_argument_required_notice" js="0">The event has indicated that this data may sometimes be empty. This argument is REQUIRED for the operation to work. If you do not provide an alternative value, this operation will be skipped if the event data is missing.</word>
+  <word key="rules_event_argument_optional_notice" js="0">Rules has determined that this data may sometimes be empty. This argument is optional for the operation. However, you may still provide an alternative value to use in case it is not provided by the event.</word>
+  <word key="rules_event_argument_required_notice" js="0">Rules has determined that this data may sometimes be empty. This argument is REQUIRED for the operation to work. If you do not provide an alternative value, this operation will be skipped if the event data is missing.</word>
   <word key="conditions_add_child" js="0">Add Sub Condition</word>
   <word key="or_group_badge" js="0">OR ANY SUBCONDITION</word>
   <word key="and_group_badge" js="0">AND ALL SUBCONDITIONS</word>
@@ -299,6 +300,12 @@
   <word key="rules_Members_event_memberSync_onProfileUpdate_changed" js="0">Array of profile fields that have changed</word>
   <word key="rules_Members_event_memberSync_onSetAsSpammer" js="0">Member is flagged as spammer</word>
   <word key="rules_Members_event_memberSync_onSetAsSpammer_member" js="0">Member that was flagged as spammer</word>
+  <word key="rules_Members_event_member_not_spammer" js="0">Member is unflagged as spammer</word>
+  <word key="rules_Members_event_member_not_spammer_member" js="0">Member that was unflagged as spammer</word>
+  <word key="rules_Members_event_member_banned" js="0">Member is banned</word>
+  <word key="rules_Members_event_member_banned_member" js="0">Member that was banned</word>
+  <word key="rules_Members_event_member_unbanned" js="0">Member is unbanned</word>
+  <word key="rules_Members_event_member_unbanned_member" js="0">Member that was unbanned</word>
   <word key="rules_Members_event_memberSync_onValidate" js="0">Member account is validated</word>
   <word key="rules_Members_event_memberSync_onValidate_member" js="0">Member that was validated</word>
   <word key="rules_Members_event_memberSync_onMerge" js="0">Member accounts are merged together</word>
@@ -318,6 +325,11 @@
   <word key="rules_Members_event_content_recounted" js="0">Member content has been re-counted</word>
   <word key="rules_Members_event_content_recounted_member" js="0">Member whose content has been re-counted</word>
   <word key="rules_Members_event_content_recounted_count" js="0">The updated content count</word>
+  <word key="rules_Members_event_profile_visit" js="0">A member visit is logged to a members profile</word>
+  <word key="rules_Members_event_profile_visit_member" js="0">Member whose profile was visited</word>
+  <word key="rules_Members_event_profile_visit_visitor" js="0">Member who visited the profile</word>
+  <word key="rules_Members_conditions_check_member" js="0">Check for a specific member or members</word>
+  <word key="rules_Members_conditions_check_member_member" js="0">Member To Check</word>
   <word key="rules_Members_conditions_member_has_group" js="0">Member is in a certain member group</word>
   <word key="rules_Members_conditions_member_has_group_member" js="0">Member To Check</word>
   <word key="rules_Members_member_groups" js="0">Check if member is in any of these groups</word>
@@ -332,6 +344,7 @@
   <word key="rules_member_attribute_signature" js="0">Has Signature</word>
   <word key="rules_member_attribute_followers" js="0">Followers</word>
   <word key="rules_member_attribute_reputation" js="0">Reputation Level</word>
+  <word key="rules_member_attribute_profile_views" js="0">Profile Views</word>
   <word key="rules_member_attribute_posts" js="0">Post Count</word>
   <word key="rules_member_attribute_joined" js="0">Joined Date</word>
   <word key="rules_member_attribute_birthday" js="0">Birthday</word>
@@ -398,11 +411,11 @@
   <word key="rules_Members_actions_unban_member_member" js="0">Member To Unban</word>
   <word key="rules_Members_actions_prune_member" js="0">Prune a member</word>
   <word key="rules_Members_actions_prune_member_member" js="0">Member To Prune</word>
-  <word key="rules_System_event_record_updated" js="0">ActiveRecord: Record Created/Updated</word>
+  <word key="rules_System_event_record_updated" js="0">ActiveRecord: Database record created/updated</word>
   <word key="rules_System_event_record_updated_record" js="0">Record that was created/updated</word>
   <word key="rules_System_event_record_updated_changed" js="0">An array of the values which have changed</word>
   <word key="rules_System_event_record_updated_new" js="0">A boolean value indicating if the record is new</word>
-  <word key="rules_System_event_record_deleted" js="0">ActiveRecord: Record Deleted</word>
+  <word key="rules_System_event_record_deleted" js="0">ActiveRecord: Database record deleted</word>
   <word key="rules_System_event_record_deleted_record" js="0">Record that was deleted</word>
   <word key="rules_System_event_browser_output" js="0">Output is being sent to browser</word>
   <word key="rules_System_event_browser_output_output" js="0">The content which is going to be output</word>
@@ -476,6 +489,9 @@
   <word key="rules_System_actions_create_conversation_participants" js="0">Conversation Participants</word>
   <word key="rules_System_actions_create_conversation_subject" js="0">Conversation Subject</word>
   <word key="rules_System_actions_create_conversation_message" js="0">Conversation Message Body</word>
+  <word key="rules_participation_mode" js="0">Conversation Participation Mode</word>
+  <word key="rules_participation_all" js="0">All recipients will be participants in the same conversation</word>
+  <word key="rules_participation_individual" js="0">A separate conversation will be created with each participant</word>
   <word key="rules_System_actions_create_notification" js="0">Create a new member notification</word>
   <word key="rules_System_actions_create_notification_recipients" js="0">Notification Recipients</word>
   <word key="rules_System_actions_create_notification_title" js="0">Notification Title</word>
@@ -485,7 +501,9 @@
   <word key="rules_System_url" js="0">Url</word>
   <word key="rules_Comparisons_type" js="0">Comparison Type</word>
   <word key="rules_Comparisons_value" js="0">Value</word>
-  <word key="rules_Content_event_content_updated" js="0">Any content has been created or updated</word>
+  <word key="rules_Content_event_content_created" js="0">Any content has been created</word>
+  <word key="rules_Content_event_content_created_content" js="0">The created/updated content</word>
+  <word key="rules_Content_event_content_updated" js="0">Any content has been updated</word>
   <word key="rules_Content_event_content_updated_content" js="0">The created/updated content</word>
   <word key="rules_Content_event_content_updated_changed" js="0">An array of the properties being saved</word>
   <word key="rules_Content_event_content_updated_new" js="0">Boolean value indicating if content is new</word>
@@ -545,8 +563,10 @@
   <word key="rules_Content_event_content_item_tags_set" js="0">Any content item's tags have been updated</word>
   <word key="rules_Content_event_content_item_tags_set_item" js="0">The content item</word>
   <word key="rules_Content_event_content_item_tags_set_tags" js="0">The content tags</word>
-  <word key="rules_Content_event_content_updated_" js="0">%s has been created or updated</word>
-  <word key="rules_Content_event_content_updated_content_" js="0">The created/updated %s</word>
+  <word key="rules_Content_event_content_created_" js="0">%s has been created</word>
+  <word key="rules_Content_event_content_created_content_" js="0">The created %s</word>
+  <word key="rules_Content_event_content_updated_" js="0">%s has been updated</word>
+  <word key="rules_Content_event_content_updated_content_" js="0">The updated %s</word>
   <word key="rules_Content_event_content_updated_changed_" js="0">An array of any changed properties</word>
   <word key="rules_Content_event_content_updated_new_" js="0">Boolean value indicating if content is new</word>
   <word key="rules_Content_event_content_approved_" js="0">%s has been approved</word>

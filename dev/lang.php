@@ -16,7 +16,7 @@ $lang = array(
 	'module__rules_logs'			=> "Custom Logs",
 	
 	'notifications__rules_Notification'	=> "Rules Notifications",
-	'notifications__rules_notification'	=> "Automated Notifications",
+	'notifications__rules_notifications'	=> "Automated Notifications",
 	'member__rules_RulesMember'		=> "Rules Data",
 	'rules_perm__label'			=> "Data Permissions",
 	'rules_perm__view'			=> "View Data",
@@ -176,9 +176,10 @@ $lang = array(
 	'ruleset_description'			=> "Rule Set Description",
 	'ruleset_creator'			=> "Created By",
 	'action_schedule_mode'			=> "Action should be executed",
-	'action_schedule_mode_desc'		=> "Actions that are executed immediately can affect the conditions of other rules operating on the same event. In some cases this is desirable, but is generally not recommended as it can lead to unexpected rule results.",
+	'action_schedule_mode_desc'		=> "Immediate actions are taken before other rules on the same event are evaluated.<br>Actions executed at the end of the event allow actions to queue while other rules on the same event are tested.<br>Actions selected to execute at the end of the page load will queue until all events are finished.<br>Actions selected to happen at a future time will be queued and executed via cron.",
 	'rules_action_execution_now'		=> "Immediately",
-	'rules_action_execution_defer'		=> "At the end of the event (recommended)",
+	'rules_action_execution_defer'		=> "At the end of the event (default)",
+	'rules_action_execution_end'		=> "At the end of the page load",
 	'rules_action_execution_future'		=> "Fixed amount of time in the future",
 	'rules_action_execution_date'		=> "A specific date in the future",
 	'rules_action_execution_custom'		=> "A calculated date and time",
@@ -248,8 +249,8 @@ $lang = array(
 							<li>If you choose OR, this condition will pass if it is valid, or if any subcondition is valid.</li></ul>",
 	'condition_not'				=> "NOT",
 	'condition_not_desc'			=> "Using NOT will reverse the condition result so that the result is TRUE if the condition is NOT MET.",
-	'rules_event_argument_optional_notice'	=> "The event has indicated that this data may sometimes be empty. The good news is that this argument is optional for the operation. However, you may still provide an alternative value to use in case it is not provided by the event.",
-	'rules_event_argument_required_notice'	=> "The event has indicated that this data may sometimes be empty. This argument is REQUIRED for the operation to work. If you do not provide an alternative value, this operation will be skipped if the event data is missing.",
+	'rules_event_argument_optional_notice'	=> "Rules has determined that this data may sometimes be empty. This argument is optional for the operation. However, you may still provide an alternative value to use in case it is not provided by the event.",
+	'rules_event_argument_required_notice'	=> "Rules has determined that this data may sometimes be empty. This argument is REQUIRED for the operation to work. If you do not provide an alternative value, this operation will be skipped if the event data is missing.",
 	'conditions_add_child'			=> "Add Sub Condition",
 	'or_group_badge'			=> "OR ANY SUBCONDITION",
 	'and_group_badge'			=> "AND ALL SUBCONDITIONS",
@@ -349,6 +350,15 @@ $lang = array(
 	'rules_Members_event_memberSync_onSetAsSpammer'		=> "Member is flagged as spammer",
 	'rules_Members_event_memberSync_onSetAsSpammer_member'	=> "Member that was flagged as spammer",
 	
+	'rules_Members_event_member_not_spammer'		=> "Member is unflagged as spammer",
+	'rules_Members_event_member_not_spammer_member'		=> "Member that was unflagged as spammer",
+	
+	'rules_Members_event_member_banned'			=> "Member is banned",
+	'rules_Members_event_member_banned_member'		=> "Member that was banned",
+	
+	'rules_Members_event_member_unbanned'			=> "Member is unbanned",
+	'rules_Members_event_member_unbanned_member'		=> "Member that was unbanned",
+	
 	'rules_Members_event_memberSync_onValidate'		=> "Member account is validated",
 	'rules_Members_event_memberSync_onValidate_member'	=> "Member that was validated",
 	
@@ -374,7 +384,14 @@ $lang = array(
 	'rules_Members_event_content_recounted_member'		=> "Member whose content has been re-counted",
 	'rules_Members_event_content_recounted_count'		=> "The updated content count",
 	
+	'rules_Members_event_profile_visit'			=> "A member visit is logged to a members profile",
+	'rules_Members_event_profile_visit_member'		=> "Member whose profile was visited",
+	'rules_Members_event_profile_visit_visitor'		=> "Member who visited the profile",
+	
 	/*** MEMBERS: Conditions ***/
+	'rules_Members_conditions_check_member'			=> "Check for a specific member or members",
+	'rules_Members_conditions_check_member_member'		=> "Member To Check",
+	
 	'rules_Members_conditions_member_has_group'		=> "Member is in a certain member group",
 	'rules_Members_conditions_member_has_group_member'	=> "Member To Check",
 	'rules_Members_member_groups'				=> "Check if member is in any of these groups",
@@ -390,6 +407,7 @@ $lang = array(
 	'rules_member_attribute_signature'			=> "Has Signature",
 	'rules_member_attribute_followers'			=> "Followers",
 	'rules_member_attribute_reputation'			=> "Reputation Level",
+	'rules_member_attribute_profile_views'			=> "Profile Views",
 	'rules_member_attribute_posts'				=> "Post Count",
 	'rules_member_attribute_joined'				=> "Joined Date",
 	'rules_member_attribute_birthday'			=> "Birthday",
@@ -480,12 +498,12 @@ $lang = array(
 	 */
 
 	/*** SYSTEM: Events ***/	
-	'rules_System_event_record_updated'			=> "ActiveRecord: Record Created/Updated",
+	'rules_System_event_record_updated'			=> "ActiveRecord: Database record created/updated",
 	'rules_System_event_record_updated_record'		=> "Record that was created/updated",
 	'rules_System_event_record_updated_changed'		=> "An array of the values which have changed",
 	'rules_System_event_record_updated_new'			=> "A boolean value indicating if the record is new",
 	
-	'rules_System_event_record_deleted'			=> "ActiveRecord: Record Deleted",
+	'rules_System_event_record_deleted'			=> "ActiveRecord: Database record deleted",
 	'rules_System_event_record_deleted_record'		=> "Record that was deleted",
 	
 	'rules_System_event_browser_output'			=> "Output is being sent to browser",
@@ -578,6 +596,9 @@ $lang = array(
 	'rules_System_actions_create_conversation_participants' => "Conversation Participants",
 	'rules_System_actions_create_conversation_subject'	=> "Conversation Subject",
 	'rules_System_actions_create_conversation_message'	=> "Conversation Message Body",
+	'rules_participation_mode'				=> "Conversation Participation Mode",
+	'rules_participation_all'				=> "All recipients will be participants in the same conversation",
+	'rules_participation_individual'			=> "A separate conversation will be created with each participant",
 	
 	'rules_System_message_subject'				=> "Subject",
 	'rules_System_message_body'				=> "Content",
@@ -601,7 +622,10 @@ $lang = array(
 	 */
 	 
 	/*** CONTENT: Events ***/
-	'rules_Content_event_content_updated'			=> "Any content has been created or updated",
+	'rules_Content_event_content_created'			=> "Any content has been created",
+	'rules_Content_event_content_created_content'		=> "The created/updated content",
+	
+	'rules_Content_event_content_updated'			=> "Any content has been updated",
 	'rules_Content_event_content_updated_content'		=> "The created/updated content",
 	'rules_Content_event_content_updated_changed'		=> "An array of the properties being saved",
 	'rules_Content_event_content_updated_new'		=> "Boolean value indicating if content is new",
@@ -681,8 +705,11 @@ $lang = array(
 	'rules_Content_event_content_item_tags_set_tags'	=> "The content tags",
 	
 	/*** CONTENT: App Events ***/
-	'rules_Content_event_content_updated_'			=> "%s has been created or updated",
-	'rules_Content_event_content_updated_content_'		=> "The created/updated %s",
+	'rules_Content_event_content_created_'			=> "%s has been created",
+	'rules_Content_event_content_created_content_'		=> "The created %s",
+	
+	'rules_Content_event_content_updated_'			=> "%s has been updated",
+	'rules_Content_event_content_updated_content_'		=> "The updated %s",
 	'rules_Content_event_content_updated_changed_'		=> "An array of any changed properties",
 	'rules_Content_event_content_updated_new_'		=> "Boolean value indicating if content is new",
 
