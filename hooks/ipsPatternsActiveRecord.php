@@ -158,7 +158,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 
 			$where = array( 'data_class=? AND data_column_name=?', $data_class, $key );
 			
-			/* Prevent subsequent requests for this key from unnecessary processing */
+			/* Prevent subsequent requests for this key in any case */
 			$this->rulesData[ $key ] = NULL;
 		}
 		else
@@ -283,7 +283,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 						case 'array':
 							
 							/**
-							 * Arrays of known object types are saved as comma separated lists
+							 * Arrays of certain object types are saved as comma separated lists
 							 */
 							if ( $data_field->type_class and $data_field->type_class !== '-IPS-Http-Url' )
 							{

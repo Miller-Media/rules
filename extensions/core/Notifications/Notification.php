@@ -75,4 +75,16 @@ class _Notification
 			'author'	=> $author,
 		);
 	}
+	
+	/**
+	 * Backward Compatibility for prior to 1.3.10
+	 *
+	 * @param	\IPS\Notification\Inline	$notification	The notification
+	 * @return	array
+	 */
+	public function parse_rules_notification( $notification )
+	{
+		return $this->parse_rules_notifications( $notification );
+	}
+	
 }
