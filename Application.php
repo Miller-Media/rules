@@ -661,7 +661,7 @@ class _Application extends \IPS\rules\Secure\Application
 
 				return array
 				(
-					'form' => function( $form, $values ) use ( $field_name, $required )
+					'form' => function( $form, $values ) use ( $field_name, $required, $options )
 					{
 						$form->add( new \IPS\Helpers\Form\Stack( $field_name, $values[ $field_name ] ?: array(), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
@@ -679,7 +679,7 @@ class _Application extends \IPS\rules\Secure\Application
 
 				return array
 				(
-					'form' => function( $form, $values, $action ) use ( $field_name, $required )
+					'form' => function( $form, $values, $action ) use ( $field_name, $required, $options )
 					{
 						$form->add( new \IPS\Helpers\Form\Url( $field_name, new \IPS\Http\Url( $values[ $field_name ] ), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
