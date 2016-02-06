@@ -133,7 +133,7 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 			}
 		}
 		
-		return $profileFields[ $this->member_id ][ 'field_' . $field_id ];
+		return static::$rulesProfileDataCache[ $this->member_id ][ 'field_' . $field_id ];
 	}
 
 }
