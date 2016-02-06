@@ -92,16 +92,20 @@ class _Token
 			{
 				if ( is_object( $_input_arg ) )
 				{
-					/* Standard conversion */
-					$_tokenValue = call_user_func( $converter[ 'converter' ], $_input_arg );
-					
-					/* Token formatter? */
-					if ( isset( $converter[ 'tokenValue' ] ) and is_callable( $converter[ 'tokenValue' ] ) )
+					try
 					{
-						$_tokenValue = call_user_func( $converter[ 'tokenValue' ], $_tokenValue );
-					}
+						/* Standard conversion */
+						$_tokenValue = call_user_func( $converter[ 'converter' ], $_input_arg );
+						
+						/* Token formatter? */
+						if ( isset( $converter[ 'tokenValue' ] ) and is_callable( $converter[ 'tokenValue' ] ) )
+						{
+							$_tokenValue = call_user_func( $converter[ 'tokenValue' ], $_tokenValue );
+						}
 					
-					$tokenValues[] = (string) $_tokenValue;
+						$tokenValues[] = (string) $_tokenValue;
+					}
+					catch( \Exception $e ) { }
 				}
 			}
 			
