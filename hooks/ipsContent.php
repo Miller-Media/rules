@@ -175,11 +175,16 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 			\IPS\rules\Event::load( 'rules', 'Content', 'content_created' )->trigger( $this );
 			\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $this->_data, TRUE );
 			
-			$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
-			if ( ! $classEvent->placeholder )
+			$createdEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_created_' . md5( get_class( $this ) ) );
+			if ( ! $createdEvent->placeholder )
 			{
-				\IPS\rules\Event::load( 'rules', 'Content', 'content_created_' . md5( get_class( $this ) ) )->trigger( $this );
-				$classEvent->trigger( $this, $this->_data, TRUE );
+				$createdEvent->trigger( $this );
+			}
+			
+			$updatedEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
+			if ( ! $updatedEvent->placeholder )
+			{
+				$updatedEvent->trigger( $this, $this->_data, TRUE );
 			}
 		}
 		else
@@ -193,10 +198,10 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 			{
 				\IPS\rules\Event::load( 'rules', 'Content', 'content_updated' )->trigger( $this, $changed, FALSE );
 				
-				$classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
-				if ( ! $classEvent->placeholder )
+				$updatedEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_updated_' . md5( get_class( $this ) ) );
+				if ( ! $updatedEvent->placeholder )
 				{
-					$classEvent->trigger( $this, $changed, FALSE );
+					$updatedEvent->trigger( $this, $changed, FALSE );
 				}
 			}
 		}
