@@ -62,7 +62,7 @@
 						{
 							select.change();
 						}, 
-						200 );
+						500 );
 					}
 					
 					select.change();
