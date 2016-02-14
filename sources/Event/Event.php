@@ -167,7 +167,7 @@ class _Event
 	 */
 	public function trigger()
 	{
-		if ( ! $this->locked and ! \IPS\rules\Application::$shutDown )
+		if ( ! $this->locked )
 		{
 			/* Don't do this during an upgrade */
 			if( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation === 'setup' )
