@@ -53,9 +53,9 @@ class _ajax extends \IPS\Dispatcher\Controller
 		}
 		
 		$idField = $contentClass::$databaseColumnId;
-		$sqlTitle = $contentClass::$databasePrefix . $contentClass::$databaseColumnMap[ 'title' ];
+		$sqlTitle = $contentClass::$databaseTable . '.' . $contentClass::$databasePrefix . $contentClass::$databaseColumnMap[ 'title' ];
 		
-		$where = array( "{$sqlTitle} LIKE CONCAT('%', ?, '%')", $input );
+		$where = array( "{$sqlTitle} LIKE ?", '%' . $input . '%' );
 		
 		foreach ( $contentClass::getItemsWithPermission( array( $where ), NULL, 20 ) as $content )
 		{		
