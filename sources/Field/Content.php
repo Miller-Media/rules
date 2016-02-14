@@ -57,6 +57,7 @@ class _Content extends \IPS\Helpers\Form\Text
 			'forceLower'			=> false,
 			'prefix'			=> false,
 		);
+		
 		if( isset( $args[ 3 ] ) and array_key_exists( 'multiple', $args[ 3 ] ) and $args[ 3 ][ 'multiple' ] > 0 )
 		{
 			$this->defaultOptions[ 'autocomplete' ][ 'maxItems' ] = $args[ 3 ][ 'multiple' ];

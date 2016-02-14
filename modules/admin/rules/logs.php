@@ -55,6 +55,7 @@ class _logs extends \IPS\Dispatcher\Controller
 			$tabs[ 'log_' . $log->id ] = $log->title;
 			if ( \IPS\Request::i()->tab == 'log_' . $log->id )
 			{
+				\IPS\Request::i()->log = $log->id;
 				$table = $log->logsTable( NULL, 25 );
 			}
 		}	
@@ -66,6 +67,7 @@ class _logs extends \IPS\Dispatcher\Controller
 		
 		if ( \IPS\Request::i()->isAjax() )
 		{
+			
 			\IPS\Output::i()->output = "<div class='ipsPad'>{$table}</div>";
 		}
 		else

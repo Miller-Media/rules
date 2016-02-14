@@ -718,6 +718,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 *
 	 * @param	object|NULL	$entity		The entity to get the log table for or NULL for all entities
 	 * @param	int|NULL	$limit		Override for the log page size
+	 * @param	
 	 */
 	public function logsTable( $entity=NULL, $limit=NULL )
 	{
@@ -726,23 +727,11 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$sortDirection = $this->sortdir ?: 'desc';
 		$page = 1;
 		
-		/* Ignore ajax requests not targeted at any particular log */
-		if ( \IPS\Request::i()->isAjax() and ! \IPS\Request::i()->log )
-		{
-			return '';
-		}
-		
 		/**
 		 * Process log table requests
 		 */
 		if ( \IPS\Request::i()->log )
-		{
-			/* Ignore ajax requests not targeted at this log */
-			if ( \IPS\Request::i()->isAjax() and $this->id != \IPS\Request::i()->log )
-			{
-				return '';
-			}
-			
+		{			
 			/* This log is targeted */
 			if ( $this->id == \IPS\Request::i()->log )
 			{
@@ -815,6 +804,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 			$table->noSort = array( 'message', 'entity_id' );
 		}
 		
+		$table->resortKey 	= 'listResort_log' . $this->id;
 		$table->tableTemplate 	= array( \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' ), 'logTable' );
 		$table->rowsTemplate 	= array( \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' ), 'rows' );
 		$table->langPrefix 	= 'rules_custom_logs_table_' . $this->id . '_';
@@ -920,6 +910,8 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 * Get a tabbed output of all logs for an entity
 	 *
 	 * @param	object		$entity		The entity to count logs for
+	 * @param	int		$limit		The number of logs to show per page
+	 * @param	
 	 */
 	public static function allLogs( $entity, $limit=NULL )
 	{
