@@ -42,8 +42,8 @@ class _Maintenance extends \IPS\Task
 		 */
 		if ( \IPS\Db::i()->select( 'COUNT(*)', 'rules_logs' )->first() > 10000 )
 		{
-			$maxid = \IPS\Db::i()->select( 'MAX(id)', 'rules_logs' )->first();
-			\IPS\Db::i()->delete( 'rules_logs', array( 'id <= ?', $maxid - 10000 ) );
+			$cutoff = \IPS\Db::i()->select( 'id', 'rules_logs', NULL, 'id DESC', array( 10000, 1 ) )->first();
+			\IPS\Db::i()->delete( 'rules_logs', array( 'id<=?', $cutoff ) );
 		}
 	}
 	
