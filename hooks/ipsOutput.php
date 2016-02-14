@@ -18,7 +18,7 @@ class rules_hook_ipsOutput extends _HOOK_CLASS_
 	{
 		\IPS\rules\Event::load( 'rules', 'System', 'browser_output' )->trigger( $output, $httpStatusCode, $contentType, $httpHeaders, $cacheThisPage, $pageIsCached );
 		
-		/* Shut down rules */
+		/* Shut down rules early for actual page requests (so redirects can be performed, etc) */
 		\IPS\rules\Application::shutDown();
 		
 		return call_user_func_array( 'parent::sendOutput', func_get_args() );
