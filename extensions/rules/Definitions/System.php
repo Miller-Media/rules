@@ -612,6 +612,7 @@ class _System
 						);
 						
 						$form->add( new \IPS\Helpers\Form\Radio( 'rules_participation_mode', (int) $values[ 'rules_participation_mode' ], TRUE, array( 'options' => $participation_modes ), NULL, NULL, NULL, 'rules_participation_mode' ) );
+						$form->add( new \IPS\Helpers\Form\YesNo( 'rules_conversation_join_creator', isset( $values[ 'rules_conversation_join_creator' ] ) ? $values[ 'rules_conversation_join_creator' ] : TRUE, TRUE ) );
 					},
 				),
 				'arguments'	=> array
@@ -926,6 +927,11 @@ class _System
 				$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
 				$conversation->first_msg_id = $_message->id;
 				
+				if ( $values[ 'rules_conversation_join_creator' ] or ! isset( $values[ 'rules_conversation_join_creator' ] ) )
+				{
+					$conversation->authorize( $creator );
+				}
+				
 				$conversation->authorize( $participant );				
 				$conversation->save();
 			}
@@ -942,6 +948,11 @@ class _System
 			
 			$_message = \IPS\core\Messenger\Message::create( $conversation, $message, TRUE, NULL, FALSE, $creator );
 			$conversation->first_msg_id = $_message->id;
+			
+			if ( $values[ 'rules_conversation_join_creator' ] or ! isset( $values[ 'rules_conversation_join_creator' ] ) )
+			{
+				$conversation->authorize( $creator );
+			}
 			
 			foreach ( $participants as $participant )
 			{
