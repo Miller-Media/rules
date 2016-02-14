@@ -236,17 +236,25 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function content()
 	{
-		if ( \IPS\Request::i()->do !== 'edit' )
+		if ( \IPS\Request::i()->do !== 'edit' and \IPS\Dispatcher::i()->controllerLocation == 'front' )
 		{
 			if ( is_subclass_of( get_called_class(), '\IPS\Content\Comment' ) )
 			{
+				/* Add in content if the item does not support its own content and this is the first comment */
 				if ( $item = $this->item() and ! $item::$databaseColumnMap[ 'content' ] and $item->rulesDataFields() )
 				{
-					return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $item, parent::content() );
+					if ( isset( $item::$databaseColumnMap[ 'first_comment_id' ] ) )
+					{
+						$firstCommentIdColumn = $item::$databaseColumnMap[ 'first_comment_id' ];
+						if ( $item->$firstCommentIdColumn == $this->activeid )
+						{
+							return \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->contentDataDisplay( $item, parent::content() );
+						}
+					}
 				}
 			}
 			
-			if ( is_subclass_of( get_called_class(), '\IPS\Content\Item' ) )
+			if ( is_subclass_of( get_called_class(), '\IPS\Content\Item' ) and static::$databaseColumnMap[ 'content' ] )
 			{
 				if ( $this->rulesDataFields() )
 				{
