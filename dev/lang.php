@@ -592,13 +592,15 @@ $lang = array(
 	'rules_System_redirect_message'				=> "Message",
 
 	'rules_System_actions_create_conversation'		=> "Create a new private conversation",
-	'rules_System_actions_create_conversation_creator'	=> "Conversation Starter",
+	'rules_System_actions_create_conversation_creator'	=> "Conversation Creator",
 	'rules_System_actions_create_conversation_participants' => "Conversation Participants",
 	'rules_System_actions_create_conversation_subject'	=> "Conversation Subject",
 	'rules_System_actions_create_conversation_message'	=> "Conversation Message Body",
 	'rules_participation_mode'				=> "Conversation Participation Mode",
 	'rules_participation_all'				=> "All recipients will be participants in the same conversation",
 	'rules_participation_individual'			=> "A separate conversation will be created with each participant",
+	'rules_conversation_join_creator'			=> "Join creator in the conversation",
+	'rules_conversation_join_creator_desc'			=> "If you do not join the creator, the creator will not see the conversation or replies to it.",
 	
 	'rules_System_message_subject'				=> "Subject",
 	'rules_System_message_body'				=> "Content",
@@ -835,6 +837,12 @@ $lang = array(
 	'rules_Content_conditions_content_container_content'	=> "The %s to Check",
 	'rules_Content_conditions_content_container_container'	=> "%s",
 	'rules_Content_content_containers'			=> "Select %s",
+	
+	'rules_Content_conditions_container'			=> "Check for specific %s",
+	'rules_Content_conditions_container_container'		=> "Select Container To Check",
+	'rules_Content_conditions_container_containers'		=> "Check For Any Of These %s",
+	'rules_Content_containers'				=> "Select %s",
+	'rules_Content_container'				=> "Select Container",
 	
 	/*** CONTENT: Actions ***/
 	'rules_Content_actions_set_content_tags'		=> "Modify content tags",

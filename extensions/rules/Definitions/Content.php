@@ -709,6 +709,13 @@ class _Content
 														{
 															$_nodes[] = $node->_id;
 														}
+														else
+														{
+															if ( $node )
+															{
+																$_nodes[] = $node;
+															}
+														}
 													}
 												}
 												return $_nodes;
@@ -730,6 +737,113 @@ class _Content
 									'configuration' => \IPS\rules\Application::configPreset( 'item', 'rules_choose_item', TRUE, array( 'class' => $contentItemClass ) ),
 								),
 
+							),						
+						);
+						
+						$lang->words[ 'rules_Content_conditions_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_container' ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
+						$lang->words[ 'rules_Content_conditions_container_' . $class_key . '_container' ] = $lang->get( 'rules_Content_conditions_container_container' );
+						$lang->words[ 'rules_Content_conditions_container_' . $class_key . '_containers' ] = sprintf( $lang->get( 'rules_Content_conditions_container_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
+						$lang->words[ 'rules_Content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
+						$conditions[ 'container_' . $class_key ] = array
+						(
+							'group' => $group,
+							'callback' => array( $this, 'checkContainer' ),
+							'arguments' 	=> array
+							(
+								'container' => array
+								(
+									'required' => TRUE,
+									'configuration' => array
+									(
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										{
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_container', $values[ 'rules_Content_container' ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE ), NULL, NULL, NULL, 'rules_Content_container' ) );
+											return array( 'rules_Content_container' );
+										},
+										'saveValues' => function( &$values ) use ( $nodeClass )
+										{
+											if ( $values[ 'rules_Content_container' ] instanceof $nodeClass )
+											{
+												$values[ 'rules_Content_container' ] = $values[ 'rules_Content_container' ]->_id;
+											}
+										},
+										'getArg' => function( $values )
+										{
+											return $values[ 'rules_Content_container' ];
+										},
+									),
+									'argtypes' => array
+									(
+										'object' => array
+										(
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'class' => $nodeClass,
+										),
+									),
+								),
+								'containers' => array
+								(
+									'default' => 'manual',
+									'required' => TRUE,
+									'configuration' => array
+									(
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										{
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_containers_' . $class_key, $values[ 'rules_Content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_containers_' . $class_key ) );
+											return array( 'rules_Content_containers_' . $class_key );
+										},
+										'saveValues' => function( &$values ) use ( $class_key )
+										{
+											if ( is_array ( $values[ 'rules_Content_containers_' . $class_key ] ) )
+											{
+												$values[ 'rules_Content_containers_' . $class_key ] = array_keys( $values[ 'rules_Content_containers_' . $class_key ] );
+											}
+										},
+										'getArg' => function( $values ) use ( $class_key )
+										{
+											return $values[ 'rules_Content_containers_' . $class_key ];
+										},
+									),
+									'argtypes' => array
+									(
+										'object' => array
+										(
+											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'class' => $nodeClass,
+											'converter' => function( $node )
+											{
+												return array( $node->_id );
+											},
+										),
+										'array' => array
+										(
+											'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' nodes',
+											'class' => $nodeClass,
+											'converter' => function( $nodes )
+											{
+												$_nodes = array();
+												if ( is_array( $nodes) )
+												{
+													foreach( $nodes as $node )
+													{
+														if ( $node instanceof \IPS\Node\Model )
+														{
+															$_nodes[] = $node->_id;
+														}
+														else
+														{
+															if ( $node )
+															{
+																$_nodes[] = $node;
+															}
+														}
+													}
+												}
+												return $_nodes;
+											},
+										),
+									),
+								),
 							),						
 						);
 					}
@@ -1678,7 +1792,7 @@ class _Content
 	}
 
 	/**
-	 * Check If Topic Is In Forum
+	 * Check If Content Is In Container
 	 */
 	public function contentContainer( $containers, $content, $values )
 	{
@@ -1698,6 +1812,19 @@ class _Content
 		}
 		
 		return FALSE;	
+	}
+
+	/**
+	 * Check For Specific Container
+	 */
+	public function checkContainer( $container, $containers, $values )
+	{
+		if ( ! ( $container instanceof \IPS\Node\Model ) )
+		{
+			throw new \UnexpectedValueException( 'Invalid container' );
+		}
+		
+		return in_array( $container->_id, (array) $containers );		
 	}
 
 	/**
@@ -2049,6 +2176,11 @@ class _Content
 		if ( get_class( $container ) != ltrim( $content::$containerNodeClass, '\\' ) )
 		{
 			throw new \UnexpectedValueException( 'container node is not the correct class' );
+		}
+		
+		if ( $content_container = $content->containerWrapper( TRUE ) and $content_container->_id === $container->_id )
+		{
+			return "content not moved, it's already there";
 		}
 		
 		$content->move( $container, $values[ 'rules_Content_move_content_link' ] );
