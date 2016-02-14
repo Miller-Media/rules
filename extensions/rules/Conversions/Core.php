@@ -139,7 +139,7 @@ class _Core
 					'argtype' => 'int',
 					'converter' => function( $member )
 					{
-						return (int) $member->member_posts;
+						return (int) $member->real_member_posts;
 					},
 				),
 				'Reputation' => array
@@ -777,7 +777,7 @@ class _Core
 						$argtype = 'bool';
 						$converter = function( $member ) use ( $field_id )
 						{
-							if ( $fieldData = $member->rulesProfileData( $field_id ) )
+							if ( ( $fieldData = $member->rulesProfileData( $field_id ) ) !== NULL )
 							{
 								return (bool) $fieldData;
 							}
@@ -856,6 +856,33 @@ class _Core
 						break;
 						
 					case 'Select':
+					
+						if ( $field->multiple )
+						{
+							$argtype = 'array';
+							$converter = function( $member ) use ( $field_id, $options )
+							{
+								if ( $fieldData = $member->rulesProfileData( $field_id ) )
+								{
+									$values = explode( ',', $fieldData );									
+									return $values;
+								}
+							};
+							$tokenValue = function( $array )
+							{
+								return implode( ', ', $array );
+							};
+						}
+						else
+						{
+							$argtype = 'string';
+							$converter = function( $member ) use ( $field_id, $options )
+							{
+								return $member->rulesProfileData( $field_id );
+							};
+						}
+						break;
+						
 					case 'CheckboxSet':
 
 						$options = json_decode( $field->content, TRUE );
