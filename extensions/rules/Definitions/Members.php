@@ -669,7 +669,7 @@ class _Members
 			
 			case 'posts':
 			
-				$amount = $member->member_posts;
+				$amount = $member->real_member_posts;
 				break;
 				
 			case 'pviews':

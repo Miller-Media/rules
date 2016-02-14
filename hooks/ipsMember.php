@@ -102,6 +102,14 @@ class rules_hook_ipsMember extends _HOOK_CLASS_
 		
 		\IPS\rules\Event::load( 'rules', 'Members', 'profile_visit' )->trigger( $this, $visitor );
 	}
+	
+	/**
+	 * Get Real Posts (Group Collaboration)
+	 */
+	public function get_real_member_posts()
+	{
+		return $this->_data[ 'member_posts' ];
+	}
 
 	/**
 	 * @brief	Member Profile Data Caching
