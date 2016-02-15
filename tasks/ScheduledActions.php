@@ -25,7 +25,12 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 class _ScheduledActions extends \IPS\Task
 {
 	/**
-	 * Execute
+	 * @brief	Rules
+	 */
+	public $rules;
+	
+	/**
+	 * Execute Scheduled Rules Actions
 	 *
 	 * If ran successfully, should return anything worth logging. Only log something
 	 * worth mentioning (don't log "task ran successfully"). Return NULL (actual NULL, not '' or 0) to not log (which will be most cases).
@@ -40,12 +45,33 @@ class _ScheduledActions extends \IPS\Task
 		/* Initialize all applications */
 		\IPS\Application::applications();
 		
-		$scheduled_actions = \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=? AND schedule_queued<1', time() ), 'schedule_time ASC' );
+		/* Get rules */
+		$this->rules = \IPS\Application::load( 'rules' );
 		
-		foreach ( new \IPS\Patterns\ActiveRecordIterator( $scheduled_actions, 'IPS\rules\Action\Scheduled' ) as $action )
+		foreach( $this->rules->scheduledActions( $this->priority ) as $action )
 		{
 			$action->execute();
+		}		
+	}
+	
+	/**
+	 * Priority interval
+	 */
+	public function get_priority()
+	{
+		if ( ! \IPS\IN_DEV )
+		{
+			try
+			{
+				return ( ( \IPS\Data\Store::i()->rpriority < time() - $this->rules->interval ) and \IPS\Data\Store::i()->rpriority = time() );
+			}
+			catch( \OutOfRangeException $e )
+			{
+				return !!( \IPS\Data\Store::i()->rpriority = time() );
+			}
 		}
+		
+		return FALSE;
 	}
 
 	/**
