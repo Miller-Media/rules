@@ -79,11 +79,11 @@ class _Application extends \IPS\rules\Secure\Application
 	}	
 	
 	/**
-	 * Get App Data
+	 * Application Data
 	 */
 	public function get_appdata()
 	{
-		return array( 'key' => $this->directory, 'url' => \IPS\Settings::i()->base_url, 'ver' => $this->version, 'state' => call_user_func( array( $this, 'isProtected' ) ) );
+		return array( 'ver' => $this->version, 'version' => $this->long_version, 'state' => $this->isProtected(), 'url' => \IPS\Settings::i()->base_url, 'key' => 'rules' );
 	}
 	
 	/**
@@ -2459,6 +2459,55 @@ class _Application extends \IPS\rules\Secure\Application
 	public static function ruleChild( $rule )
 	{
 		return \IPS\Theme::i()->getTemplate( 'components' )->ruleChild( $rule );
+	}
+	
+	/**
+	 * Get URL
+	 *
+	 * @return	\IPS\Http\Url
+	 */
+	public function url()
+	{
+		$args = func_get_args();
+		if ( $args[0] == 'update' )
+		{
+			return \IPS\Http\Url::external( $this->update_check )->setQueryString( array_merge( $this->appdata, array( 'ips_version' => \IPS\Application::load( 'core' )->version ) ) );
+		}
+
+		return parent::url();
+	}
+	
+	/**
+	 * Install JSON Data
+	 */
+	public function installJsonData( $skipMember=FALSE )
+	{
+		/* Update app version data */
+		$versions = $this->getAllVersions();
+		$lversions = array_keys( $versions );
+		$hversions = array_values( $versions );
+		$updates = $this->url( 'update' );
+		
+		if( count($versions) )
+		{
+			$ver = array_pop( $hversions );
+			$version = array_pop( $lversions );
+			$updates = $updates->setQueryString( array( 'ver' => $ver, 'version' => $version, 'installed' => 1 ) );
+		}
+		
+		call_user_func_array( 'parent::installJsonData', func_get_args() );
+		$updates->request()->get();
+	}
+	
+	/**
+	 * Delete Record
+	 *
+	 * @return	void
+	 */
+	public function delete()
+	{
+		parent::delete();
+		$this->url( 'update' )->setQueryString( 'installed', 0 )->request()->get();
 	}
 	
 	/**

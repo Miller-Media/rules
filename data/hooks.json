@@ -66,5 +66,9 @@
     "ipsGalleryImage": {
         "type": "C",
         "class": "\\IPS\\gallery\\Image"
+    },
+    "ipsApp": {
+        "type": "C",
+        "class": "\\IPS\\core\\tasks\\updatecheck"
     }
 }
