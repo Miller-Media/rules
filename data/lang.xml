@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100310">
+ <app key="rules" version="100312">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -485,13 +485,15 @@
   <word key="rules_System_actions_url_redirect_message" js="0">The message to display upon redirect</word>
   <word key="rules_System_redirect_message" js="0">Message</word>
   <word key="rules_System_actions_create_conversation" js="0">Create a new private conversation</word>
-  <word key="rules_System_actions_create_conversation_creator" js="0">Conversation Starter</word>
+  <word key="rules_System_actions_create_conversation_creator" js="0">Conversation Creator</word>
   <word key="rules_System_actions_create_conversation_participants" js="0">Conversation Participants</word>
   <word key="rules_System_actions_create_conversation_subject" js="0">Conversation Subject</word>
   <word key="rules_System_actions_create_conversation_message" js="0">Conversation Message Body</word>
   <word key="rules_participation_mode" js="0">Conversation Participation Mode</word>
   <word key="rules_participation_all" js="0">All recipients will be participants in the same conversation</word>
   <word key="rules_participation_individual" js="0">A separate conversation will be created with each participant</word>
+  <word key="rules_conversation_join_creator" js="0">Join creator in the conversation</word>
+  <word key="rules_conversation_join_creator_desc" js="0">If you do not join the creator, the creator will not see the conversation or replies to it.</word>
   <word key="rules_System_actions_create_notification" js="0">Create a new member notification</word>
   <word key="rules_System_actions_create_notification_recipients" js="0">Notification Recipients</word>
   <word key="rules_System_actions_create_notification_title" js="0">Notification Title</word>
@@ -665,6 +667,11 @@
   <word key="rules_Content_conditions_content_container_content" js="0">The %s to Check</word>
   <word key="rules_Content_conditions_content_container_container" js="0">%s</word>
   <word key="rules_Content_content_containers" js="0">Select %s</word>
+  <word key="rules_Content_conditions_container" js="0">Check for specific %s</word>
+  <word key="rules_Content_conditions_container_container" js="0">Select Container To Check</word>
+  <word key="rules_Content_conditions_container_containers" js="0">Check For Any Of These %s</word>
+  <word key="rules_Content_containers" js="0">Select %s</word>
+  <word key="rules_Content_container" js="0">Select Container</word>
   <word key="rules_Content_actions_set_content_tags" js="0">Modify content tags</word>
   <word key="rules_Content_actions_set_content_tags_content" js="0">Content To Modify</word>
   <word key="rules_Content_actions_set_content_tags_tags" js="0">Tags</word>
