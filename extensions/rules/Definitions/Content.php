@@ -216,21 +216,21 @@ class _Content
 			{
 				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$contentTitle = ucwords( ( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : $contentItemClass::$title ) );
 					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
 					
-					$this->buildEvents( $app_events, $contentItemClass, $content_type, $group, $data );
+					$this->buildEvents( $app_events, $contentItemClass, $contentTitle, $group, $data );
 					
 					if ( isset ( $contentItemClass::$commentClass ) )
 					{
 						$commentClass = $contentItemClass::$commentClass;
-						$this->buildEvents( $app_events, $commentClass, $content_type . ' Comment', $group, $data );
+						$this->buildEvents( $app_events, $commentClass, $contentTitle . ' Comment', $group, $data );
 					}
 					
 					if ( isset ( $contentItemClass::$reviewClass ) )
 					{
 						$reviewClass = $contentItemClass::$reviewClass;
-						$this->buildEvents( $app_events, $reviewClass, $content_type . ' Review', $group, $data );
+						$this->buildEvents( $app_events, $reviewClass, $contentTitle . ' Review', $group, $data );
 					}
 				}
 			}
@@ -242,12 +242,12 @@ class _Content
 	/**
 	 * Build Events
 	 */
-	protected function buildEvents( &$app_events, $contentClass, $content_type, $group, $data )
+	protected function buildEvents( &$app_events, $contentClass, $contentTitle, $group, $data )
 	{
 		$build_data = array_merge( $data, array
 		(
 			'class_key' 	=> md5( ltrim( $contentClass, '\\' ) ),
-			'content_type'	=> $content_type,
+			'contentTitle'	=> $contentTitle,
 			'group'		=> $group,
 			'contentClass' 	=> '\\' . ltrim( $contentClass, '\\' ),
 		) );
@@ -351,12 +351,12 @@ class _Content
 		}
 		
 		/* Event Title */
-		$lang->words[ 'rules_Content_event_' . $class_event_key ] = sprintf( $lang->get( 'rules_Content_event_' . $event_key . '_' ), $content_type );
+		$lang->words[ 'rules_Content_event_' . $class_event_key ] = sprintf( $lang->get( 'rules_Content_event_' . $event_key . '_' ), $contentTitle );
 		
 		/* Argument Titles */
 		foreach ( $app_events[ $class_event_key ][ 'arguments' ] as $argname => $argdata )
 		{
-			$lang->words[ 'rules_Content_event_' . $class_event_key . '_' . $argname ] = sprintf( $lang->get( 'rules_Content_event_' . $event_key . '_' . $argname . '_' ), $content_type );
+			$lang->words[ 'rules_Content_event_' . $class_event_key . '_' . $argname ] = sprintf( $lang->get( 'rules_Content_event_' . $event_key . '_' . $argname . '_' ), $contentTitle );
 		}	
 	}
 	
@@ -393,18 +393,19 @@ class _Content
 							{
 								if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 								{
-									$options[ str_replace( '\\', '-', $contentItemClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Content Item)';
+									$contentTitle = $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : $contentItemClass::$title;
+									$options[ str_replace( '\\', '-', $contentItemClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $contentTitle ) . ' (Content Item)';
 									
 									if ( isset ( $contentItemClass::$commentClass ) )
 									{
 										$commentClass = $contentItemClass::$commentClass;
-										$options[ str_replace( '\\', '-', $commentClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Comment)';
+										$options[ str_replace( '\\', '-', $commentClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $contentTitle ) . ' (Comment)';
 									}
 									
 									if ( isset ( $contentItemClass::$reviewClass ) )
 									{
 										$reviewClass = $contentItemClass::$reviewClass;
-										$options[ str_replace( '\\', '-', $reviewClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $lang->get( $contentItemClass::$title ) ) . ' (Review)';
+										$options[ str_replace( '\\', '-', $reviewClass ) ] = $lang->addToStack( '__app_' . $contentItemClass::$application ) . ' / ' . ucwords( $contentTitle ) . ' (Review)';
 									}
 								}
 							}
@@ -642,17 +643,18 @@ class _Content
 			{
 				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$contentTitle = ucwords( ( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : $contentItemClass::$title ) );
 					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
 					$class_key = md5( ltrim( $contentItemClass, '\\' ) );
 					
 					if ( isset ( $contentItemClass::$containerNodeClass ) )
 					{
 						$nodeClass = $contentItemClass::$containerNodeClass;
-						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_content_container' ), $content_type, mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_content' ), $content_type );
-						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_container' ), $lang->get( $nodeClass::$nodeTitle ) );
-						$lang->words[ 'rules_Content_content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
+						$nodeTitle = $lang->checkKeyExists( $nodeClass::$nodeTitle ) ? $lang->get( $nodeClass::$nodeTitle ) : $nodeClass::$nodeTitle;
+						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_content_container' ), $contentTitle, mb_strtolower( $nodeTitle ) );
+						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_content' ), $contentTitle );
+						$lang->words[ 'rules_Content_conditions_content_container_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_conditions_content_container_container' ), $nodeTitle );
+						$lang->words[ 'rules_Content_content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $nodeTitle );
 						
 						$conditions[ 'content_container_' . $class_key ] = array
 						(
@@ -666,7 +668,7 @@ class _Content
 									'required' => TRUE,
 									'configuration' => array
 									(
-										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
 											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_containers_' . $class_key, $values[ 'rules_Content_content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_content_containers_' . $class_key ) );
 											return array( 'rules_Content_content_containers_' . $class_key );
@@ -687,7 +689,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' node',
 											'class' => $nodeClass,
 											'converter' => function( $node )
 											{
@@ -696,7 +698,7 @@ class _Content
 										),
 										'array' => array
 										(
-											'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' nodes',
+											'description' => 'An array of ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' nodes',
 											'class' => $nodeClass,
 											'converter' => function( $nodes )
 											{
@@ -730,7 +732,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => $content_type . " to check",
+											'description' => $contentTitle . " to check",
 											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
 										),							
 									),
@@ -740,10 +742,10 @@ class _Content
 							),						
 						);
 						
-						$lang->words[ 'rules_Content_conditions_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_container' ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
+						$lang->words[ 'rules_Content_conditions_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_conditions_container' ), mb_strtolower( $nodeTitle ) );
 						$lang->words[ 'rules_Content_conditions_container_' . $class_key . '_container' ] = $lang->get( 'rules_Content_conditions_container_container' );
-						$lang->words[ 'rules_Content_conditions_container_' . $class_key . '_containers' ] = sprintf( $lang->get( 'rules_Content_conditions_container_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
-						$lang->words[ 'rules_Content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $lang->get( $nodeClass::$nodeTitle ) );
+						$lang->words[ 'rules_Content_conditions_container_' . $class_key . '_containers' ] = sprintf( $lang->get( 'rules_Content_conditions_container_containers' ), $nodeTitle );
+						$lang->words[ 'rules_Content_containers_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_containers' ), $nodeTitle );
 						$conditions[ 'container_' . $class_key ] = array
 						(
 							'group' => $group,
@@ -755,7 +757,7 @@ class _Content
 									'required' => TRUE,
 									'configuration' => array
 									(
-										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
 											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_container', $values[ 'rules_Content_container' ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE ), NULL, NULL, NULL, 'rules_Content_container' ) );
 											return array( 'rules_Content_container' );
@@ -776,7 +778,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' node',
 											'class' => $nodeClass,
 										),
 									),
@@ -787,7 +789,7 @@ class _Content
 									'required' => TRUE,
 									'configuration' => array
 									(
-										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
 											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_containers_' . $class_key, $values[ 'rules_Content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_containers_' . $class_key ) );
 											return array( 'rules_Content_containers_' . $class_key );
@@ -808,7 +810,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' node',
 											'class' => $nodeClass,
 											'converter' => function( $node )
 											{
@@ -817,7 +819,7 @@ class _Content
 										),
 										'array' => array
 										(
-											'description' => 'An array of ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' nodes',
+											'description' => 'An array of ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' nodes',
 											'class' => $nodeClass,
 											'converter' => function( $nodes )
 											{
@@ -1140,30 +1142,31 @@ class _Content
 			{
 				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$contentTitle = ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : $contentItemClass::$title );
 					$group = 'Content: ' . ( $lang->checkKeyExists( '__app_' . $contentItemClass::$application ) ? $lang->get( '__app_' . $contentItemClass::$application ) : $contentItemClass::$application );
 					$class_key = md5( ltrim( $contentItemClass, '\\' ) );
 					
 					if ( isset ( $contentItemClass::$containerNodeClass ) )
 					{
 						$nodeClass = $contentItemClass::$containerNodeClass;
-						$lang->words[ 'rules_Content_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_container' ), $lang->get( $nodeClass::$nodeTitle ) );
+						$nodeTitle = $lang->checkKeyExists( $nodeClass::$nodeTitle ) ? $lang->get( $nodeClass::$nodeTitle ) : $nodeClass::$nodeTitle;
+						$lang->words[ 'rules_Content_content_container_' . $class_key ] = sprintf( $lang->get( 'rules_Content_content_container' ), $nodeTitle );
 
-						$lang->words[ 'rules_Content_actions_move_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_move_content' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-						$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_item' ), $content_type );
+						$lang->words[ 'rules_Content_actions_move_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_move_content' ), mb_strtolower( $contentTitle ), mb_strtolower( $nodeTitle ) );
+						$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_item' ), $contentTitle );
 						$lang->words[ 'rules_Content_actions_move_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_move_content_container' ), $lang->get( $nodeClass::$nodeTitle ) );
 						
-						$lang->words[ 'rules_Content_actions_create_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_container' ), $content_type );
-						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_author' ), $content_type );
-						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_title' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_title' ), $content_type );
-						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_content' ), $content_type );
-						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_tags' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_tags' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content' ), mb_strtolower( $contentTitle ), mb_strtolower( $nodeTitle ) );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_container' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_container' ), $contentTitle );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_author' ), $contentTitle );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_title' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_title' ), $contentTitle );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_content' ), $contentTitle );
+						$lang->words[ 'rules_Content_actions_create_content_' . $class_key . '_tags' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_tags' ), $contentTitle );
 
-						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment' ), mb_strtolower( $content_type ), mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) );
-						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_item' ), $content_type );
-						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_author' ), $content_type );
-						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_content' ), $content_type );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment' ), mb_strtolower( $contentTitle ), mb_strtolower( $nodeTitle ) );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_item' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_item' ), $contentTitle );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_author' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_author' ), $contentTitle );
+						$lang->words[ 'rules_Content_actions_create_content_comment_' . $class_key . '_content' ] = sprintf( $lang->get( 'rules_Content_actions_create_content_comment_content' ), $contentTitle );
 
 						/**
 						 * Move Content
@@ -1187,7 +1190,7 @@ class _Content
 									'required' => TRUE,
 									'configuration' => array
 									(
-										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
 											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
 											return array( 'rules_Content_content_container_' . $class_key );
@@ -1216,7 +1219,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' node',
 											'class' => $nodeClass,
 										),
 									),
@@ -1228,7 +1231,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => $content_type . " to move",
+											'description' => $contentTitle . " to move",
 											'class' => '\\' . ltrim( $contentItemClass, '\\' ),
 										),							
 									),
@@ -1326,7 +1329,7 @@ class _Content
 									'required' => TRUE,
 									'configuration' => array
 									(
-										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $content_type, $class_key )
+										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
 											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
 											return array( 'rules_Content_content_container_' . $class_key );
@@ -1355,7 +1358,7 @@ class _Content
 									(
 										'object' => array
 										(
-											'description' => 'A ' . mb_strtolower( $content_type ) . ' ' . mb_strtolower( $lang->get( $nodeClass::$nodeTitle ) ) . ' node',
+											'description' => 'A ' . mb_strtolower( $contentTitle ) . ' ' . mb_strtolower( $nodeTitle ) . ' node',
 											'class' => $nodeClass,
 										),
 									),
@@ -1485,7 +1488,7 @@ class _Content
 										(
 											'object' => array
 											(
-												'description' => $content_type . " to post comment to",
+												'description' => $contentTitle . " to post comment to",
 												'class' => '\\' . ltrim( $contentItemClass, '\\' ),
 											),							
 										),

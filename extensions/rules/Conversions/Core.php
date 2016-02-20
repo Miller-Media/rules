@@ -669,7 +669,7 @@ class _Core
 		$lang = \IPS\Member::loggedIn()->language();
 		
 		/**
-		 * Content Item Conversiosn
+		 * Content Item Conversions
 		 */
 		foreach ( \IPS\Application::allExtensions( 'core', 'ContentRouter' ) as $router )
 		{
@@ -677,7 +677,7 @@ class _Core
 			{
 				if ( is_subclass_of( $contentItemClass, '\IPS\Content\Item' ) )
 				{
-					$content_type = ucwords( $lang->get( $contentItemClass::$title ) );
+					$contentTitle = ucwords( ( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : $contentItemClass::$title ) );
 					
 					/**
 					 * Add Converters For Content Item
@@ -685,7 +685,8 @@ class _Core
 					if ( isset ( $contentItemClass::$containerNodeClass ) )
 					{
 						$nodeClass = $contentItemClass::$containerNodeClass;
-						$node_type = rtrim( ucwords( $lang->get( $nodeClass::$nodeTitle ) ), "s" );
+						$nodeTitle = ucwords( ( $lang->checkKeyExists( $nodeClass::$nodeTitle ) ? $lang->get( $nodeClass::$nodeTitle ) : $nodeClass::$nodeTitle ) );
+						$node_type = rtrim( $nodeTitle, "s" );
 						$map[ '\\' . ltrim( $contentItemClass, '\\' ) ][ $node_type ] = array
 						(
 							'argtype' => 'object',
@@ -703,7 +704,7 @@ class _Core
 					if ( isset ( $contentItemClass::$commentClass ) )
 					{
 						$commentClass = $contentItemClass::$commentClass;
-						$map[ '\\' . ltrim( $commentClass, '\\' ) ][ $content_type ] = array
+						$map[ '\\' . ltrim( $commentClass, '\\' ) ][ $contentTitle ] = array
 						(
 							'argtype' => 'object',
 							'class' => '\\' . ltrim( $contentItemClass, '\\' ),
@@ -720,7 +721,7 @@ class _Core
 					if ( isset ( $contentItemClass::$reviewClass ) )
 					{
 						$reviewClass = $contentItemClass::$reviewClass;
-						$map[ '\\' . ltrim( $reviewClass, '\\' ) ][ $content_type ] = array
+						$map[ '\\' . ltrim( $reviewClass, '\\' ) ][ $contentTitle ] = array
 						(
 							'argtype' => 'object',
 							'class' => '\\' . ltrim( $contentItemClass, '\\' ),
@@ -740,6 +741,7 @@ class _Core
 		
 		/* Cheap way to make sure profile fields are in the data store */
 		\IPS\core\ProfileFields\Field::fieldsForContentView();
+		
 		foreach ( \IPS\Data\Store::i()->profileFields[ 'fields' ] as $group_id => $fields )
 		{
 			foreach( $fields as $field_id => $fieldrow )
