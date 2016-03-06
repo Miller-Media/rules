@@ -324,7 +324,15 @@ class _Condition extends \IPS\Node\Model
 			 */
 			$this->locked = TRUE;
 			
-			$result = call_user_func_array( '\IPS\rules\Application::opInvoke', array( $this, 'conditions', func_get_args() ) );
+			try
+			{
+				$result = call_user_func_array( '\IPS\rules\Application::opInvoke', array( $this, 'conditions', func_get_args() ) );
+			}
+			catch( \Exception $e )
+			{
+				$this->locked = FALSE;
+				throw $e;
+			}
 			
 			if ( $this->hasChildren() )
 			{

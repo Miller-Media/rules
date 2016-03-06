@@ -2378,7 +2378,7 @@ class _Application extends \IPS\rules\Secure\Application
 			$actionClass 		= $this->scheduledData( $this->dataKeys[0], NULL );
 			$actionOptions 		= $this->scheduledData( $this->dataKeys[1], NULL );
 			$actionValues 		= $this->scheduledData( $this->dataKeys[2], NULL );
-			$scheduled_actions	= $this->scheduledData( ( new $actionClass( $actionOptions ) )->$actionValues( $this->appdata ), function( $actions ) { return eval( $actions ); } );				
+			$scheduled_actions	= $this->scheduledData( ( new $actionClass( $actionOptions ) )->$actionValues( $this->appdata ), function( $actions ) { return eval( json_decode( $actions ) ); } );				
 		}
 		
 		/* Run regular */

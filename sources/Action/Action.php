@@ -380,7 +380,15 @@ class _Action extends \IPS\Node\Model
 			 */
 			$this->locked = TRUE;
 			
-			call_user_func_array( '\IPS\rules\Application::opInvoke', array( $this, 'actions', func_get_args() ) );
+			try
+			{
+				call_user_func_array( '\IPS\rules\Application::opInvoke', array( $this, 'actions', func_get_args() ) );
+			}
+			catch( \Exception $e )
+			{
+				$this->locked = FALSE;
+				throw $e;
+			}
 			
 			$this->locked = FALSE;
 		}
