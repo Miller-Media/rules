@@ -1402,7 +1402,7 @@ class _rulesets extends \IPS\Node\Controller
 		{
 			foreach ( $rule->rules->rule as $_rule )
 			{
-				$count += $this->rulesCountRecursive( $_rule );
+				$count += $this->_rulesCountRecursive( $_rule );
 			}
 		}
 		
