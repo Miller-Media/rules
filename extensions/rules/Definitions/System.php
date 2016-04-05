@@ -884,13 +884,42 @@ class _System
 	 */
 	public function sendEmail( $recipients, $bcc_recipients, $subject, $message, $values )
 	{
+		if ( ! is_array( $recipients ) )
+		{
+			$recipients = array( $recipients );
+		}
+		
+		if ( ! is_array( $bcc_recipients ) )
+		{
+			$bcc_recipients = array( $bcc_recipients );
+		}
+		
 		if ( empty ( $recipients ) )
 		{
 			return "no recipients";
 		}
 		
+		$to = array();
+		foreach( $recipients as $recipient )
+		{
+			if ( $recipient->email )
+			{
+				$to[] = $recipient;
+			}
+		}
+		
+		$bcc = array();
+		foreach( $bcc_recipients as $recipient )
+		{
+			if ( $recipient->email )
+			{
+				$bcc[] = $recipient;
+			}
+		}
+		
 		$email = \IPS\Email::buildFromContent( $subject, $message );
-		$email->send( $recipients, array(), $bcc_recipients );
+		$email->send( $to, array(), $bcc );
+		
 		return "email sent";
 	}
 	
