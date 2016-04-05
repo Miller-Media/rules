@@ -10,6 +10,12 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 	 */
 	protected function edit()
 	{
+		/* Forward Compatibility with ( 4.1.9+ ) */
+		if ( method_exists( $this, 'buildEditForm' ) )
+		{
+			return parent::edit();
+		}
+	
 		/* Do we have permission? */
 		if ( !\IPS\Member::loggedIn()->modPermission('can_modify_profiles') and ( \IPS\Member::loggedIn()->member_id !== $this->member->member_id or !$this->member->group['g_edit_profile'] ) )
 		{
@@ -184,7 +190,7 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 			/**
 			 * Save Custom Rules Data
 			 */
-			foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\' )', \IPS\Member::rulesDataClass() ) ) as $row )
+			foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', \IPS\Member::rulesDataClass() ) ) as $row )
 			{
 				if ( isset ( $values[ 'rules_data_' . $row[ 'data_column_name' ] ] ) )
 				{
@@ -239,4 +245,63 @@ class rules_hook_modCoreMembersProfile extends _HOOK_CLASS_
 		\IPS\Output::i()->breadcrumb[] = array( NULL, \IPS\Member::loggedIn()->language()->addToStack( 'editing_profile', FALSE, array( 'sprintf' => array( $this->member->name ) ) ) );
 	}
 
+	/**
+	 * Build Edit Form ( IPS 4.1.9+ )
+	 *
+	 * @return \IPS\Helpers\Form
+	 */
+	protected function buildEditForm()
+	{
+		$form = parent::buildEditForm();
+		
+		/**
+		 * Rules Data Fields
+		 */
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', \IPS\Member::rulesDataClass() ) ) as $row )
+		{
+			if ( $row[ 'data_use_mode' ] == 'public' or \IPS\Member::loggedIn()->modPermission( 'can_modify_profiles' ) )
+			{
+				$data_field = \IPS\rules\Data::constructFromData( $row );
+				if ( $data_field->can( 'edit' ) )
+				{
+					if ( ! isset( $_rules_header ) )
+					{
+						$_rules_header = TRUE and $form->addHeader( "rules_profile_data_header" );
+					}
+					
+					foreach( $data_field->formElements( $this->member ) as $name => $element )
+					{
+						$form->add( $element );
+					}
+				}
+			}
+		}				
+		
+		return $form;
+	}
+	
+	/**
+	 * Save Member ( IPS 4.1.9+ )
+	 *
+	 * @param $form
+	 * @param array $values
+	 */
+	protected function _saveMember( $form, array $values )
+	{			
+		/**
+		 * Save Custom Rules Data
+		 */
+		foreach ( \IPS\Db::i()->select( '*', 'rules_data', array( 'data_class=? AND data_use_mode IN ( \'public\', \'admin\' )', \IPS\Member::rulesDataClass() ) ) as $row )
+		{
+			if ( isset ( $values[ 'rules_data_' . $row[ 'data_column_name' ] ] ) )
+			{
+				$this->member->setRulesData( $row[ 'data_column_name' ], $values[ 'rules_data_' . $row[ 'data_column_name' ] ] );
+				unset( $values[ 'rules_data_' . $row[ 'data_column_name' ] ] );
+			}
+		}
+
+		return parent::_saveMember( $form, $values );
+	}
+	
+	
 }
