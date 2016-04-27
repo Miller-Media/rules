@@ -1024,7 +1024,7 @@ class _Content
 			),
 			'hide_content' => array
 			(
-				'callback' 	=> array( $this, 'hideContent' ),				
+				'callback' 	=> array( $this, 'hideContent' ),
 				'arguments'	=> array
 				(
 					'content' => array

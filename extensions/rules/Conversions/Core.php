@@ -286,7 +286,7 @@ class _Core
 					'nullable' => TRUE,
 					'converter' => function( $content )
 					{
-						return $content->mapped( 'content' );
+						return $content->content();
 					},
 				),
 				'Created Date' => array
