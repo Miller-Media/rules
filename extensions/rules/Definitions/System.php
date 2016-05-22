@@ -917,7 +917,7 @@ class _System
 			}
 		}
 		
-		$email = \IPS\Email::buildFromContent( $subject, $message );
+		$email = \IPS\Email::buildFromContent( $subject, $message, NULL, 'transactional' );
 		$email->send( $to, array(), $bcc );
 		
 		return "email sent";
