@@ -198,7 +198,13 @@ class _CustomData
 						throw new \UnexpectedValueException( 'Expecting an object and got a ' . gettype( $entity ) );
 					}
 					
-					if ( get_class( $entity ) !== $entity_class )
+					/* Special exceptions */
+					if ( $entity instanceof \IPS\nexus\Customer )
+					{
+						$entity = \IPS\Member::load( $entity->member_id );
+					}
+
+					if ( get_class( $entity ) != $entity_class )
 					{
 						throw new \UnexpectedValueException( 'Incorrect entity class (' . get_class( $entity ) . '). Expecting ' . $entity_class );
 					}
