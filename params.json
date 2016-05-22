@@ -1,0 +1,6 @@
+{
+  "name": "Automation Rules",
+  "tagline": "Rules engine built for IPS4 Community Suite",
+  "body": "### Automation Rules\r\nAutomation rules allow community administrators to create custom workflows and automatic actions that happen based on Events, Conditions, and Actions.\r\n\r\n### Features Overview\r\n* Automatically update/modify content and member attributes, statuses, and properties\r\n* Automatically send emails, create conversations, and send notifications\r\n* Add your own custom data fields to any content, categories, or members\r\n* Build relationships between fields and content to keep data synchronized\r\n* Create rule sets that work together to form automated workflows\r\n* Define your own custom actions that can be used in rules\r\n* Schedule actions to happen at specific times (one-time or recurring)\r\n* Schedule bulk processing routines for content and members on your site\r\n* Share and refine your rules with other communities using import/export\r\n\r\n### Support or Contact\r\nWant to download the built application for your IPS4 site? Check it out in the [marketplace](https://invisionpower.com/files/file/7368-automation-rules-lite/) or [get support](https://ipsguru.net/projects/rules) on the project.\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
