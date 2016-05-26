@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100313">
+ <app key="rules" version="100314">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
@@ -345,7 +345,7 @@
   <word key="rules_member_attribute_followers" js="0">Followers</word>
   <word key="rules_member_attribute_reputation" js="0">Reputation Level</word>
   <word key="rules_member_attribute_profile_views" js="0">Profile Views</word>
-  <word key="rules_member_attribute_posts" js="0">Post Count</word>
+  <word key="rules_member_attribute_posts" js="0">Content Count</word>
   <word key="rules_member_attribute_joined" js="0">Joined Date</word>
   <word key="rules_member_attribute_birthday" js="0">Birthday</word>
   <word key="rules_member_attribute_birthdate" js="0">Birthdate</word>
