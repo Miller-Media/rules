@@ -96,7 +96,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		{
 			return $this->rulesDataRaw;
 		}
-	
+		
 		$idField = static::$databaseColumnId;
 		
 		try
@@ -173,10 +173,10 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		}
 		
 		if ( $this->rulesTableExists() and $data = $this->getRulesDataRaw() )
-		{			
+		{		
 			foreach ( \IPS\rules\Data::roots( NULL, NULL, array( $where ) ) as $data_field )
 			{
-				if ( ! $this->rulesLoadedKeys[ $data_class->column_name ] )
+				if ( ! isset( $this->rulesLoadedKeys[ $data_field->column_name ] ) or $this->rulesLoadedKeys[ $data_field->column_name ] !== TRUE )
 				{
 					$data_field_data = $data[ 'data_' . $data_field->column_name ];
 					
@@ -432,7 +432,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		 * We only want that to happen if the value has ACTUALLY changed.
 		 * This makes the changed array actually useful
 		 */
-		if( ! method_exists( $this, 'set_'.$key ) and $this->_data[ $key ] === $value )
+		if( ! method_exists( $this, 'set_'.$key ) and array_key_exists( $key, $this->_data ) and $this->_data[ $key ] === $value )
 		{
 			return $value;
 		}

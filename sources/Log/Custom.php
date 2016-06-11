@@ -774,7 +774,13 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		 */
 		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' )
 		{
-			$controllerUrl = \IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}&entity={$entity->activeid}" );
+			$controllerUrl = \IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}" );
+			
+			if ( $entity )
+			{
+				$controllerUrl = $controllerUrl->setQueryString( 'entity', $entity->activeid );
+			}
+			
 			if ( ! static::$tableControllerLoaded )
 			{
 				\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_ui.js', 'rules', 'front' ) );
