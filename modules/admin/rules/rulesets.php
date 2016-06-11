@@ -104,7 +104,7 @@ class _rulesets extends \IPS\Node\Controller
 		$rulesClass		= '\IPS\rules\Rule';
 		$rulesController 	= new \IPS\rules\modules\admin\rules\rules( NULL );
 		$rules 			= new \IPS\Helpers\Tree\Tree( 
-						\IPS\Http\Url::internal( "app=rules&module=rules&controller=rules&rule={$this->id}" ),
+						\IPS\Http\Url::internal( "app=rules&module=rules&controller=rules" ),
 						$rulesClass::$nodeTitle, 
 						array( $rulesController, '_getRoots' ), 
 						array( $rulesController, '_getRow' ), 

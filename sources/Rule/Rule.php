@@ -244,7 +244,7 @@ class _Rule extends \IPS\rules\Secure\Rule
 			{
 				foreach ( $definition[ 'events' ] as $event_key => $event_data )
 				{
-					$group = $event_data[ 'group' ] ?: $definition[ 'group' ];
+					$group = ( isset( $event_data[ 'group' ] ) and $event_data[ 'group' ] ) ? $event_data[ 'group' ] : $definition[ 'group' ];
 					$events[ $group ][ $definition_key . '_' . $event_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_event_' . $event_key;
 				}
 			}
@@ -406,16 +406,19 @@ class _Rule extends \IPS\rules\Secure\Rule
 	 */
 	public function saveForm( $values )
 	{
-		list( $definition_key, $event_key ) = explode( '_', $values[ 'rule_event_selection' ], 2 );
-		
-		if ( $definition = \IPS\rules\Application::rulesDefinitions( $definition_key ) )
+		if ( isset( $values[ 'rule_event_selection' ] ) )
 		{
-			$values[ 'rule_event_app' ]	= $definition[ 'app' ];
-			$values[ 'rule_event_class' ]	= $definition[ 'class' ];
-			$values[ 'rule_event_key' ] 	= $event_key;
+			list( $definition_key, $event_key ) = explode( '_', $values[ 'rule_event_selection' ], 2 );
+			
+			if ( $definition = \IPS\rules\Application::rulesDefinitions( $definition_key ) )
+			{
+				$values[ 'rule_event_app' ]	= $definition[ 'app' ];
+				$values[ 'rule_event_class' ]	= $definition[ 'class' ];
+				$values[ 'rule_event_key' ] 	= $event_key;
+			}
+			
+			unset( $values[ 'rule_event_selection' ] );
 		}
-		
-		unset( $values[ 'rule_event_selection' ] );
 		
 		if ( isset ( $values[ 'rule_ruleset_id' ] ) and is_object( $values[ 'rule_ruleset_id' ] ) )
 		{
@@ -498,7 +501,7 @@ class _Rule extends \IPS\rules\Secure\Rule
 			(
 				'icon'		=> 'bug',
 				'title'		=> 'Disable Debugging',
-				'id'		=> "{$row['id']}-debug-disable",
+				'id'		=> "{$this->id}-debug-disable",
 				'link'		=> $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'debugDisable', 'id' => $this->id ) ),
 			);
 		
@@ -506,7 +509,7 @@ class _Rule extends \IPS\rules\Secure\Rule
 			(
 				'icon'		=> 'bug',
 				'title'		=> 'View Debug Console',
-				'id'		=> "{$row['id']}-debug",
+				'id'		=> "{$this->id}-debug",
 				'link'		=> $url->setQueryString( array( 'controller' => 'rules', 'do' => 'form', 'id' => $this->id, 'tab' => 'debug_console', 'subnode' => NULL ) ),
 			);
 		}
@@ -516,7 +519,7 @@ class _Rule extends \IPS\rules\Secure\Rule
 			(
 				'icon'		=> 'bug',
 				'title'		=> 'Enable Debugging',
-				'id'		=> "{$row['id']}-debug-enable",
+				'id'		=> "{$this->id}-debug-enable",
 				'link'		=> $url->setQueryString( array( 'controller' => 'rulesets', 'do' => 'debugEnable', 'id' => $this->id ) ),
 			);		
 		}

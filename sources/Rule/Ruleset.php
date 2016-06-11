@@ -85,7 +85,7 @@ class _Ruleset extends \IPS\Node\Model
 	{
 		return $this->description;
 	}
-		
+	
 	/**
 	 * [Node] Get content table description 
 	 *
@@ -93,7 +93,7 @@ class _Ruleset extends \IPS\Node\Model
 	 */
 	protected function get_description()
 	{
-		return $this->_data[ 'description' ];
+		return isset( $this->_data[ 'description' ] ) ? $this->_data[ 'description' ] : '';
 	}
 
 	/**

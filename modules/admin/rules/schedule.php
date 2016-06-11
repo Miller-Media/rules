@@ -339,8 +339,9 @@ class _schedule extends \IPS\Dispatcher\Controller
 		$lang 		= \IPS\Member::loggedIn()->language();
 		$action_data 	= isset( $scheduled_action ) ? ( json_decode( $scheduled_action->data, TRUE ) ?: array() ) : array();
 		$action_args 	= array();
+		$action_data_args = isset( $action_data[ 'args' ] ) ? (array) $action_data[ 'args' ] : array();
 		
-		foreach ( (array) $action_data[ 'args' ] as $key => $arg )
+		foreach ( $action_data_args as $key => $arg )
 		{
 			$action_args[ $key ] = \IPS\rules\Application::restoreArg( $arg );
 		}
@@ -349,12 +350,12 @@ class _schedule extends \IPS\Dispatcher\Controller
 		$form->addHtml( '<div class="ipsMessage ipsMessage_info"><h2 style="margin:0">' . $customAction->title . '</h2><p>' . $customAction->description . '</p></div>' );
 		
 		$form->add( new \IPS\Helpers\Form\Date( 'rules_scheduled_date', \IPS\DateTime::ts( ( isset( $scheduled_action ) ? $scheduled_action->time : strtotime( 'now +1 hour' ) ) ), TRUE, array( 'time' => TRUE ) ) );
-		$form->add( new \IPS\Helpers\Form\Radio( 'rules_schedule_custom_frequency', $action_data[ 'frequency' ], FALSE, array( 'options' => $frequency_options, 'toggles' => array( 'repeat' => array( 'action_schedule_repeats', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months' ) ) ) ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'rules_schedule_custom_frequency', isset( $action_data[ 'frequency' ] ) ? $action_data[ 'frequency' ] : NULL, FALSE, array( 'options' => $frequency_options, 'toggles' => array( 'repeat' => array( 'action_schedule_repeats', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months' ) ) ) ) );
 		$form->addHtml( '<div class="ipsFieldRow"><div id="action_schedule_repeats" class="ipsFieldRow_content ipsMessage ipsMessage_warning">' . $lang->addToStack( 'rules_repeats' ) . '</div></div>' );
-		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_minutes', $action_data[ 'minutes' ] ?: 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_minutes' ) );
-		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_hours', $action_data[ 'hours' ] ?: 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_hours' ) );
-		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_days', $action_data[ 'days' ] ?: 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_days' ) );
-		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_months', $action_data[ 'months' ] ?: 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_months' ) );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_minutes', isset( $action_data[ 'minutes' ] ) ? $action_data[ 'minutes' ] : 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_minutes' ) );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_hours', isset( $action_data[ 'hours' ] ) ? $action_data[ 'hours' ] : 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_hours' ) );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_days', isset( $action_data[ 'days' ] ) ? $action_data[ 'days' ] : 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_days' ) );
+		$form->add( new \IPS\Helpers\Form\Number( 'action_schedule_months', isset( $action_data[ 'months' ] ) ? $action_data[ 'months' ] : 0, FALSE, array(), NULL, NULL, NULL, 'action_schedule_months' ) );
 				
 		$argument_inputs 	= array();
 		$bulk_options 		= array();
@@ -363,7 +364,7 @@ class _schedule extends \IPS\Dispatcher\Controller
 		foreach( $customAction->children() as $argument )
 		{
 			$form_name = 'custom_argument_' . $argument->id;
-			$form_value = $action_args[ 'custom_argument_' . $argument->id ];
+			$form_value = isset( $action_args[ 'custom_argument_' . $argument->id ] ) ? $action_args[ 'custom_argument_' . $argument->id ] : NULL;
 			$form_input = NULL;
 			
 			$lang->words[ $form_name ] 		= $argument->name;
@@ -481,8 +482,8 @@ class _schedule extends \IPS\Dispatcher\Controller
 			}
 			
 			$form->addHeader( 'rules_bulk_options' );
-			$form->add( new \IPS\Helpers\Form\Select( 'rules_schedule_custom_bulk', $action_data[ 'bulk_option' ], FALSE, array( 'options' => array_merge( array( '' => 'None' ), $bulk_options ), 'toggles' => $bulk_options_toggles ), NULL, "<div data-controller='rules.admin.ui.chosen'>", "</div>", 'rules_schedule_custom_bulk' ) );
-			$form->add( $bulk_limit = new \IPS\Helpers\Form\Number( 'rules_schedule_bulk_limit', $action_data[ 'bulk_limit' ] ?: 500, TRUE, array( 'min' => 1 ), NULL, NULL, NULL, 'rules_schedule_bulk_limit' ) );
+			$form->add( new \IPS\Helpers\Form\Select( 'rules_schedule_custom_bulk', isset( $action_data[ 'bulk_option' ] ) ? $action_data[ 'bulk_option' ] : NULL, FALSE, array( 'options' => array_merge( array( '' => 'None' ), $bulk_options ), 'toggles' => $bulk_options_toggles ), NULL, "<div data-controller='rules.admin.ui.chosen'>", "</div>", 'rules_schedule_custom_bulk' ) );
+			$form->add( $bulk_limit = new \IPS\Helpers\Form\Number( 'rules_schedule_bulk_limit', isset( $action_data[ 'bulk_limit' ] ) ? $action_data[ 'bulk_limit' ] : 500, TRUE, array( 'min' => 1 ), NULL, NULL, NULL, 'rules_schedule_bulk_limit' ) );
 			
 			if ( \IPS\Request::i()->rules_schedule_custom_bulk === '' )
 			{

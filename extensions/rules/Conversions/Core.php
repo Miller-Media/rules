@@ -862,7 +862,7 @@ class _Core
 						if ( $field->multiple )
 						{
 							$argtype = 'array';
-							$converter = function( $member ) use ( $field_id, $options )
+							$converter = function( $member ) use ( $field_id )
 							{
 								if ( $fieldData = $member->rulesProfileData( $field_id ) )
 								{
@@ -878,7 +878,7 @@ class _Core
 						else
 						{
 							$argtype = 'string';
-							$converter = function( $member ) use ( $field_id, $options )
+							$converter = function( $member ) use ( $field_id )
 							{
 								return $member->rulesProfileData( $field_id );
 							};

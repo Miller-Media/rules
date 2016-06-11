@@ -777,9 +777,10 @@ class _Application extends \IPS\rules\Secure\Application
 				( 
 					! isset( $footprint ) or 
 					( $definition_key === md5( $operation->app . $operation->class ) and $operation_key === $operation->key ) or 
-					$footprint == md5( json_encode( $operation_data[ 'arguments' ] ) ) )
+					$footprint == md5( json_encode( isset( $operation_data[ 'arguments' ] ) ? $operation_data[ 'arguments' ] : '' ) ) 
+				)
 				{
-					$group = $operation_data[ 'group' ] ?: $definition[ 'group' ];
+					$group = ( isset( $operation_data[ 'group' ] ) and $operation_data[ 'group' ] ) ? $operation_data[ 'group' ] : $definition[ 'group' ];
 					$_operations[ $group ][ $definition_key . '_' . $operation_key ] = $definition[ 'app' ] . '_' . $definition[ 'class' ] . '_' . $optype . '_' . $operation_key;
 				}
 			}
@@ -939,7 +940,10 @@ class _Application extends \IPS\rules\Secure\Application
 						foreach ( $_usable_arguments as $event_arg_name => $event_argument )
 						{
 							/* Break apart argument name because it may contain converter details */
-							list( $_event_arg_name, $converter_class, $converter_key ) = explode( ':', $event_arg_name );
+							$apart 			= explode( ':', $event_arg_name );
+							$_event_arg_name 	= isset( $apart[ 0 ] ) ? $apart[ 0 ] : '';
+							$converter_class 	= isset( $apart[ 1 ] ) ? $apart[ 1 ] : '';
+							$converter_key 		= isset( $apart[ 2 ] ) ? $apart[ 2 ] : '';
 							
 							/**
 							 * Global Arguments
@@ -1019,7 +1023,7 @@ class _Application extends \IPS\rules\Secure\Application
 							if ( $default_toggle_needed )
 							{
 								$togglesOn = ( isset( $arg[ 'configuration' ][ 'getArg' ] ) and is_callable( $arg[ 'configuration' ][ 'getArg' ] ) ) ? $source_select->options[ 'toggles' ][ 'manual' ] : array( $argNameKey . '_phpcode' );
-								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ], FALSE, array( 'togglesOn' => $togglesOn ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
+								$form->add( new \IPS\Helpers\Form\YesNo( $argNameKey . '_eventArg_useDefault', isset( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ] ) ? $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg_useDefault' ] : NULL, FALSE, array( 'togglesOn' => $togglesOn ), NULL, NULL, NULL, $argNameKey . '_eventArg_useDefault' ), $argNameKey . '_eventArg' );
 							}
 							
 							$source_select->options[ 'toggles' ][ 'event' ] = array( $argNameKey . '_eventArg' );
@@ -1958,7 +1962,7 @@ class _Application extends \IPS\rules\Secure\Application
 												)
 												{
 													$arg_name_token = 'global:' . $global_args[ $arg_name ][ 'token' ];
-													$arg_name_description = $global_args[ $arg_name ][ 'description' ] ? ' for ' . $global_args[ $arg_name ][ 'description' ] : '';
+													$arg_name_description = ( isset( $global_args[ $arg_name ][ 'description' ] ) and $global_args[ $arg_name ][ 'description' ] ) ? ' for ' . $global_args[ $arg_name ][ 'description' ] : '';
 												}
 												break;
 										}
@@ -2062,7 +2066,7 @@ class _Application extends \IPS\rules\Secure\Application
 		$conversion_arguments	= array();
 		$mappings		= array();
 		$current_class 		= $event_argument[ 'class' ]; 
-		$acceptable_classes 	= (array) $type_def[ 'class' ];
+		$acceptable_classes 	= isset( $type_def[ 'class' ] ) ? (array) $type_def[ 'class' ] : array();
 		
 		/**
 		 * If the operation argument does not require any specific
@@ -2097,7 +2101,7 @@ class _Application extends \IPS\rules\Secure\Application
 			{
 				foreach ( $acceptable_classes as $acceptable_class )
 				{
-					if ( $acceptable_class === '*' or static::classCompliant( $argument[ 'class' ], $acceptable_class ) )
+					if ( $acceptable_class === '*' or ( isset( $argument[ 'class' ] ) and static::classCompliant( $argument[ 'class' ], $acceptable_class ) ) )
 					{
 						$conversion_arguments[ $base_class . ':' . $conversion_key ] = $argument;
 					}
