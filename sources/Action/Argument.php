@@ -116,7 +116,7 @@ class _Argument extends \IPS\Node\Model
 	 */
 	public function get_description()
 	{
-		return $this->_data[ 'description' ];
+		return isset( $this->_data[ 'description' ] ) ? $this->_data[ 'description' ] : '';
 	}
 	
 	/**
@@ -353,7 +353,7 @@ class _Argument extends \IPS\Node\Model
 		/**
 		 * Work out a machine name for newly added arguments automatically
 		 */
-		if ( ! $values[ 'argument_varname' ] )
+		if ( ! isset( $values[ 'argument_varname' ] ) or ! $values[ 'argument_varname' ] )
 		{
 			/* Standardize variable name */
 			$varname = mb_strtolower( $values[ 'argument_name' ] );

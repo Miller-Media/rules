@@ -101,7 +101,7 @@ class _Custom extends \IPS\Node\Model
 	 */
 	public function get_description()
 	{
-		return $this->_data[ 'description' ];
+		return isset( $this->_data[ 'description' ] ) ? $this->_data[ 'description' ] : '';
 	}
 	
 	/**

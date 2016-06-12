@@ -458,7 +458,7 @@ class _Content
 							'is_poll'	=> 'Has Poll',
 						);
 						
-						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Content_content_statuses', $values[ 'rules_Content_content_statuses' ], TRUE, array( 'options' => $statuses ), NULL, NULL, NULL, 'rules_Content_content_statuses' ) );
+						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Content_content_statuses', isset( $values[ 'rules_Content_content_statuses' ] ) ? $values[ 'rules_Content_content_statuses' ] : NULL, TRUE, array( 'options' => $statuses ), NULL, NULL, NULL, 'rules_Content_content_statuses' ) );
 						return array( 'rules_Content_content_statuses' );
 					},
 				),
@@ -517,7 +517,7 @@ class _Content
 							'has_all' 	=> 'All of these tags',
 						);
 						
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_check_tags_type', $values[ 'rules_Content_check_tags_type' ] ?: 'has_any', TRUE, array( 'options' => $tag_options ) ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_check_tags_type', isset( $values[ 'rules_Content_check_tags_type' ] ) ? $values[ 'rules_Content_check_tags_type' ] : 'has_any', TRUE, array( 'options' => $tag_options ) ) );
 					},
 				),
 				'arguments' => array
@@ -599,21 +599,21 @@ class _Content
 							'?' => array( 'rules_Content_attribute_compare_minutes', 'rules_Content_attribute_compare_hours', 'rules_Content_attribute_compare_days', 'rules_Content_attribute_compare_months', 'rules_Content_attribute_compare_years' ),
 						);
 						
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_content_attribute', $values[ 'rules_Content_content_attribute' ], TRUE, array( 'options' => $attribute_options, 'toggles' => $attribute_toggles ), NULL, NULL, NULL, 'rules_Content_content_attribute' ) );					
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_attribute_compare_type_value', $values[ 'rules_Content_attribute_compare_type_value' ], FALSE, array( 'options' => $value_compare_options ), NULL, NULL, NULL, 'rules_Content_attribute_compare_type_value' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_value', $values[ 'rules_Content_attribute_compare_value' ] ?: 0, FALSE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_value' ) );
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_attribute_compare_type_date', $values[ 'rules_Content_attribute_compare_type_date' ], FALSE, array( 'options' => $date_compare_options, 'toggles' => $date_toggles ), NULL, NULL, NULL, 'rules_Content_attribute_compare_type_date' ) );
-						$form->add( new \IPS\Helpers\Form\Date( 'rules_Content_attribute_compare_date', \IPS\DateTime::ts( $values[ 'rules_Content_attribute_compare_date' ] ), FALSE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_date' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_minutes', $values[ 'rules_Content_attribute_compare_minutes' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_minutes' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_hours', $values[ 'rules_Content_attribute_compare_hours' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_hours' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_days', $values[ 'rules_Content_attribute_compare_days' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_days' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_months', $values[ 'rules_Content_attribute_compare_months' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_months' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_years', $values[ 'rules_Content_attribute_compare_years' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_years' ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_content_attribute', isset( $values[ 'rules_Content_content_attribute' ] ) ? $values[ 'rules_Content_content_attribute' ] : NULL, TRUE, array( 'options' => $attribute_options, 'toggles' => $attribute_toggles ), NULL, NULL, NULL, 'rules_Content_content_attribute' ) );					
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_attribute_compare_type_value', isset( $values[ 'rules_Content_attribute_compare_type_value' ] ) ? $values[ 'rules_Content_attribute_compare_type_value' ] : NULL, FALSE, array( 'options' => $value_compare_options ), NULL, NULL, NULL, 'rules_Content_attribute_compare_type_value' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_value', isset( $values[ 'rules_Content_attribute_compare_value' ] ) ? $values[ 'rules_Content_attribute_compare_value' ] : 0, FALSE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_value' ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_attribute_compare_type_date', isset( $values[ 'rules_Content_attribute_compare_type_date' ] ) ? $values[ 'rules_Content_attribute_compare_type_date' ] : NULL, FALSE, array( 'options' => $date_compare_options, 'toggles' => $date_toggles ), NULL, NULL, NULL, 'rules_Content_attribute_compare_type_date' ) );
+						$form->add( new \IPS\Helpers\Form\Date( 'rules_Content_attribute_compare_date', isset( $values[ 'rules_Content_attribute_compare_date' ] ) ? \IPS\DateTime::ts( $values[ 'rules_Content_attribute_compare_date' ] ) : NULL, FALSE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_date' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_minutes', isset( $values[ 'rules_Content_attribute_compare_minutes' ] ) ? $values[ 'rules_Content_attribute_compare_minutes' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_minutes' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_hours', isset( $values[ 'rules_Content_attribute_compare_hours' ] ) ? $values[ 'rules_Content_attribute_compare_hours' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_hours' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_days', isset( $values[ 'rules_Content_attribute_compare_days' ] ) ? $values[ 'rules_Content_attribute_compare_days' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_days' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_months', isset( $values[ 'rules_Content_attribute_compare_months' ] ) ? $values[ 'rules_Content_attribute_compare_months' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_months' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Content_attribute_compare_years', isset( $values[ 'rules_Content_attribute_compare_years' ] ) ? $values[ 'rules_Content_attribute_compare_years' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Content_attribute_compare_years' ) );
 						
 					},
 					'saveValues' => function( &$values )
 					{
-						if ( $values[ 'rules_Content_attribute_compare_date' ] instanceof \IPS\DateTime )
+						if ( isset( $values[ 'rules_Content_attribute_compare_date' ] ) and $values[ 'rules_Content_attribute_compare_date' ] instanceof \IPS\DateTime )
 						{
 							$values[ 'rules_Content_attribute_compare_date' ] = $values[ 'rules_Content_attribute_compare_date' ]->getTimestamp();
 						}
@@ -670,12 +670,12 @@ class _Content
 									(
 										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
-											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_containers_' . $class_key, $values[ 'rules_Content_content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_content_containers_' . $class_key ) );
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_containers_' . $class_key, isset( $values[ 'rules_Content_content_containers_' . $class_key ] ) ? $values[ 'rules_Content_content_containers_' . $class_key ] : NULL, TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_content_containers_' . $class_key ) );
 											return array( 'rules_Content_content_containers_' . $class_key );
 										},
 										'saveValues' => function( &$values ) use ( $class_key )
 										{
-											if ( is_array ( $values[ 'rules_Content_content_containers_' . $class_key ] ) )
+											if ( is_array( $values[ 'rules_Content_content_containers_' . $class_key ] ) )
 											{
 												$values[ 'rules_Content_content_containers_' . $class_key ] = array_keys( $values[ 'rules_Content_content_containers_' . $class_key ] );
 											}
@@ -759,12 +759,12 @@ class _Content
 									(
 										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
-											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_container', $values[ 'rules_Content_container' ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE ), NULL, NULL, NULL, 'rules_Content_container' ) );
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_container', isset( $values[ 'rules_Content_container' ] ) ? $values[ 'rules_Content_container' ] : NULL, TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE ), NULL, NULL, NULL, 'rules_Content_container' ) );
 											return array( 'rules_Content_container' );
 										},
 										'saveValues' => function( &$values ) use ( $nodeClass )
 										{
-											if ( $values[ 'rules_Content_container' ] instanceof $nodeClass )
+											if ( isset( $values[ 'rules_Content_container' ] ) and $values[ 'rules_Content_container' ] instanceof $nodeClass )
 											{
 												$values[ 'rules_Content_container' ] = $values[ 'rules_Content_container' ]->_id;
 											}
@@ -791,12 +791,12 @@ class _Content
 									(
 										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
-											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_containers_' . $class_key, $values[ 'rules_Content_containers_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_containers_' . $class_key ) );
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_containers_' . $class_key, isset( $values[ 'rules_Content_containers_' . $class_key ] ) ? $values[ 'rules_Content_containers_' . $class_key ] : NULL, TRUE, array( 'class' => $nodeClass, 'multiple' => TRUE ), NULL, NULL, NULL, 'rules_Content_containers_' . $class_key ) );
 											return array( 'rules_Content_containers_' . $class_key );
 										},
 										'saveValues' => function( &$values ) use ( $class_key )
 										{
-											if ( is_array ( $values[ 'rules_Content_containers_' . $class_key ] ) )
+											if ( is_array( $values[ 'rules_Content_containers_' . $class_key ] ) )
 											{
 												$values[ 'rules_Content_containers_' . $class_key ] = array_keys( $values[ 'rules_Content_containers_' . $class_key ] );
 											}
@@ -882,7 +882,7 @@ class _Content
 							'set'		=> 'Set Tags Explicitly',
 						);
 						
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_modify_tags_type', $values[ 'rules_Content_modify_tags_type' ] ?: 'add', TRUE, array( 'options' => $tag_options ) ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_modify_tags_type', isset( $values[ 'rules_Content_modify_tags_type' ] ) ? $values[ 'rules_Content_modify_tags_type' ] : 'add', TRUE, array( 'options' => $tag_options ) ) );
 					},
 				),
 				'arguments'	=> array
@@ -1054,7 +1054,7 @@ class _Content
 						(
 							'form' => function( $form, $values, $condition )
 							{
-								$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_reason', $values[ 'rules_Content_reason' ], FALSE, array(), NULL, NULL, NULL, 'rules_Content_reason' ) );
+								$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_reason', isset( $values[ 'rules_Content_reason' ] ) ? $values[ 'rules_Content_reason' ] : NULL, FALSE, array(), NULL, NULL, NULL, 'rules_Content_reason' ) );
 								return array( 'rules_Content_reason' );
 							},
 							'getArg' => function( $values )
@@ -1179,7 +1179,7 @@ class _Content
 							(
 								'form' => function( $form, $values )
 								{
-									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_move_content_link', $values[ 'rules_Content_move_content_link' ], TRUE ) );
+									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_move_content_link', isset( $values[ 'rules_Content_move_content_link' ] ) ? $values[ 'rules_Content_move_content_link' ] : NULL, TRUE ) );
 								},
 							),
 							'arguments' 	=> array
@@ -1192,12 +1192,12 @@ class _Content
 									(
 										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
-											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, isset( $values[ 'rules_Content_content_container_' . $class_key ] ) ? $values[ 'rules_Content_content_container_' . $class_key ] : NULL, TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
 											return array( 'rules_Content_content_container_' . $class_key );
 										},
 										'saveValues' => function( &$values ) use ( $class_key )
 										{	
-											if ( $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
+											if ( isset( $values[ 'rules_Content_content_container_' . $class_key ] ) and $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
 											{
 												$values[ 'rules_Content_content_container_' . $class_key ] = $values[ 'rules_Content_content_container_' . $class_key ]->_id;
 											}
@@ -1250,12 +1250,12 @@ class _Content
 							(
 								'form' => function( $form, $values, $operation ) use ( $lang )
 								{
-									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', $values[ 'rules_Content_increase_posts' ], TRUE ) );
+									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', isset( $values[ 'rules_Content_increase_posts' ] ) ? $values[ 'rules_Content_increase_posts' ] : NULL, TRUE ) );
 									$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
 									$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_use_created_handler', isset( $values[ 'rules_Content_use_created_handler' ] ) ? $values[ 'rules_Content_use_created_handler' ] : FALSE, FALSE, array( 'togglesOn' => array( $form->id . '_rules_Content_created_handler' ) ) ) );
 									
 									$lang->words[ 'rules_Content_created_handler_desc' ] = $lang->get( 'rules_Content_created_handler_description' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
-									$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', $values[ 'rules_Content_created_handler' ] ?: "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
+									$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', isset( $values[ 'rules_Content_created_handler' ] ) ? $values[ 'rules_Content_created_handler' ] : "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 								},
 							),
 							'callback' => function( $container, $author, $title, $content, $tags, $values, $arg_map ) use ( $nodeClass, $contentItemClass, $self )
@@ -1331,12 +1331,12 @@ class _Content
 									(
 										'form' => function( $form, $values ) use ( $nodeClass, $contentItemClass, $contentTitle, $class_key )
 										{
-											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, $values[ 'rules_Content_content_container_' . $class_key ], TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
+											$form->add( new \IPS\Helpers\Form\Node( 'rules_Content_content_container_' . $class_key, isset( $values[ 'rules_Content_content_container_' . $class_key ] ) ? $values[ 'rules_Content_content_container_' . $class_key ] : NULL, TRUE, array( 'class' => $nodeClass, 'multiple' => FALSE, 'subnodes' => FALSE ), NULL, NULL, NULL, 'rules_Content_content_container_' . $class_key ) );
 											return array( 'rules_Content_content_container_' . $class_key );
 										},
 										'saveValues' => function( &$values ) use ( $class_key )
 										{	
-											if ( $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
+											if ( isset( $values[ 'rules_Content_content_container_' . $class_key ] ) and $values[ 'rules_Content_content_container_' . $class_key ] instanceof \IPS\Node\Model )
 											{
 												$values[ 'rules_Content_content_container_' . $class_key ] = $values[ 'rules_Content_content_container_' . $class_key ]->_id;
 											}
@@ -1384,7 +1384,7 @@ class _Content
 									(
 										'form' => function( $form, $values )
 										{
-											$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_content_title', $values[ 'rules_Content_content_title' ], TRUE, array(), NULL, NULL, NULL, 'rules_Content_content_title' ) );
+											$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_content_title', isset( $values[ 'rules_Content_content_title' ] ) ? $values[ 'rules_Content_content_title' ] : NULL, TRUE, array(), NULL, NULL, NULL, 'rules_Content_content_title' ) );
 											return array( 'rules_Content_content_title' );
 										},
 										'getArg' => function( $values )
@@ -1408,7 +1408,7 @@ class _Content
 									(
 										'form' => function( $form, $values )
 										{
-											$form->add( new \IPS\Helpers\Form\Editor( 'rules_Content_content_body', $values[ 'rules_Content_content_body' ], TRUE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
+											$form->add( new \IPS\Helpers\Form\Editor( 'rules_Content_content_body', isset( $values[ 'rules_Content_content_body' ] ) ? $values[ 'rules_Content_content_body' ] : NULL, TRUE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
 											return array( $form->id . '_rules_Content_content_body' );
 										},
 										'getArg' => function( $values )
@@ -1439,12 +1439,12 @@ class _Content
 								(
 									'form' => function( $form, $values, $operation ) use ( $lang )
 									{
-										$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', $values[ 'rules_Content_increase_posts' ], TRUE ) );
+										$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_increase_posts', isset( $values[ 'rules_Content_increase_posts' ] ) ? $values[ 'rules_Content_increase_posts' ] : NULL, TRUE ) );
 										$form->add( new \IPS\Helpers\Form\Text( 'rules_Content_guest_name', isset ( $values[ 'rules_Content_guest_name' ] ) ? $values[ 'rules_Content_guest_name' ] : 'Guest', FALSE ) ); 
 										$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_use_created_handler', isset( $values[ 'rules_Content_use_created_handler' ] ) ? $values[ 'rules_Content_use_created_handler' ] : FALSE, FALSE, array( 'togglesOn' => array( $form->id . '_rules_Content_created_handler' ) ) ) );
 										
 										$lang->words[ 'rules_Content_created_handler_desc' ] = $lang->get( 'rules_Content_created_handler_description' ) . \IPS\rules\Application::eventArgInfo( $operation->event() );
-										$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', $values[ 'rules_Content_created_handler' ] ?: "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
+										$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', isset( $values[ 'rules_Content_created_handler' ] ) ? $values[ 'rules_Content_created_handler' ] : "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 									},
 								),
 								'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass, $self )
@@ -1515,7 +1515,7 @@ class _Content
 										(
 											'form' => function( $form, $values )
 											{
-												$form->add( new \IPS\Helpers\Form\Editor( 'rules_Content_content_body', $values[ 'rules_Content_content_body' ], TRUE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
+												$form->add( new \IPS\Helpers\Form\Editor( 'rules_Content_content_body', isset( $values[ 'rules_Content_content_body' ] ) ? $values[ 'rules_Content_content_body' ] : NULL, TRUE, array( 'app' => 'rules', 'key' => 'Generic' ) ) );
 												return array( $form->id . '_rules_Content_content_body' );
 											},
 											'getArg' => function( $values )

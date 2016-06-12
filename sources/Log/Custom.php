@@ -125,7 +125,7 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function get_description()
 	{
-		return $this->_data[ 'description' ];
+		return isset( $this->_data[ 'description' ] ) ? $this->_data[ 'description' ] : '';
 	}
 	
 	/**
@@ -933,12 +933,12 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 				$activeTab = $activeTab ?: $tab_title;
 				\IPS\Member::loggedIn()->language()->words[ 'custom_log_' . $log->id ] = $log->title;
 			
-				$output[ $tab_title ] = $log->logsTable( $entity, $limit );
+				$output[ $tab_title ] = (string) $log->logsTable( $entity, $limit );
 				$logs++;
 			}
 		}
 		
-		return $logs ? \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->logsTables( $output, $activeTab ) : NULL;		
+		return $logs ? \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' )->logsTables( $output, $activeTab, $entity->activeid ) : NULL;		
 	}
 	
 }

@@ -165,7 +165,8 @@ class _Members
 					'form' => function( $form, $values )
 					{
 						$members = array();
-						foreach( (array) $values[ 'rules_choose_members' ] as $member_id )
+						$rules_choose_members = isset( $values[ 'rules_choose_members' ] ) ? (array) $values[ 'rules_choose_members' ] : array();
+						foreach( $rules_choose_members as $member_id )
 						{
 							if ( $member_id )
 							{
@@ -182,7 +183,8 @@ class _Members
 					'saveValues' => function( &$values )
 					{	
 						$members = array();
-						foreach ( (array) $values[ 'rules_choose_members' ] as $member )
+						$rules_choose_members = isset( $values[ 'rules_choose_members' ] ) ? (array) $values[ 'rules_choose_members' ] : array();
+						foreach ( $rules_choose_members as $member )
 						{
 							$members[] = $member->member_id;
 						}
@@ -210,7 +212,7 @@ class _Members
 							$options[ $group->g_id ] = $group->name;
 						}
 						
-						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_groups', $values[ 'rules_Members_member_groups' ], TRUE, array( 'options' => $options ), NULL, NULL, NULL, 'rules_Members_member_groups' ) );
+						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_groups', isset( $values[ 'rules_Members_member_groups' ] ) ? $values[ 'rules_Members_member_groups' ] : NULL, TRUE, array( 'options' => $options ), NULL, NULL, NULL, 'rules_Members_member_groups' ) );
 					},
 				),
 				'callback' 	=> array( $this, 'checkMemberGroup' ),
@@ -239,7 +241,7 @@ class _Members
 							'banned_temp'	=> 'rules_member_banned_temp',
 							'warnlevel'	=> 'rules_member_warnlevel',
 						);						
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_member_status', $values[ 'rules_Members_member_status' ], TRUE, array( 'options' => $status_options ), NULL, NULL, NULL, 'rules_Members_member_status' ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_member_status', isset( $values[ 'rules_Members_member_status' ] ) ? $values[ 'rules_Members_member_status' ] : NULL, TRUE, array( 'options' => $status_options ), NULL, NULL, NULL, 'rules_Members_member_status' ) );
 					},
 				),
 				'callback' 	=> array( $this, 'checkMemberStatus' ),
@@ -309,21 +311,21 @@ class _Members
 							'?' => array( 'rules_Members_attribute_compare_minutes', 'rules_Members_attribute_compare_hours', 'rules_Members_attribute_compare_days', 'rules_Members_attribute_compare_months', 'rules_Members_attribute_compare_years' ),
 						);
 						
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_member_attribute', $values[ 'rules_Members_member_attribute' ], TRUE, array( 'options' => $attribute_options, 'toggles' => $attribute_toggles ), NULL, NULL, NULL, 'rules_Members_member_attribute' ) );					
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_attribute_compare_type_value', $values[ 'rules_Members_attribute_compare_type_value' ], FALSE, array( 'options' => $value_compare_options ), NULL, NULL, NULL, 'rules_Members_attribute_compare_type_value' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_value', $values[ 'rules_Members_attribute_compare_value' ] ?: 0, FALSE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_value' ) );
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_attribute_compare_type_date', $values[ 'rules_Members_attribute_compare_type_date' ], FALSE, array( 'options' => $date_compare_options, 'toggles' => $date_toggles ), NULL, NULL, NULL, 'rules_Members_attribute_compare_type_date' ) );
-						$form->add( new \IPS\Helpers\Form\Date( 'rules_Members_attribute_compare_date', \IPS\DateTime::ts( $values[ 'rules_Members_attribute_compare_date' ] ), FALSE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_date' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_minutes', $values[ 'rules_Members_attribute_compare_minutes' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_minutes' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_hours', $values[ 'rules_Members_attribute_compare_hours' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_hours' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_days', $values[ 'rules_Members_attribute_compare_days' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_days' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_months', $values[ 'rules_Members_attribute_compare_months' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_months' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_years', $values[ 'rules_Members_attribute_compare_years' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_years' ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_member_attribute', isset( $values[ 'rules_Members_member_attribute' ] ) ? $values[ 'rules_Members_member_attribute' ] : NULL, TRUE, array( 'options' => $attribute_options, 'toggles' => $attribute_toggles ), NULL, NULL, NULL, 'rules_Members_member_attribute' ) );					
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_attribute_compare_type_value', isset( $values[ 'rules_Members_attribute_compare_type_value' ] ) ? $values[ 'rules_Members_attribute_compare_type_value' ] : NULL, FALSE, array( 'options' => $value_compare_options ), NULL, NULL, NULL, 'rules_Members_attribute_compare_type_value' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_value', isset( $values[ 'rules_Members_attribute_compare_value' ] ) ? $values[ 'rules_Members_attribute_compare_value' ] : 0, FALSE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_value' ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_attribute_compare_type_date', isset( $values[ 'rules_Members_attribute_compare_type_date' ] ) ? $values[ 'rules_Members_attribute_compare_type_date' ] : NULL, FALSE, array( 'options' => $date_compare_options, 'toggles' => $date_toggles ), NULL, NULL, NULL, 'rules_Members_attribute_compare_type_date' ) );
+						$form->add( new \IPS\Helpers\Form\Date( 'rules_Members_attribute_compare_date', isset( $values[ 'rules_Members_attribute_compare_date' ] ) ? \IPS\DateTime::ts( $values[ 'rules_Members_attribute_compare_date' ] ) : NULL, FALSE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_date' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_minutes', isset( $values[ 'rules_Members_attribute_compare_minutes' ] ) ? $values[ 'rules_Members_attribute_compare_minutes' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_minutes' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_hours', isset( $values[ 'rules_Members_attribute_compare_hours' ] ) ? $values[ 'rules_Members_attribute_compare_hours' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_hours' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_days', isset( $values[ 'rules_Members_attribute_compare_days' ] ) ? $values[ 'rules_Members_attribute_compare_days' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_days' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_months', isset( $values[ 'rules_Members_attribute_compare_months' ] ) ? $values[ 'rules_Members_attribute_compare_months' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_months' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_attribute_compare_years', isset( $values[ 'rules_Members_attribute_compare_years' ] ) ? $values[ 'rules_Members_attribute_compare_years' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_attribute_compare_years' ) );
 						
 					},
 					'saveValues' => function( &$values )
 					{
-						if ( $values[ 'rules_Members_attribute_compare_date' ] instanceof \IPS\DateTime )
+						if ( isset( $values[ 'rules_Members_attribute_compare_date' ] ) and $values[ 'rules_Members_attribute_compare_date' ] instanceof \IPS\DateTime )
 						{
 							$values[ 'rules_Members_attribute_compare_date' ] = $values[ 'rules_Members_attribute_compare_date' ]->getTimestamp();
 						}
@@ -409,7 +411,7 @@ class _Members
 				(
 					'form' => function( $form, $values, $action )
 					{
-						$form->add( new \IPS\Helpers\Form\Select( 'rules_Members_member_primary_group', $values[ 'rules_Members_member_primary_group' ], TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'parse' => 'normal' ) ) );
+						$form->add( new \IPS\Helpers\Form\Select( 'rules_Members_member_primary_group', isset( $values[ 'rules_Members_member_primary_group' ] ) ? $values[ 'rules_Members_member_primary_group' ] : NULL, TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'parse' => 'normal' ) ) );
 					},
 				),
 				'arguments'	=> array
@@ -429,7 +431,7 @@ class _Members
 				(
 					'form' => function( $form, $values, $action )
 					{
-						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_secondary_groups_add', $values[ 'rules_Members_member_secondary_groups_add' ], TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'multiple' => TRUE, 'parse' => 'normal' ) ) );
+						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_secondary_groups_add', isset( $values[ 'rules_Members_member_secondary_groups_add' ] ) ? $values[ 'rules_Members_member_secondary_groups_add' ] : NULL, TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'multiple' => TRUE, 'parse' => 'normal' ) ) );
 					},
 				),
 				'arguments'	=> array
@@ -449,7 +451,7 @@ class _Members
 				(
 					'form' => function( $form, $values, $action )
 					{
-						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_secondary_groups_remove', $values[ 'rules_Members_member_secondary_groups_remove' ], TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'multiple' => TRUE, 'parse' => 'normal' ) ) );
+						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_secondary_groups_remove', isset( $values[ 'rules_Members_member_secondary_groups_remove' ] ) ? $values[ 'rules_Members_member_secondary_groups_remove' ] : NULL, TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'multiple' => TRUE, 'parse' => 'normal' ) ) );
 					},
 				),
 				'arguments'	=> array
@@ -469,7 +471,7 @@ class _Members
 				(
 					'form' => function( $form, $values, $action )
 					{
-						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_secondary_groups_set', $values[ 'rules_Members_member_secondary_groups_set' ], TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'multiple' => TRUE, 'parse' => 'normal' ) ) );
+						$form->add( new \IPS\Helpers\Form\CheckboxSet( 'rules_Members_member_secondary_groups_set', isset( $values[ 'rules_Members_member_secondary_groups_set' ] ) ? $values[ 'rules_Members_member_secondary_groups_set' ] : NULL, TRUE, array( 'options' => \IPS\Member\Group::groups( \IPS\Member::loggedIn()->hasAcpRestriction( 'core', 'members', 'member_add_admin' ), FALSE ), 'multiple' => TRUE, 'parse' => 'normal' ) ) );
 					},
 				),
 				'arguments'	=> array
@@ -499,7 +501,7 @@ class _Members
 						(
 							'form' => function( $form, $values, $action )
 							{
-								$form->add( new \IPS\Helpers\Form\Text( 'rules_Members_member_title', $values[ 'rules_Members_member_title' ], TRUE, array(), NULL, NULL, NULL, 'rules_Members_member_title' ) );
+								$form->add( new \IPS\Helpers\Form\Text( 'rules_Members_member_title', isset( $values[ 'rules_Members_member_title' ] ) ? $values[ 'rules_Members_member_title' ] : NULL, TRUE, array(), NULL, NULL, NULL, 'rules_Members_member_title' ) );
 								return array( 'rules_Members_member_title' );
 							},
 							'getArg' => function( $values, $action )
@@ -556,11 +558,11 @@ class _Members
 							'temporary' => array( 'rules_Members_ban_setting_minutes', 'rules_Members_ban_setting_hours', 'rules_Members_ban_setting_days', 'rules_Members_ban_setting_months' ),
 						);
 						
-						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_ban_setting', $values[ 'rules_Members_ban_setting' ], TRUE, array( 'options' => $ban_options, 'toggles' => $ban_toggles ) ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_minutes', $values[ 'rules_Members_ban_setting_minutes' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_minutes' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_hours', $values[ 'rules_Members_ban_setting_hours' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_hours' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_days', $values[ 'rules_Members_ban_setting_days' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_days' ) );
-						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_months', $values[ 'rules_Members_ban_setting_months' ] ?: 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_months' ) );
+						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Members_ban_setting', isset( $values[ 'rules_Members_ban_setting' ] ) ? $values[ 'rules_Members_ban_setting' ] : NULL, TRUE, array( 'options' => $ban_options, 'toggles' => $ban_toggles ) ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_minutes', isset( $values[ 'rules_Members_ban_setting_minutes' ] ) ? $values[ 'rules_Members_ban_setting_minutes' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_minutes' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_hours', isset( $values[ 'rules_Members_ban_setting_hours' ] ) ? $values[ 'rules_Members_ban_setting_hours' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_hours' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_days', isset( $values[ 'rules_Members_ban_setting_days' ] ) ? $values[ 'rules_Members_ban_setting_days' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_days' ) );
+						$form->add( new \IPS\Helpers\Form\Number( 'rules_Members_ban_setting_months', isset( $values[ 'rules_Members_ban_setting_months' ] ) ? $values[ 'rules_Members_ban_setting_months' ] : 0, TRUE, array(), NULL, NULL, NULL, 'rules_Members_ban_setting_months' ) );
 					},
 				),
 				'arguments'	=> array

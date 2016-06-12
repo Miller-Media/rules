@@ -243,8 +243,8 @@ class _Event
 		while ( $deferred = array_shift( $actions ) )
 		{
 			$action 		= $deferred[ 'action' ];
-			$this->thread 		= $deferred[ 'thread' ];
-			$this->parentThread 	= $deferred[ 'parentThread' ];
+			$this->thread 		= isset( $deferred[ 'thread' ] ) ? $deferred[ 'thread' ] : NULL;
+			$this->parentThread 	= isset( $deferred[ 'parentThread' ] ) ? $deferred[ 'parentThread' ] : NULL;
 			
 			/**
 			 * Execute the action

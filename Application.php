@@ -242,7 +242,8 @@ class _Application extends \IPS\rules\Secure\Application
 					'form' => function( $form, $values ) use ( $field_name, $required )
 					{
 						$members = array();
-						foreach( (array) $values[ $field_name ] as $member_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $member_id )
 						{
 							if ( $member_id )
 							{
@@ -262,7 +263,8 @@ class _Application extends \IPS\rules\Secure\Application
 					'saveValues' => function( &$values ) use ( $field_name )
 					{	
 						$members = array();
-						foreach ( (array) $values[ $field_name ] as $member )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach ( $fieldValues as $member )
 						{
 							$members[] = $member->member_id;
 						}
@@ -271,7 +273,8 @@ class _Application extends \IPS\rules\Secure\Application
 					'getArg' => function( $values ) use ( $field_name )
 					{
 						$members = array();
-						foreach( (array) $values[ $field_name ] as $member_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $member_id )
 						{
 							if ( $member_id )
 							{
@@ -294,7 +297,8 @@ class _Application extends \IPS\rules\Secure\Application
 					'form' => function( $form, $values ) use ( $field_name, $required )
 					{
 						$members = array();
-						foreach( (array) $values[ $field_name ] as $member_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $member_id )
 						{
 							if ( $member_id )
 							{
@@ -313,7 +317,7 @@ class _Application extends \IPS\rules\Secure\Application
 					},
 					'saveValues' => function( &$values ) use ( $field_name )
 					{
-						if ( $values[ $field_name ] instanceof \IPS\Member )
+						if ( isset( $values[ $field_name ] ) and $values[ $field_name ] instanceof \IPS\Member )
 						{
 							$values[ $field_name ] = array( $values[ $field_name ]->member_id );
 						}
@@ -321,7 +325,8 @@ class _Application extends \IPS\rules\Secure\Application
 					'getArg' => function( $values ) use ( $field_name )
 					{
 						$members = array();
-						foreach( (array) $values[ $field_name ] as $member_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $member_id )
 						{
 							if ( $member_id )
 							{
@@ -350,7 +355,8 @@ class _Application extends \IPS\rules\Secure\Application
 							return array();
 						}
 						
-						foreach( (array) $values[ $field_name ] as $content_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $content_id )
 						{
 							if ( $content_id )
 							{
@@ -379,7 +385,8 @@ class _Application extends \IPS\rules\Secure\Application
 						$idField = $itemClass::$databaseColumnId;
 						
 						$items = array();
-						foreach ( (array) $values[ $field_name ] as $content )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach ( $fieldValues as $content )
 						{
 							if ( $content instanceof $itemClass )
 							{
@@ -400,7 +407,8 @@ class _Application extends \IPS\rules\Secure\Application
 						}
 					
 						$items = array();
-						foreach( (array) $values[ $field_name ] as $content_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $content_id )
 						{
 							try 
 							{ 
@@ -430,7 +438,8 @@ class _Application extends \IPS\rules\Secure\Application
 							return array();
 						}
 						
-						foreach( (array) $values[ $field_name ] as $content_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $content_id )
 						{
 							if ( $content_id )
 							{
@@ -458,7 +467,7 @@ class _Application extends \IPS\rules\Secure\Application
 						
 						$idField = $itemClass::$databaseColumnId;
 						
-						if ( $values[ $field_name ] instanceof $itemClass )
+						if ( isset( $values[ $field_name ] ) and $values[ $field_name ] instanceof $itemClass )
 						{
 							$values[ $field_name ] = array( $values[ $field_name ]->$idField );
 						}
@@ -474,7 +483,8 @@ class _Application extends \IPS\rules\Secure\Application
 						}
 					
 						$items = array();
-						foreach( (array) $values[ $field_name ] as $content_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $content_id )
 						{
 							try 
 							{ 
@@ -504,7 +514,8 @@ class _Application extends \IPS\rules\Secure\Application
 							return array();
 						}
 						
-						foreach( (array) $values[ $field_name ] as $node_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $node_id )
 						{
 							if ( $node_id )
 							{
@@ -533,7 +544,8 @@ class _Application extends \IPS\rules\Secure\Application
 						$idField = $nodeClass::$databaseColumnId;
 						
 						$items = array();
-						foreach ( (array) $values[ $field_name ] as $node )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach ( $fieldValues as $node )
 						{
 							if ( $node instanceof $nodeClass )
 							{
@@ -554,7 +566,8 @@ class _Application extends \IPS\rules\Secure\Application
 						}
 					
 						$items = array();
-						foreach( (array) $values[ $field_name ] as $node_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $node_id )
 						{
 							try 
 							{ 
@@ -584,7 +597,8 @@ class _Application extends \IPS\rules\Secure\Application
 							return array();
 						}
 						
-						foreach( (array) $values[ $field_name ] as $node_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $node_id )
 						{
 							if ( $node_id )
 							{
@@ -612,7 +626,7 @@ class _Application extends \IPS\rules\Secure\Application
 						
 						$idField = $nodeClass::$databaseColumnId;
 						
-						if ( $values[ $field_name ] instanceof $nodeClass )
+						if ( isset( $values[ $field_name ] ) and $values[ $field_name ] instanceof $nodeClass )
 						{
 							$values[ $field_name ] = array( $values[ $field_name ]->$idField );
 						}
@@ -628,7 +642,8 @@ class _Application extends \IPS\rules\Secure\Application
 						}
 					
 						$items = array();
-						foreach( (array) $values[ $field_name ] as $node_id )
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						foreach( $fieldValues as $node_id )
 						{
 							try 
 							{ 
@@ -650,13 +665,13 @@ class _Application extends \IPS\rules\Secure\Application
 				(
 					'form' => function( $form, $values, $operation ) use ( $field_name, $required, $options )
 					{
-						$values[ $field_name ] = $values[ $field_name ] ?: time();
+						$values[ $field_name ] = isset( $values[ $field_name ] ) ? $values[ $field_name ] : time();
 						$form->add( new \IPS\Helpers\Form\Date( $field_name, \IPS\DateTime::ts( $values[ $field_name ] ), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values, $operation ) use ( $field_name )
 					{	
-						if ( $values[ $field_name ] instanceof \IPS\DateTime )
+						if ( isset( $values[ $field_name ] ) and $values[ $field_name ] instanceof \IPS\DateTime )
 						{
 							$values[ $field_name ] = $values[ $field_name ]->getTimestamp();
 						}
@@ -676,12 +691,13 @@ class _Application extends \IPS\rules\Secure\Application
 				(
 					'form' => function( $form, $values ) use ( $field_name, $required, $options )
 					{
-						$form->add( new \IPS\Helpers\Form\Stack( $field_name, $values[ $field_name ] ?: array(), $required, $options, NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Stack( $field_name, isset( $values[ $field_name ] ) ? $values[ $field_name ] : array(), $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'getArg' => function( $values ) use ( $field_name )
 					{
-						return (array) $values[ $field_name ];
+						$fieldValues = isset( $values[ $field_name ] ) ? (array) $values[ $field_name ] : array();						
+						return $fieldValues;
 					},
 				);
 				
@@ -694,7 +710,7 @@ class _Application extends \IPS\rules\Secure\Application
 				(
 					'form' => function( $form, $values, $action ) use ( $field_name, $required, $options )
 					{
-						$form->add( new \IPS\Helpers\Form\Url( $field_name, new \IPS\Http\Url( $values[ $field_name ] ), $required, $options, NULL, NULL, NULL, $field_name ) );
+						$form->add( new \IPS\Helpers\Form\Url( $field_name, isset( $values[ $field_name ] ) ? new \IPS\Http\Url( $values[ $field_name ] ) : NULL, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
 					},
 					'saveValues' => function( &$values ) use ( $field_name )
@@ -829,7 +845,7 @@ class _Application extends \IPS\rules\Secure\Application
 					 * IPS does a validate on input creation, WHY? WHY? WHY?
 					 */
 					$lang->words[ $argNameKey . '_source' ] = $lang->get( 'source' );
-					$form->add( $source_select = new \IPS\Helpers\Form\Select( $argNameKey . '_source', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] ?: $arg[ 'default' ], TRUE, array( 'options' => array( 'event' => '', 'manual' => '', 'phpcode' => '' ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, $argNameKey . '_source' ) );
+					$form->add( $source_select = new \IPS\Helpers\Form\Select( $argNameKey . '_source', isset( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] ) ? $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_source' ] : ( isset( $arg[ 'default' ] ) ? $arg[ 'default' ] : NULL ), TRUE, array( 'options' => array( 'event' => '', 'manual' => '', 'phpcode' => '' ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix, $argNameKey . '_source' ) );
 					$source_select->options[ 'options' ] = array();
 					
 					/**
@@ -849,7 +865,7 @@ class _Application extends \IPS\rules\Secure\Application
 						 * Note: Callbacks should return an array with the ID's of their
 						 * added form fields so we know what to toggle.
 						 */
-						$_added = call_user_func_array( $arg[ 'configuration' ][ 'form' ], array( $form, $operation->data[ 'configuration' ][ 'data' ], $operation ) );
+						$_added = call_user_func_array( $arg[ 'configuration' ][ 'form' ], array( $form, isset( $operation->data[ 'configuration' ][ 'data' ] ) ? $operation->data[ 'configuration' ][ 'data' ] : array(), $operation ) );
 						
 						$source 		= $argNameKey . '_source';
 						$eventArg		= $argNameKey . '_eventArg';
@@ -1015,7 +1031,7 @@ class _Application extends \IPS\rules\Secure\Application
 							$usable_arguments = array_merge( $single_options, $usable_arguments );
 							
 							/* Event arg selector */
-							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ], FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix . $noticeHtml, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
+							$form->add( new \IPS\Helpers\Form\Select( $argNameKey . '_eventArg', isset( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] ) ? $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] : NULL, FALSE, array( 'options' => $usable_arguments, 'toggles' => $usable_toggles ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix . $noticeHtml, $argNameKey . '_eventArg' ), $argNameKey . '_source' );
 							
 							/**
 							 * Offer default configuration option if available
@@ -1075,7 +1091,7 @@ class _Application extends \IPS\rules\Secure\Application
 						$source_select->options[ 'options' ][ 'phpcode' ] = 'operation_arg_source_phpcode';
 						$source_select->options[ 'toggles' ][ 'phpcode' ] = array( $argNameKey . '_phpcode' );
 						
-						$form->add( new \IPS\Helpers\Form\Codemirror( $argNameKey . '_phpcode', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] ?: "//<?php\n\nreturn;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, $argNameKey . '_phpcode' ) );
+						$form->add( new \IPS\Helpers\Form\Codemirror( $argNameKey . '_phpcode', isset( $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] ) ? $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_phpcode' ] : "//<?php\n\nreturn;", FALSE, array( 'mode' => 'php' ), NULL, NULL, NULL, $argNameKey . '_phpcode' ) );
 					}
 				}
 			}
@@ -1185,6 +1201,8 @@ class _Application extends \IPS\rules\Secure\Application
 					 */
 					foreach( $all_arguments as $event_arg_name => $event_argument )
 					{
+						$type_def = array();
+						
 						/**
 						 * Check if the event argument itself is supported
 						 */
@@ -1193,7 +1211,7 @@ class _Application extends \IPS\rules\Secure\Application
 							$can_use = TRUE;
 							
 							/* Our operation argument type definition */
-							$type_def = $arg[ 'argtypes' ][ $event_argument[ 'argtype' ] ] ?: $arg[ 'argtypes' ][ 'mixed' ];
+							$type_def = isset( $arg[ 'argtypes' ][ $event_argument[ 'argtype' ] ] ) ? $arg[ 'argtypes' ][ $event_argument[ 'argtype' ] ] : $arg[ 'argtypes' ][ 'mixed' ];
 							
 							/* If it's not an array, then it doesn't have any special needs */
 							if ( is_array( $type_def ) and ! empty ( $type_def ) )
@@ -1214,7 +1232,7 @@ class _Application extends \IPS\rules\Secure\Application
 								$_usable_arguments[ $event_arg_name ] = $event_argument;
 							}
 						}
-							
+						
 						/**
 						 * Add in any other arguments that we can derive from the event argument as options also
 						 */
@@ -1288,14 +1306,11 @@ class _Application extends \IPS\rules\Secure\Application
 								 * Determine which argument index to use and if the argument
 								 * needs class conversion or not
 								 */
-								list
-								( 
-									$event_arg_name, 
-									$converter_class, 
-									$converter_key 
-								) 	
-									= explode( ':', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] );
-										
+								$parts = explode( ':', $operation->data[ 'configuration' ][ 'data' ][ $argNameKey . '_eventArg' ] );
+								$event_arg_name = isset( $parts[ 0 ] ) ? $parts[ 0 ] : NULL;
+								$converter_class = isset( $parts[ 1 ] ) ? $parts[ 1 ] : NULL;
+								$converter_key = isset( $parts[ 2 ] ) ? $parts[ 2 ] : NULL;
+								
 								$_operation_arg	= NULL;
 								$input_arg 	= NULL;
 								$input_arg_type	= NULL;

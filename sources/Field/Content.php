@@ -191,14 +191,18 @@ class _Content extends \IPS\Helpers\Form\Text
 	{
 		if ( is_array( $value ) )
 		{
-			return implode( ',', array_map( function( $v )
+			$values = array();
+			foreach( $value as $v )
 			{
-				$idField = $v::$databaseColumnId;
-				return $v->$idField;
-			}, $value ) );
+				if ( $v instanceof \IPS\Content )
+				{
+					$values[] = $v->activeid;
+				}
+			}
+			
+			return implode( ',', $values );
 		}
 		
-		$idField = $v::$databaseColumnId;
-		return $value ? (string) $value->$idField : NULL;
+		return $value instanceof \IPS\Content ? $value->activeid : NULL;
 	}
 }
