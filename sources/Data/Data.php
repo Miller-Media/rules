@@ -176,7 +176,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	public function get_description()
 	{
 
-		return $this->_data[ 'description' ];
+		return isset( $this->_data[ 'description' ] ) ? $this->_data[ 'description' ] : '';
 	}
 	
 	/**
@@ -654,16 +654,28 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	public function valueFromForm( $values )
 	{
 		$form_name 	= 'rules_data_' . $this->column_name;
-		$form_value 	= $values[ $form_name ];
+		$form_value 	= isset( $values[ $form_name ] ) ? $values[ $form_name ] : NULL;
 		
 		if ( $this->type == 'string' )
 		{
 			$form_value = (string) $form_value;
 		}
 		
+		/**
+		 * Induce an object from a saved value
+		 * Added to accomodate the IPS gallery image upload process
+		 */
+		if ( $form_value and $this->type == 'object' and ! is_object( $form_value ) )
+		{
+			$elements 		= $this->formElements( NULL, $values );
+			$form_field 		= $elements[ $form_name ];
+			$form_field->value 	= $form_value;
+			$form_value 		= $form_field->formatValue();
+		}		
+		
 		return $form_value;
 	}
-		
+	
 	/**
 	 * [Node] Save Add/Edit Form
 	 *
@@ -672,7 +684,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function saveForm( $values )
 	{
-		$values[ 'data_column_name' ] = mb_strtolower( $values[ 'data_column_name' ] );
+		$values[ 'data_column_name' ] = mb_strtolower( isset( $values[ 'data_column_name' ] ) ? $values[ 'data_column_name' ] : '' );
 		$configuration = array();
 		
 		foreach( $values as $key => $value )
