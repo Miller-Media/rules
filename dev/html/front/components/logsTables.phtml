@@ -1,12 +1,12 @@
-<ips:template parameters="$logs, $activeTab, $usingIcons=FALSE, $tabArray=array()" />
+<ips:template parameters="$logs, $activeTab, $id" />
 <div style="margin-bottom:20px">
-	<div class='ipsTabs ipsClearfix ipsJS_show{{if $usingIcons}} ipsTabs_withIcons{{endif}}' id='tabs_{$id}' data-ipsTabBar data-ipsTabBar-contentArea='#ipsTabs_content_{$id}'>
+	<div class='ipsTabs ipsClearfix ipsJS_show' id='tabs_{$id}' data-ipsTabBar data-ipsTabBar-contentArea='#ipsTabs_content_{$id}'>
 		<a href='#tabs_{$id}' data-action='expandTabs'><i class='fa fa-caret-down'></i></a>
 		<ul role='tablist'>
 			{{foreach $logs as $name => $content}}
 				<li>
 					<a href='#ipsTabs_tabs_{$id}_{$id}_tab_{$name}_panel' id='{$id}_tab_{$name}' class="ipsTabs_item {{if $name == $activeTab}}ipsTabs_activeItem{{endif}}" role="tab" aria-selected="{{if $activeTab == $name}}true{{else}}false{{endif}}">
-						{{if isset($tabArray[$name]['icon'])}}<i class='fa fa-{$tabArray[$name]['icon']}'></i> {{endif}}{lang="$name"}
+						{lang="$name"}
 					</a>
 				</li>
 			{{endforeach}}

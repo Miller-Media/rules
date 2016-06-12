@@ -153,12 +153,12 @@ class _CustomLogs
 					(
 						'form' => function( $form, $values )
 						{
-							$form->add( new \IPS\Helpers\Form\Text( 'rules_custom_log_message', $values[ 'rules_custom_log_message' ], TRUE, array(), NULL, NULL, NULL, 'rules_custom_log_message' ) );
+							$form->add( new \IPS\Helpers\Form\Text( 'rules_custom_log_message', isset( $values[ 'rules_custom_log_message' ] ) ? $values[ 'rules_custom_log_message' ] : '', TRUE, array(), NULL, NULL, NULL, 'rules_custom_log_message' ) );
 							return array( 'rules_custom_log_message' );
 						},
 						'getArg' => function( $values )
 						{
-							return $values[ 'rules_custom_log_message' ];
+							return isset( $values[ 'rules_custom_log_message' ] ) ? $values[ 'rules_custom_log_message' ] : '';
 						}
 					)
 				),
@@ -167,7 +167,7 @@ class _CustomLogs
 			$lang->words[ 'rules_CustomLogs_actions_custom_log_' . $log->key . '_message' ] = $lang->get( 'rules_custom_log_message' );
 			
 			$logData = array();
-			foreach ( $log->children() as $argument )
+			foreach ( $log->children( NULL ) as $argument )
 			{
 				$logData[ $argument->varname ] = NULL;
 				$argClass = NULL;
@@ -193,7 +193,7 @@ class _CustomLogs
 						'form' => function( $form, $values ) use ( $argument, $lang ) 
 						{
 							$form_name = 'custom_argument_' . $argument->id;
-							$form_value = \IPS\rules\Application::restoreArg( json_decode( $values[ 'custom_argument_' . $argument->id ], TRUE ) );
+							$form_value = isset( $values[ 'custom_argument_' . $argument->id ] ) ? \IPS\rules\Application::restoreArg( json_decode( $values[ 'custom_argument_' . $argument->id ], TRUE ) ) : NULL;
 							$form_input = NULL;
 							
 							$lang->words[ $form_name ] 		= $argument->name;
