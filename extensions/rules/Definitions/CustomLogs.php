@@ -38,7 +38,7 @@ class _CustomLogs
 		$lang 		= \IPS\Member::loggedIn()->language();
 		$events 	= array();
 
-		foreach ( \IPS\rules\Log\Custom::roots() as $log )
+		foreach ( \IPS\rules\Log\Custom::roots( NULL ) as $log )
 		{
 			$arguments = array
 			(
@@ -57,7 +57,7 @@ class _CustomLogs
 			$lang->words[ 'rules_CustomLogs_event_custom_log_' . $log->key . '_entity' ] = $lang->get( 'rules_custom_log_entity' );			
 			$lang->words[ 'rules_CustomLogs_event_custom_log_' . $log->key . '_message' ] = $lang->get( 'rules_custom_log_message' );
 			
-			foreach ( $log->children() as $argument )
+			foreach ( $log->children( NULL ) as $argument )
 			{
 				$argClass = NULL;
 				if ( $argument->type == 'object' )
