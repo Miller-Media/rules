@@ -14,7 +14,7 @@ class rules_hook_ipsOutput extends _HOOK_CLASS_
 	 * @param	bool	$pageIsCached		Is the page from a cache? If TRUE, no language parsing will be done
 	 * @return	void
 	 */
-	public function sendOutput( $output='', $httpStatusCode=200, $contentType='text/html', $httpHeaders=array (), $cacheThisPage=true, $pageIsCached=false )
+	public function sendOutput( $output='', $httpStatusCode=200, $contentType='text/html', $httpHeaders=array (), $cacheThisPage=true, $pageIsCached=false, $parseFileObjects=TRUE )
 	{
 		\IPS\rules\Event::load( 'rules', 'System', 'browser_output' )->trigger( $output, $httpStatusCode, $contentType, $httpHeaders, $cacheThisPage, $pageIsCached );
 		
