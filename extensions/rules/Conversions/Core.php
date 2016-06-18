@@ -99,7 +99,9 @@ class _Core
 					'argtype' => 'string',
 					'converter' => function( $member )
 					{
-						return (string) $member->name;
+						$name = (string) $member->name;
+						\IPS\Lang::load( \IPS\Lang::defaultLanguage() )->parseOutputForDisplay( $name );
+						return $name;
 					},
 				),
 				'Name Link' => array
