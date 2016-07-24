@@ -2515,7 +2515,8 @@ class _Application extends \IPS\rules\Secure\Application
 		}
 		
 		call_user_func_array( 'parent::installJsonData', func_get_args() );
-		$updates->request()->get();
+		
+		try { $updates->request()->get(); } catch( \Exception $e ) { }
 	}
 	
 	/**
