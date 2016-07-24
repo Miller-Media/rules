@@ -158,7 +158,7 @@
   <word key="ruleset_description" js="0">Rule Set Description</word>
   <word key="ruleset_creator" js="0">Created By</word>
   <word key="action_schedule_mode" js="0">Action should be executed</word>
-  <word key="action_schedule_mode_desc" js="0"><![CDATA[Immediate actions are taken before other rules on the same event are evaluated.<br>Actions executed at the end of the event allow actions to queue while other rules on the same event are tested.<br>Actions selected to execute at the end of the page load will queue until all events are finished.<br>Actions selected to happen at a future time will be queued and executed via cron.]]></word>
+  <word key="action_schedule_mode_desc" js="0"><![CDATA[Immediate actions are taken before other rules on the same event are evaluated.<br>Actions executed at the end of the event allow actions to queue while other rules on the same event are tested.<br>Actions selected to execute at the end of the page load will queue until all events on the page have finished.<br>Actions selected to happen at a future time will be queued and executed via cron.]]></word>
   <word key="rules_action_execution_now" js="0">Immediately</word>
   <word key="rules_action_execution_defer" js="0">At the end of the event (default)</word>
   <word key="rules_action_execution_end" js="0">At the end of the page load</word>
