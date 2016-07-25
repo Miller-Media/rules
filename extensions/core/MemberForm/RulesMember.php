@@ -64,7 +64,7 @@ class _RulesMember
 			\IPS\Member::loggedIn()->language()->words[ 'custom_log_' . $log->id ] = $log->title;
 			
 			$form->addTab( $tab_title );
-			$form->addHtml( $log->logsTable( $member ) );
+			$form->addHtml( (string) $log->logsTable( $member ) );
 		}
 	}
 	
