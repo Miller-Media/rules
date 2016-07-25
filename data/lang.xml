@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100314">
+ <app key="rules" version="100315">
   <word key="__app_rules" js="0">Rules</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
+  <word key="menu__rules_logs" js="0">Rules Logs</word>
   <word key="menu__rules_rules_logs" js="0">Rules Logs</word>
+  <word key="menu__rules_system" js="0">System</word>
   <word key="menu__rules_rules_custom" js="0">Custom Actions</word>
   <word key="menu__rules_rules_data" js="0">Custom Data Fields</word>
   <word key="menu__rules_rules_customlogs" js="0">Custom Logs</word>
