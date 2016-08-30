@@ -457,7 +457,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_display_mode', $this->display_mode ?: 'automatic', TRUE, array( 'options' => $data_display_options ), NULL, NULL, NULL, 'data_display_mode' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_use_mode', $this->use_mode ?: 'internal', TRUE, array( 'options' => $data_use_options, 'toggles' => $data_use_toggles ), NULL, NULL, NULL, 'data_use_mode' ) );
-		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required ?: 0, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'data_required', $this->required, TRUE, array(), NULL, NULL, NULL, 'data_required' ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'data_text_mode', $this->text_mode ?: 1, TRUE, array( 'options' => $data_text_modes, 'toggles' => $data_text_mode_toggles ), NULL, "<div id='data_text_mode_wrap'>", "</div><span id='data_text_mode_unavailable' class='ipsMessage ipsMessage_success'>Automatically Configured</span>", 'data_text_mode' ) );
 		$form->add( new \IPS\Helpers\Form\Stack( 'data_value_options', json_decode( $this->value_options, TRUE ), FALSE, array( 'stackFieldType' => 'KeyValue' ), NULL, NULL, NULL, 'data_value_options' ) );
 		$form->add( new \IPS\Helpers\Form\Textarea( 'data_value_default', $this->value_default, FALSE, array(), NULL, "<div id='data_value_default_usable'>", "</div><span id='data_value_default_unusable' class='ipsMessage ipsMessage_warning'>Unsupported</span>", 'data_value_default' ) );
@@ -717,15 +717,6 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 		if ( in_array( $values[ 'data_type' ], array( 'object', 'array' ) ) )
 		{
 			$values[ 'data_value_default' ] = NULL;
-		}
-		
-		print "<pre>";
-		var_dump( $values );
-		exit;
-
-		if ( $values[ 'data_required' ] === NULL )
-		{
-			//unset( $values[ 'data_required' ] );
 		}
 		
 		parent::saveForm( $values );
