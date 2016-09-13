@@ -1275,7 +1275,7 @@ class _rulesets extends \IPS\Node\Controller
 		{
 			$tempFile = tempnam( \IPS\TEMP_DIRECTORY, 'IPS' );
 			move_uploaded_file( $values[ 'rules_import' ], $tempFile );
-								
+			
 			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=rules&module=rules&controller=rulesets&do=doImport&file=' . urlencode( $tempFile ) . '&key=' . md5_file( $tempFile ) . ( isset( \IPS\Request::i()->id ) ? '&id=' . \IPS\Request::i()->id : '' ) ) );
 		}
 		
@@ -1290,12 +1290,12 @@ class _rulesets extends \IPS\Node\Controller
 	 */
 	public function doImport()
 	{
-		if ( ! file_exists( \IPS\Request::i()->file ) or md5_file( \IPS\Request::i()->file ) !== \IPS\Request::i()->key )
+		if ( ! file_exists( urldecode( \IPS\Request::i()->file ) ) or md5_file( urldecode( \IPS\Request::i()->file ) ) != \IPS\Request::i()->key )
 		{
 			\IPS\Output::i()->error( 'generic_error', '2RI00/B', 500, '' );
 		}
 		
-		if ( ! ( $import = \simplexml_load_file( \IPS\Request::i()->file, 'SimpleXMLElement', LIBXML_NOCDATA ) ) )
+		if ( ! ( $import = \simplexml_load_file( urldecode( \IPS\Request::i()->file ), 'SimpleXMLElement', LIBXML_NOCDATA ) ) )
 		{
 			\IPS\Output::i()->error( 'xml_upload_invalid', '2RI00/C', 403, '' );
 		}
