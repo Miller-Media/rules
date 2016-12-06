@@ -518,6 +518,7 @@ class _Content
 						);
 						
 						$form->add( new \IPS\Helpers\Form\Radio( 'rules_Content_check_tags_type', isset( $values[ 'rules_Content_check_tags_type' ] ) ? $values[ 'rules_Content_check_tags_type' ] : 'has_any', TRUE, array( 'options' => $tag_options ) ) );
+						$form->add( new \IPS\Helpers\Form\YesNo( 'rules_Content_check_tags_prefix', isset( $values[ 'rules_Content_check_tags_prefix' ] ) ? $values[ 'rules_Content_check_tags_prefix' ] : FALSE, FALSE ) );
 					},
 				),
 				'arguments' => array
@@ -1639,11 +1640,17 @@ class _Content
 			throw new \UnexpectedValueException( 'Invalid content item' );
 		}
 	
+		$_tags = $item->tags();
+		$prefix = $item->prefix();
+		if ( isset( $values[ 'rules_Content_check_tags_prefix' ] ) and $values[ 'rules_Content_check_tags_prefix' ] == TRUE and $prefix !== NULL )
+		{
+			$_tags[] = $prefix;
+		}
+		
 		switch ( $values[ 'rules_Content_check_tags_type' ] )
 		{
 			case 'has_any':
 			
-				$_tags = $item->tags();
 				$matched = array_intersect( $tags, $_tags );
 				if ( count( $matched ) )
 				{
@@ -1654,7 +1661,6 @@ class _Content
 			
 			case 'has_all':
 			
-				$_tags = $item->tags();
 				$matched = array_intersect( $tags, $_tags );
 				if ( count( $tags ) == count( $matched ) )
 				{

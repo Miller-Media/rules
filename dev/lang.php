@@ -810,6 +810,7 @@ $lang = array(
 	'rules_Content_conditions_content_tags_item'		=> "The Content Item to Check",
 	'rules_Content_conditions_content_tags_tags'		=> "Tags",
 	'rules_Content_check_tags_type'				=> "Check if content is tagged with",
+	'rules_Content_check_tags_prefix'			=> "Include prefix tag?",
 	
 	'rules_Content_conditions_content_attributes'		=> "Content attribute values",
 	'rules_Content_conditions_content_attributes_content'	=> "The Content to Check",
