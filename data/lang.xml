@@ -644,6 +644,7 @@
   <word key="rules_Content_conditions_content_tags_item" js="0">The Content Item to Check</word>
   <word key="rules_Content_conditions_content_tags_tags" js="0">Tags</word>
   <word key="rules_Content_check_tags_type" js="0">Check if content is tagged with</word>
+  <word key="rules_Content_check_tags_prefix" js="0">Include prefix tag?</word>
   <word key="rules_Content_conditions_content_attributes" js="0">Content attribute values</word>
   <word key="rules_Content_conditions_content_attributes_content" js="0">The Content to Check</word>
   <word key="rules_Content_content_attribute" js="0">Attribute to check</word>
