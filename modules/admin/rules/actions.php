@@ -199,7 +199,7 @@ class _actions extends \IPS\Node\Controller
 	 * @param	\IPS\Node\Model	$node	The node now
 	 * @return	void
 	 */
-	protected function _afterSave( \IPS\Node\Model $old = NULL, \IPS\Node\Model $new )
+	protected function _afterSave( \IPS\Node\Model $old = NULL, \IPS\Node\Model $new, $lastUsedTab = false )
 	{
 		if( \IPS\Request::i()->isAjax() )
 		{
