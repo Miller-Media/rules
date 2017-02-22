@@ -33,7 +33,18 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	 */
 	public function unhide( $member )
 	{
+		/* If we're approving, we have to do extra stuff */
+		$approving = $this->hidden() === 1 ? TRUE : FALSE;
+		
 		$result = call_user_func_array( 'parent::unhide', func_get_args() );
+		
+		if ( $approving ) {
+			\IPS\rules\Event::load( 'rules', 'Content', 'content_approved' 	)->trigger( $this, $member );
+			$approvingEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_approved_' . md5( get_class( $this ) ) );
+			if ( ! $approvingEvent->placeholder ) {
+				$approvingEvent->trigger( $this, $member );
+			}
+		}
 		
 		\IPS\rules\Event::load( 'rules', 'Content', 'content_unhidden' )->trigger( $this, $member ?: \IPS\Member::loggedIn() );
 		
@@ -135,7 +146,6 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 	
 		switch ( $action )
 		{
-			case 'approve'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_approved' 	)->trigger( $this, $member ); break;
 			case 'pin'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_pinned' 		)->trigger( $this, $member ); break;
 			case 'unpin'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_unpinned' 	)->trigger( $this, $member ); break;
 			case 'feature'	: \IPS\rules\Event::load( 'rules', 'Content', 'content_featured' 	)->trigger( $this, $member ); break;
@@ -146,7 +156,6 @@ abstract class rules_hook_ipsContent extends _HOOK_CLASS_
 		
 		switch ( $action )
 		{
-			case 'approve'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_approved_' . 	md5( get_class( $this ) ) ); break;
 			case 'pin'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_pinned_' . 	md5( get_class( $this ) ) ); break;
 			case 'unpin'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_unpinned_' . 	md5( get_class( $this ) ) ); break;
 			case 'feature'	: $classEvent = \IPS\rules\Event::load( 'rules', 'Content', 'content_featured_' . 	md5( get_class( $this ) ) ); break;
