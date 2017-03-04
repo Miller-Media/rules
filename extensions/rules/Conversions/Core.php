@@ -144,6 +144,16 @@ class _Core
 						return (int) $member->real_member_posts;
 					},
 				),
+				'Leaderboard Days Won' => array
+				(
+					'token' => 'leaderboards_won',
+					'description' => 'Number of days won on leaderboard',
+					'argtype' => 'int',
+					'converter' => function( $member )
+					{
+						return (int) $member->getReputationDaysWonCount();
+					},
+				),
 				'Reputation' => array
 				(
 					'token' => 'reputation',
