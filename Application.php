@@ -368,7 +368,9 @@ class _Application extends \IPS\rules\Secure\Application
 							}
 						}
 						
-						$options[ 'multiple' ] = NULL;
+						if ( ! array_key_exists( 'multiple', $options ) ) {
+							$options[ 'multiple' ] = NULL;
+						}
 						
 						$form->add( new \IPS\rules\Field\Content( $field_name, $items, $required, $options, NULL, NULL, NULL, $field_name ) );
 						return array( $field_name );
