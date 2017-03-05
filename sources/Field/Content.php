@@ -95,7 +95,6 @@ class _Content extends \IPS\Helpers\Form\Text
 					$value[] = $v;
 				}
 			}
-			$value = implode( ',', $value );
 		}
 		elseif ( $value instanceof \IPS\Content\Item )
 		{
@@ -114,17 +113,31 @@ class _Content extends \IPS\Helpers\Form\Text
 	{
 		if ( $this->value and ! ( $this->value instanceof \IPS\Content\Item ) )
 		{
-			$return 	= array();
-			$contentClass 	= $this->options[ 'class' ];
-			$idField 	= $contentClass::$databaseColumnId;
+			// IPS 4.1.17.1 and below use comma delimiter on autocomplete fields. Higher versions use a new line break.
+			$delimiter = \IPS\Application::getAvailableVersion( 'core' ) < 101079 ? "," : "\n";
+
+			$return       = array();
+			$contentClass = $this->options[ 'class' ];
+			$idField      = $contentClass::$databaseColumnId;
+			$matches      = NULL;
 			
-			if ( ! is_array( $this->value ) )
+			if ( is_array( $this->value ) )
+			{
+				$this->value = array_map( 
+					function( $val ) {
+						preg_match( "/ID:(\d+) - /", $val, $matches );
+						return empty( $matches[ 1 ] ) ? $val : $matches[ 1 ];
+					}, 
+					$this->value 
+				);
+			}
+			else
 			{
 				preg_match_all( "/ID:(\d+) - /", $this->value, $matches );
 				
 				if ( empty( $matches[ 1 ] ) )
 				{
-					$this->value = explode( ',', $this->value );
+					$this->value = explode( $delimiter, $this->value );
 				}
 				else
 				{
@@ -132,6 +145,7 @@ class _Content extends \IPS\Helpers\Form\Text
 				}
 			}
 			
+			// assemble array of items from array of item id's
 			foreach ( $this->value as $v )
 			{
 				if ( $v instanceof \IPS\Content\Item )
