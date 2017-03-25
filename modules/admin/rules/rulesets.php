@@ -1062,6 +1062,7 @@ class _rulesets extends \IPS\Node\Controller
 		$conditionNode->addAttribute( 'enabled',	$condition->enabled );
 		$conditionNode->addAttribute( 'compare', 	$condition->group_compare );
 		$conditionNode->addAttribute( 'not',		$condition->not );
+		$conditionNode->addAttribute( 'recursion',	$condition->enable_recursion );
 		$conditionNode->addAttribute( 'footprint',	$condition->footprint );
 		
 		$conditionNode->addChild( 'data', json_encode( $condition->data ) );
@@ -1129,6 +1130,7 @@ class _rulesets extends \IPS\Node\Controller
 		$actionNode->addAttribute( 'schedule_days',	$action->schedule_days );
 		$actionNode->addAttribute( 'schedule_months',	$action->schedule_months );
 		$actionNode->addAttribute( 'schedule_key', 	$action->schedule_key );
+		$actionNode->addAttribute( 'recursion',		$action->enable_recursion );
 		$actionNode->addAttribute( 'footprint',		$action->footprint );
 		$actionNode->addAttribute( 'else',		$action->else );
 		
@@ -1509,6 +1511,7 @@ class _rulesets extends \IPS\Node\Controller
 		$condition->enabled		= (int) 	$conditionXML[ 'enabled' ];
 		$condition->group_compare 	= (string) 	$conditionXML[ 'compare' ];
 		$condition->not			= (string) 	$conditionXML[ 'not' ];
+		$condition->enable_recursion = (int) $conditionXML[ 'recursion' ];
 		$condition->footprint		= (string)	$conditionXML[ 'footprint' ];
 		$condition->data 		= json_decode( (string) $conditionXML->data );
 		$condition->save();
@@ -1545,6 +1548,7 @@ class _rulesets extends \IPS\Node\Controller
 		$action->schedule_months 	= (int)		$actionXML[ 'schedule_months' ];
 		$action->schedule_date		= (int)		$actionXML[ 'schedule_date' ];
 		$action->schedule_key		= (string)	$actionXML[ 'schedule_key' ];
+		$action->enable_recursion   = (string)  $actionXML[ 'recursion' ];
 		$action->footprint		= (string)	$actionXML[ 'footprint' ];
 		$action->else			= (int)		$actionXML[ 'else' ];
 		

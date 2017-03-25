@@ -331,6 +331,8 @@ class _Action extends \IPS\Node\Model
 		}
 		catch ( \Exception $e ) {}
 		
+		$form->add( new \IPS\Helpers\Form\YesNo( 'action_enable_recursion', $this->enable_recursion, FALSE ), 'operation_title' );
+		
 		parent::form( $form );
 		
 	}
@@ -348,7 +350,7 @@ class _Action extends \IPS\Node\Model
 			$values[ 'action_schedule_date' ] = $values[ 'action_schedule_date' ]->getTimestamp();
 		}
 		
-		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id', 'action_else', 'action_schedule_mode', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months', 'action_schedule_date', 'action_schedule_customcode', 'action_schedule_key' ) );		
+		$values = \IPS\rules\Application::opformSave( $this, 'actions', $values, array( 'action_rule_id', 'action_else', 'action_schedule_mode', 'action_schedule_minutes', 'action_schedule_hours', 'action_schedule_days', 'action_schedule_months', 'action_schedule_date', 'action_schedule_customcode', 'action_schedule_key', 'action_enable_recursion' ) );		
 		parent::saveForm( $values );
 		
 		/**
@@ -372,7 +374,7 @@ class _Action extends \IPS\Node\Model
 	 */
 	public function invoke()
 	{
-		if ( ! $this->locked )
+		if ( ! $this->locked or $this->enable_recursion )
 		{
 			/**
 			 * Lock this action from being triggered recursively by itself

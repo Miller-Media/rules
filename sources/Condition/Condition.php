@@ -273,6 +273,8 @@ class _Condition extends \IPS\Node\Model
 			$form->add( new \IPS\Helpers\Form\Radio( 'condition_group_compare', $this->group_compare ?: 'and', FALSE, array( 'options' => $compare_options ), NULL, NULL, NULL, 'condition_group_compare' ), 'operation_title' );
 		}
 		
+		$form->add( new \IPS\Helpers\Form\YesNo( 'condition_enable_recursion', $this->enable_recursion, FALSE ), 'operation_title' );
+		
 		parent::form( $form );
 	}
 	
@@ -284,7 +286,7 @@ class _Condition extends \IPS\Node\Model
 	 */
 	public function saveForm( $values )
 	{
-		$values = \IPS\rules\Application::opformSave( $this, 'conditions', $values, array( 'condition_rule_id', 'condition_group_compare', 'condition_not' ) );		
+		$values = \IPS\rules\Application::opformSave( $this, 'conditions', $values, array( 'condition_rule_id', 'condition_group_compare', 'condition_not', 'condition_enable_recursion' ) );		
 		parent::saveForm( $values );
 		
 		/**
@@ -316,7 +318,7 @@ class _Condition extends \IPS\Node\Model
 	 */
 	public function invoke()
 	{
-		if ( ! $this->locked )
+		if ( ! $this->locked or $this->enable_recursion )
 		{
 			/**
 			 * Lock this from being triggered recursively
