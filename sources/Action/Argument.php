@@ -288,6 +288,7 @@ class _Argument extends \IPS\Node\Model
 				'-IPS-Member'			=> 'Any Member ( IPS\Member )',
 				'-IPS-Content'			=> 'Any Content ( IPS\Content )',
 				'-IPS-DateTime'			=> 'A Date/Time ( IPS\DateTime )',
+				'-IPS-Http-Url'			=> 'A Url ( IPS\Http\Url )',
 				'-IPS-Content-Item'		=> 'Content Item ( IPS\Content\Item )',
 				'-IPS-Content-Comment'		=> 'Content Comment ( IPS\Content\Comment )',
 				'-IPS-Content-Review'		=> 'Content Review ( IPS\Content\Review )',
