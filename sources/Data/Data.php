@@ -373,16 +373,42 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 					/* Add the content class */
 					$_object_classes[ '-' . str_replace( '\\', '-', $contentItemClass ) ] =  ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) : '' ) . ' ( ' . $contentItemClass . ' )';
 					
+					$hasNode = FALSE;
+					
 					/* Add node class */
 					if ( isset( $contentItemClass::$containerNodeClass ) and $nodeClass = $contentItemClass::$containerNodeClass )
 					{
+						$hasNode = TRUE;
 						$_object_classes[ '-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->addToStack( $nodeClass::$nodeTitle ) . ' ( ' . $nodeClass . ' )';
 						
-						$lang->words[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->get( $nodeClass::$nodeTitle );
+						$lang->words[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] = $lang->checkKeyExists( $nodeClass::$nodeTitle ) ? $lang->get( $nodeClass::$nodeTitle ) : $nodeClass::$nodeTitle;
 						$object_classes_containers[] = new \IPS\Helpers\Form\Node( 'containers-' . str_replace( '\\', '-', $nodeClass ), isset( $configuration[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] ) ? $configuration[ 'containers-' . str_replace( '\\', '-', $nodeClass ) ] : 0, FALSE, array( 'class' => $nodeClass, 'multiple' => TRUE, 'subnodes' => FALSE, 'zeroVal' => 'All' ), NULL, NULL, NULL, 'containers-' . str_replace( '\\', '-', $nodeClass ) );
 						$object_classes_toggles[ '-' . str_replace( '\\', '-', $contentItemClass ) ] = array( 'containers-' . str_replace( '\\', '-', $nodeClass ) );
 						$object_classes_toggles[ '-' . str_replace( '\\', '-', $nodeClass ) ] = array( 'containers-' . str_replace( '\\', '-', $nodeClass ) );
 					}
+					
+					/* Add comment class */
+					if ( isset( $contentItemClass::$commentClass ) and $commentClass = $contentItemClass::$commentClass )
+					{
+						$_object_classes[ '-' . str_replace( '\\', '-', $commentClass ) ] = ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) . ' Comment' : '' ) . ' ( ' . $commentClass . ' )';
+						
+						if ( $hasNode )
+						{
+							$object_classes_toggles[ '-' . str_replace( '\\', '-', $commentClass ) ] = array( 'containers-' . str_replace( '\\', '-', $nodeClass ) );						
+						}
+					}
+					
+					/* Add review class */
+					if ( isset( $contentItemClass::$reviewClass ) and $reviewClass = $contentItemClass::$reviewClass )
+					{
+						$_object_classes[ '-' . str_replace( '\\', '-', $reviewClass ) ] = ucwords( $lang->checkKeyExists( $contentItemClass::$title ) ? $lang->get( $contentItemClass::$title ) . ' Review' : '' ) . ' ( ' . $reviewClass . ' )';
+						
+						if ( $hasNode )
+						{
+							$object_classes_toggles[ '-' . str_replace( '\\', '-', $reviewClass ) ] = array( 'containers-' . str_replace( '\\', '-', $nodeClass ) );						
+						}
+					}
+					
 				}
 			}
 			
