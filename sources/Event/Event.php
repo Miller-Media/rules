@@ -59,6 +59,11 @@ class _Event
 	public $placeholder = FALSE;
 	
 	/**
+	 * API Response Params
+	 */
+	public $apiResponse = array();
+	
+	/**
 	 * Event Loader
 	 * 
 	 * @param 	string	$app		App that defines the action
