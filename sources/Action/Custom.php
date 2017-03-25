@@ -155,6 +155,40 @@ class _Custom extends \IPS\Node\Model
 	}
 	
 	/**
+	 * Trigger this rule with arguments
+	 *
+	 * @param	array		$args			A keyed array of arguments
+	 * @return	void
+	 */
+	public function trigger( $args )
+	{
+		$arguments = array();
+		foreach( $this->children() as $argument )
+		{
+			if ( isset( $args[ $argument->varname ] ) )
+			{
+				$arguments[] = $args[ $argument->varname ];
+			}
+			else
+			{
+				$arguments[] = NULL;
+			}
+		}
+		
+		call_user_func_array( array( $this->event(), 'trigger' ), $arguments );
+	}
+	
+	/**
+	 * Get Event
+	 *
+	 * @return	\IPS\rules\Event
+	 */
+	public function event()
+	{
+		return \IPS\rules\Event::load( 'rules', 'CustomActions', 'custom_action_' . $this->key );
+	}
+	
+	/**
 	 * [Node] Get buttons to display in tree
 	 * Example code explains return value
 	 *
@@ -203,9 +237,13 @@ class _Custom extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
+		$self = $this;
+		
 		$form->add( new \IPS\Helpers\Form\Text( 'custom_action_title', $this->title, TRUE ) );
 		$form->add( new \IPS\Helpers\Form\TextArea( 'custom_action_description', $this->description, FALSE ) );	
-
+		$form->add( new \IPS\Helpers\Form\YesNo( 'custom_action_enable_api', $this->enable_api, FALSE, array( 'togglesOn' => array( 'custom_action_api_methods' ) ), NULL, NULL, NULL, 'custom_action_enable_api' ) );
+		$form->add( new \IPS\Helpers\Form\CheckboxSet( 'custom_action_api_methods', $this->api_methods ? explode(',', $this->api_methods ) : array(), TRUE, array( 'options' => array( 'GET' => 'GET', 'POST' => 'POST', 'PUT' => 'PUT', 'DELETE' => 'DELETE' ) ), NULL, NULL, NULL, 'custom_action_api_methods' ) );
+		
 		parent::form( $form );
 	}
 	
@@ -222,6 +260,7 @@ class _Custom extends \IPS\Node\Model
 	 */
 	public function saveForm( $values )
 	{
+		$values[ 'custom_action_api_methods' ] = implode( ',', $values[ 'custom_action_api_methods' ] );
 		parent::saveForm( $values );
 	}
 	
