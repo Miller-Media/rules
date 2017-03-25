@@ -1448,7 +1448,7 @@ class _Content
 										$form->add( new \IPS\Helpers\Form\Codemirror( 'rules_Content_created_handler', isset( $values[ 'rules_Content_created_handler' ] ) ? $values[ 'rules_Content_created_handler' ] : "//<?php\n\n/* custom processing of \$createdContent... */\n\n", FALSE, array( 'mode' => 'php' ) ) );
 									},
 								),
-								'callback' => function( $item, $author, $content, $values ) use ( $contentItemClass, $self )
+								'callback' => function( $item, $author, $content, $values, $arg_map ) use ( $contentItemClass, $self )
 								{								
 									if ( ! ( $item instanceof \IPS\Content\Item ) )
 									{
@@ -1474,7 +1474,7 @@ class _Content
 									/* Custom PHP Code Handler */
 									if ( $values[ 'rules_Content_use_created_handler' ] )
 									{
-										$arg_map[ 'createdContent' ] = $item;
+										$arg_map[ 'createdContent' ] = $comment;
 										$self->evaluate( $values[ 'rules_Content_created_handler' ], $arg_map );
 									}
 								
