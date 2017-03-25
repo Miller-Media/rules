@@ -27,6 +27,44 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	 * @brief 	Flag for if rules data has been updated
 	 */
 	public $rulesDataChanged = FALSE;
+	
+	/**
+	 * Load a record by a rules key
+	 *
+	 * @param	string			$key			The rules key to load by
+	 * @param	string|int		$value			The value to lookup
+	 * @param	bool			$returnArray	If TRUE, all records matching the value will be returned in an array
+	 * @return	object|ActiveRecordIterator|NULL
+	 * @throws	InvalidArgumentException
+	 */
+	public static function loadByRulesKey( $key, $value, $returnArray=FALSE )
+	{
+		$class = get_called_class();
+		
+		if ( ! $class::rulesKeyExists( $key ) )
+		{
+			throw new \InvalidArgumentException;
+		}
+	
+		if ( $returnArray )
+		{
+			$ids = iterator_to_array( \IPS\Db::i()->select( 'entity_id', \IPS\rules\Data::getTableName( $class ), array( 'data_' . $key . '=?', $value ) ) );
+			if ( ! empty( $ids ) )
+			{
+				return \IPS\Patterns\ActiveRecordIterator( \IPS\Db::i()->select( '*', static::$databaseTable, array( \IPS\Db::i()->in( static::$databasePrefix . static::$databaseColumnId, $ids ) ) ), $class );
+			}
+			return array();
+		}
+		
+		try
+		{
+			$id = \IPS\Db::i()->select( 'entity_id', \IPS\rules\Data::getTableName( $class ), array( 'data_' . $key . '=?', $value ) )->first();
+			return $class::load( $id );
+		}
+		catch( \Exception $e ) { }
+		
+		return NULL;
+	}
 
 	/**
 	 * Save Changed Columns
@@ -61,6 +99,38 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	}
 
 	/**
+	 * [ActiveRecord] Duplicate
+	 *
+	 * @return	void
+	 */
+	public function __clone()
+	{
+		if( $this->skipCloneDuplication === TRUE )
+		{
+			return;
+		}
+		
+		$primaryKey = static::$databaseColumnId;
+		$old_id = $this->$primaryKey;
+		
+		try
+		{
+			$old_record = static::load( $old_id );
+		}
+		catch( \Exception $e )
+		{
+			$old_record = NULL;
+		}
+		
+		parent::__clone();
+		
+		if ( $old_record instanceof \IPS\Patterns\ActiveRecord ) 
+		{
+			\IPS\rules\Event::load( 'rules', 'System', 'record_copied' )->trigger( $old_record, $this );
+		}
+	}
+	
+	/**
 	 * [ActiveRecord] Delete Record
 	 *
 	 * @return	void
@@ -70,7 +140,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		$result = call_user_func_array( 'parent::delete', func_get_args() );
 		\IPS\rules\Event::load( 'rules', 'System', 'record_deleted' )->trigger( $this );
 		
-		if ( $this->rulesTableExists() )
+		if ( $this::rulesTableExists() )
 		{
 			$idField = $this::$databaseColumnId;
 			\IPS\Db::i()->delete( \IPS\rules\Data::getTableName( get_class( $this ) ), array( 'entity_id=?', $this->$idField ) );
@@ -172,7 +242,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 			$where = array( 'data_class=?', $data_class );
 		}
 		
-		if ( $this->rulesTableExists() and $data = $this->getRulesDataRaw() )
+		if ( $this::rulesTableExists() and $data = $this->getRulesDataRaw() )
 		{		
 			foreach ( \IPS\rules\Data::roots( NULL, NULL, array( $where ) ) as $data_field )
 			{
@@ -207,6 +277,13 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							isset( $this::$containerNodeClass ) and 
 							$nodeClass = $this::$containerNodeClass 
 						)
+						or
+						/* Content Comment/Review */
+						(
+							$this instanceof \IPS\Content\Comment and 
+							$contentItemClass = $this::$itemClass and
+							$nodeClass = $contentItemClass::$containerNodeClass
+						)
 					)
 					{
 						$configuration = json_decode( $data_field->configuration, TRUE ) ?: array();
@@ -225,6 +302,17 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 							else if ( $this instanceof \IPS\Node\Model )
 							{
 								$node_id = $this->_id;
+							}
+							else if ( $this instanceof \IPS\Content\Comment )
+							{
+								try
+								{
+									if ( $item = $this->item() and $node = $item->containerWrapper() )
+									{
+										$node_id = $node->_id;
+									}
+								}
+								catch( \Exception $e ) {}
 							}
 							
 							if ( ! in_array( $node_id, $configuration[ $containers ] ) )
@@ -399,16 +487,16 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 		/**
 		 * Check if we can load rules data for this key
 		 */
-		if ( $this->rulesTableExists() )
+		if ( $this::rulesTableExists() )
 		{
 			/* Use 'r_' prefix to get rules data, bypassing permission checks */
-			if ( mb_substr( $key, 0, 2 ) == 'r_' and $this->rulesKeyExists( mb_substr( $key, 2 ) ) )
+			if ( mb_substr( $key, 0, 2 ) == 'r_' and $this::rulesKeyExists( mb_substr( $key, 2 ) ) )
 			{
 				return $this->getRulesData( mb_substr( $key, 2 ) );
 			}
 			
 			/* Get rules data with a permission check */
-			if ( $this->rulesKeyExists( $key ) )
+			if ( $this::rulesKeyExists( $key ) )
 			{
 				return $this->getRulesDataWithPermission( $key );
 			}
@@ -455,7 +543,7 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 			return NULL;
 		}
 		
-		if ( $this->rulesTableExists() )
+		if ( $this::rulesTableExists() )
 		{
 			if ( \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key ) )
 			{
@@ -700,10 +788,10 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	 *
 	 * @return	bool
 	 */
-	public function rulesTableExists()
+	public static function rulesTableExists()
 	{
 		static $tableExists = array();
-		$table_name = \IPS\rules\Data::getTableName( get_class( $this ) );
+		$table_name = \IPS\rules\Data::getTableName( get_called_class() );
 		
 		if ( ! isset ( $tableExists[ $table_name ] ) )
 		{
@@ -724,14 +812,16 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 	 * @param 	string		$key		The key to check
 	 * @return	bool
 	 */
-	public function rulesKeyExists( $key )
-	{		
-		if ( isset( static::$keyExists[ get_class( $this ) ][ $key ] ) )
+	public static function rulesKeyExists( $key )
+	{
+		$class = get_called_class();
+		
+		if ( isset( static::$keyExists[ get_called_class() ][ $key ] ) )
 		{
-			return static::$keyExists[ get_class( $this ) ][ $key ];
+			return static::$keyExists[ get_called_class() ][ $key ];
 		}
 
-		return static::$keyExists[ get_class( $this ) ][ $key ] = ( $this->rulesTableExists() and \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( get_class( $this ) ), 'data_' . $key ) );
+		return static::$keyExists[ $class ][ $key ] = ( $class::rulesTableExists() and \IPS\Db::i()->checkForColumn( \IPS\rules\Data::getTableName( $class ), 'data_' . $key ) );
 	}
 	
 	/**
