@@ -44,6 +44,14 @@ class _System
 					'new' 		=> array( 'argtype' => 'bool' ),
 				),		
 			),
+			'record_copied' => array
+			( 
+				'arguments' => array
+				( 
+					'old_record' => array( 'argtype' => 'object', 'class' => '\IPS\Patterns\ActiveRecord' ),
+					'new_record' => array( 'argtype' => 'object', 'class' => '\IPS\Patterns\ActiveRecord' ),
+				),		
+			),
 			'record_deleted' => array
 			( 
 				'arguments' => array
@@ -532,6 +540,47 @@ class _System
 	{
 		$actions = array
 		(
+			'set_api_response' => array
+			(
+				'callback' => array( $this, 'setApiResponse' ),
+				'configuration' => array
+				(
+					'form' => function( &$form, $values, $operation )
+					{
+						$response_types = array(
+							'int' => 'int',
+							'string' => 'string',
+							'float' => 'float',
+							'datetime' => 'datetime',
+							'bool' => 'bool',
+							'object' => 'object',
+						);				
+					
+						$form->add( new \IPS\Helpers\Form\Text( 'rules_api_response_key', $values[ 'rules_api_response_key' ], TRUE, array(), NULL, NULL, NULL, 'rules_api_response_key' ) );
+						$form->add( new \IPS\Helpers\Form\Text( 'rules_api_response_description', $values[ 'rules_api_response_description' ], FALSE, array(), NULL, NULL, NULL, 'rules_api_response_description' ) );
+						$form->add( new \IPS\Helpers\Form\Select( 'rules_api_response_type', $values[ 'rules_api_response_type' ], TRUE, array( 'options' => $response_types ) ) );
+					},
+				),
+				'arguments' => array
+				(
+					'value' => array
+					( 
+						'argtypes' => array( 'mixed' ),
+						'configuration' => array
+						(
+							'form' => function( $form, $values )
+							{
+								$form->add( new \IPS\Helpers\Form\Text( 'rules_System_api_response_value', isset( $values[ 'rules_System_api_response_value' ] ) ? $values[ 'rules_System_api_response_value' ] : NULL, TRUE, array(), NULL, NULL, NULL, 'rules_System_api_response_value' ) );
+								return array( 'rules_System_api_response_value' );
+							},
+							'getArg' => function( $values )
+							{
+								return $values[ 'rules_System_api_response_value' ];
+							},
+						),
+					),
+				),
+			),
 			'send_email' => array
 			(
 				'callback' 	=> array( $this, 'sendEmail' ),	
@@ -878,6 +927,21 @@ class _System
 	
 	
 	/*** ACTIONS ***/
+	
+	/**
+	 * Set API Response Value
+	 */
+	public function setApiResponse( $value, $values, $arg_map, $action )
+	{
+		$response_key = $values[ 'rules_api_response_key' ];
+		if ( ! $response_key ) 
+		{
+			return "no response key to set";
+		}
+		
+		$action->event()->apiResponse[ $response_key ] = $value;
+		return "api response key set: " . $response_key;
+	}
 	
 	/**
 	 * Send Email Callback
