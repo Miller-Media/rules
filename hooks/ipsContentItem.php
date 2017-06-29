@@ -116,7 +116,21 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 	 */
 	public static function formElements( $item=NULL, \IPS\Node\Model $container=NULL )
 	{
-		return array_merge( parent::formElements( $item, $container ), static::rulesFormElements( $item, $container ) );
+		$formElements = parent::formElements( $item, $container );
+		$rulesFormElements = static::rulesFormElements( $item, $container );
+		
+		$pollPosition = array_search( 'poll', array_keys( $formElements ) );
+		
+		if ( $pollPosition !== FALSE )
+		{
+			$formElements = array_merge( array_slice( $formElements, 0, $pollPosition ), $rulesFormElements, array_slice( $formElements, $pollPosition ) );
+		}
+		else 
+		{
+			$formElements = array_merge( $formElements, $rulesFormElements );
+		}
+		
+		return $formElements;
 	}
 	
 	/**
