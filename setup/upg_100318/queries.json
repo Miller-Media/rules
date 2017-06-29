@@ -1,0 +1,69 @@
+{
+    "1": {
+        "method": "addColumn",
+        "params": [
+            "rules_custom_actions",
+            {
+                "name": "custom_action_enable_api",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "2": {
+        "method": "addColumn",
+        "params": [
+            "rules_custom_actions",
+            {
+                "name": "custom_action_api_methods",
+                "type": "VARCHAR",
+                "length": 32,
+                "decimals": null,
+                "values": null,
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "3": {
+        "method": "addColumn",
+        "params": [
+            "rules_custom_actions",
+            {
+                "name": "custom_action_endpoint_alias",
+                "type": "VARCHAR",
+                "length": 56,
+                "decimals": null,
+                "values": null,
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "4": {
+        "method": "dropColumn",
+        "params": [
+            "rules_custom_actions",
+            "custom_action_endpoint_alias"
+        ]
+    }
+}

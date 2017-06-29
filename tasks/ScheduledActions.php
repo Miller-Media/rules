@@ -48,32 +48,12 @@ class _ScheduledActions extends \IPS\Task
 		/* Get rules */
 		$this->rules = \IPS\Application::load( 'rules' );
 		
-		foreach( $this->rules->scheduledActions( $this->priority ) as $action )
+		foreach( $this->rules->scheduledActions() as $action )
 		{
 			$action->execute();
 		}		
 	}
 	
-	/**
-	 * Priority interval
-	 */
-	public function get_priority()
-	{
-		if ( ! \IPS\IN_DEV )
-		{
-			try
-			{
-				return ( ( \IPS\Data\Store::i()->rpriority < time() - $this->rules->interval ) and \IPS\Data\Store::i()->rpriority = time() );
-			}
-			catch( \OutOfRangeException $e )
-			{
-				return !!( \IPS\Data\Store::i()->rpriority = time() );
-			}
-		}
-		
-		return FALSE;
-	}
-
 	/**
 	 * Cleanup
 	 *

