@@ -70,5 +70,13 @@
     "ipsApp": {
         "type": "C",
         "class": "\\IPS\\core\\tasks\\updatecheck"
+    },
+    "ipsApiController": {
+        "type": "C",
+        "class": "\\IPS\\Api\\Controller"
+    },
+    "ipsDispatcherApi": {
+        "type": "C",
+        "class": "\\IPS\\Dispatcher\\Api"
     }
 }

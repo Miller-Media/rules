@@ -3,6 +3,7 @@
 $lang = array(
 
 	'__app_rules'				=> "Rules",
+	'__api_rules_actions'		=> "Custom Actions",
 	'menu__rules_rules'			=> "Rules",
 	'menu__rules_rules_rulesets'		=> "Manage Rules",
 	'menu__rules_logs'			=> "Rules Logs",
@@ -16,6 +17,8 @@ $lang = array(
 	'ext__Conversions'			=> "Global Arguments and Object Conversion Mapping",
 	'module__rules_system'			=> "Rules System",
 	'module__rules_logs'			=> "Custom Logs",
+	'rules_api_response_key'		=> "Response Key",
+	'rules_api_response_key_desc'	=> "Enter the response parameter key to set the value for",
 	
 	'notifications__rules_Notification'	=> "Rules Notifications",
 	'notifications__rules_notifications'	=> "Automated Notifications",
@@ -118,6 +121,10 @@ $lang = array(
 	'custom_action_arguments'		=> "Action Arguments",
 	'custom_action_title'			=> "Custom Action Name",
 	'custom_action_description'		=> "Description",
+	'custom_action_enable_api'		=> "Enable API Endpoint",
+	'custom_action_enable_api_desc' => "When enabled, this custom action can be triggered from an api endpoint. Grant access to it using your REST API settings.",
+	'custom_action_api_methods'		=> "API Endpoint Methods",
+	'custom_action_api_methods_desc'=> "Select the methods that can be used to interact with the endpoint.",
 	'custom_actions_add_child'		=> "Add Action Argument",
 	'rules_tokens_description'		=> "You can type the names of replacement tokens (including the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.<br><i class='fa fa-arrow-right'></i> Alternative token format: Replace the brackets with tildes ( ~ ) ( Example: ~token:name~ ) for use in places where brackets are problematic (such as urls).",
 	'custom_logs'				=> "Custom Logs",
@@ -308,6 +315,10 @@ $lang = array(
 	
 	// Conditions
 	'condition_title'			=> "Condition Name",
+	'condition_enable_recursion' => "Disable Recursion Protection",
+	'condition_enable_recursion_desc'  => "By default, conditions are protected from the possiblity of infinite loops by recursion protection. This option turns that protection off for edge cases where it is needed.",
+	'action_enable_recursion'  => "Disable Recursion Protection",
+	'action_enable_recursion_desc'  => "By default, actions are protected from the possiblity of infinite loops by recursion protection. This option turns that protection off for edge cases where it is needed.",
 	
 	// Operations ( Conditions / Actions )
 	'actions_title'				=> "Action Title",
@@ -505,6 +516,10 @@ $lang = array(
 	'rules_System_event_record_updated_changed'		=> "An array of the values which have changed",
 	'rules_System_event_record_updated_new'			=> "A boolean value indicating if the record is new",
 	
+	'rules_System_event_record_copied'			=> "ActiveRecord: Database record copied",
+	'rules_System_event_record_copied_old_record'		=> "The record that was copied",
+	'rules_System_event_record_copied_new_record'		=> "The new copy of the record",
+	
 	'rules_System_event_record_deleted'			=> "ActiveRecord: Database record deleted",
 	'rules_System_event_record_deleted_record'		=> "Record that was deleted",
 	
@@ -562,6 +577,12 @@ $lang = array(
 	'rules_System_schedule_key_desc'			=> "Enter a keyphrase that you want to check has an existing scheduled action.",
 	
 	/*** SYSTEM: Actions ***/
+	'rules_System_actions_set_api_response'		=> "Set an API Response parameter",
+	'rules_System_actions_set_api_response_value' => "Parameter Value",
+	'rules_System_actions_set_api_response_value_desc' => "Define the value of the response parameter",
+	'rules_api_response_description'			=> "The response parameter description",
+	'rules_api_response_type'					=> "The response value type",
+	
 	'rules_System_actions_send_email'			=> "Send an email",
 	'rules_System_actions_send_email_recipients'		=> "Recipients",
 	'rules_System_actions_send_email_recipients_desc'	=> "Members to send the email to",

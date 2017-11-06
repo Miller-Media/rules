@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100316">
+ <app key="rules" version="100400">
   <word key="__app_rules" js="0">Rules</word>
+  <word key="__api_rules_actions" js="0">Custom Actions</word>
   <word key="menu__rules_rules" js="0">Rules</word>
   <word key="menu__rules_rules_rulesets" js="0">Manage Rules</word>
   <word key="menu__rules_logs" js="0">Rules Logs</word>
@@ -15,6 +16,8 @@
   <word key="ext__Conversions" js="0">Global Arguments and Object Conversion Mapping</word>
   <word key="module__rules_system" js="0">Rules System</word>
   <word key="module__rules_logs" js="0">Custom Logs</word>
+  <word key="rules_api_response_key" js="0">Response Key</word>
+  <word key="rules_api_response_key_desc" js="0">Enter the response parameter key to set the value for</word>
   <word key="notifications__rules_Notification" js="0">Rules Notifications</word>
   <word key="notifications__rules_notifications" js="0">Automated Notifications</word>
   <word key="member__rules_RulesMember" js="0">Rules Data</word>
@@ -104,6 +107,10 @@
   <word key="custom_action_arguments" js="0">Action Arguments</word>
   <word key="custom_action_title" js="0">Custom Action Name</word>
   <word key="custom_action_description" js="0">Description</word>
+  <word key="custom_action_enable_api" js="0">Enable API Endpoint</word>
+  <word key="custom_action_enable_api_desc" js="0">When enabled, this custom action can be triggered from an api endpoint. Grant access to it using your REST API settings.</word>
+  <word key="custom_action_api_methods" js="0">API Endpoint Methods</word>
+  <word key="custom_action_api_methods_desc" js="0">Select the methods that can be used to interact with the endpoint.</word>
   <word key="custom_actions_add_child" js="0">Add Action Argument</word>
   <word key="rules_tokens_description" js="0"><![CDATA[You can type the names of replacement tokens (including the brackets) into text entry fields on this form and they will be replaced by their associated data when the rule is executed.<br><i class='fa fa-arrow-right'></i> Alternative token format: Replace the brackets with tildes ( ~ ) ( Example: ~token:name~ ) for use in places where brackets are problematic (such as urls).]]></word>
   <word key="custom_logs" js="0">Custom Logs</word>
@@ -278,6 +285,10 @@
   <word key="rules_choose_items" js="0">Type Item Names</word>
   <word key="rules_choose_items2" js="0">Type Item Names</word>
   <word key="condition_title" js="0">Condition Name</word>
+  <word key="condition_enable_recursion" js="0">Disable Recursion Protection</word>
+  <word key="condition_enable_recursion_desc" js="0">By default, conditions are protected from the possiblity of infinite loops by recursion protection. This option turns that protection off for edge cases where it is needed.</word>
+  <word key="action_enable_recursion" js="0">Disable Recursion Protection</word>
+  <word key="action_enable_recursion_desc" js="0">By default, actions are protected from the possiblity of infinite loops by recursion protection. This option turns that protection off for edge cases where it is needed.</word>
   <word key="actions_title" js="0">Action Title</word>
   <word key="rule_actions_selection" js="0">Action to perform:</word>
   <word key="conditions_title" js="0">Condition Title</word>
@@ -417,6 +428,9 @@
   <word key="rules_System_event_record_updated_record" js="0">Record that was created/updated</word>
   <word key="rules_System_event_record_updated_changed" js="0">An array of the values which have changed</word>
   <word key="rules_System_event_record_updated_new" js="0">A boolean value indicating if the record is new</word>
+  <word key="rules_System_event_record_copied" js="0">ActiveRecord: Database record copied</word>
+  <word key="rules_System_event_record_copied_old_record" js="0">The record that was copied</word>
+  <word key="rules_System_event_record_copied_new_record" js="0">The new copy of the record</word>
   <word key="rules_System_event_record_deleted" js="0">ActiveRecord: Database record deleted</word>
   <word key="rules_System_event_record_deleted_record" js="0">Record that was deleted</word>
   <word key="rules_System_event_browser_output" js="0">Output is being sent to browser</word>
@@ -460,6 +474,11 @@
   <word key="rules_System_schedule_mode" js="0">Keyphrase Matching</word>
   <word key="rules_System_schedule_key" js="0">Keyphrase</word>
   <word key="rules_System_schedule_key_desc" js="0">Enter a keyphrase that you want to check has an existing scheduled action.</word>
+  <word key="rules_System_actions_set_api_response" js="0">Set an API Response parameter</word>
+  <word key="rules_System_actions_set_api_response_value" js="0">Parameter Value</word>
+  <word key="rules_System_actions_set_api_response_value_desc" js="0">Define the value of the response parameter</word>
+  <word key="rules_api_response_description" js="0">The response parameter description</word>
+  <word key="rules_api_response_type" js="0">The response value type</word>
   <word key="rules_System_actions_send_email" js="0">Send an email</word>
   <word key="rules_System_actions_send_email_recipients" js="0">Recipients</word>
   <word key="rules_System_actions_send_email_recipients_desc" js="0">Members to send the email to</word>
