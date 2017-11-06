@@ -345,6 +345,17 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 										$data_field_data = new \IPS\Http\Url( $data_field_data );
 										break;
 									
+									case '-IPS-Member':
+									
+										try {
+											$data_field_data = $data_field_data ? \IPS\Member::load( $data_field_data ) : NULL;
+										}
+										catch( \Exception $e )
+										{
+											$data_field_data = NULL;
+										}
+										break;
+										
 									default:
 									
 										try
@@ -390,6 +401,25 @@ abstract class rules_hook_ipsPatternsActiveRecord extends _HOOK_CLASS_
 											$_data_field_data[ $_id ] = \IPS\DateTime::ts( $_id );
 											break;
 										
+										case '-IPS-Http-Url':
+										
+											try
+											{
+												$_data_field_data[] = new \IPS\Http\Url( $_id );
+											}
+											catch( \Exception $e ) {}
+											break;
+										
+										case '-IPS-Member':
+										
+											if ( is_numeric( $_id ) ) {
+												try {
+													$_data_field_data[ $_id ] = \IPS\Member::load( $_id );
+												}
+												catch( \Exception $e ) {}
+											}
+											break;
+											
 										default:
 										
 											try
