@@ -1558,7 +1558,7 @@ class _rulesets extends \IPS\Node\Controller
 		$action->schedule_months 	= (int)		$actionXML[ 'schedule_months' ];
 		$action->schedule_date		= (int)		$actionXML[ 'schedule_date' ];
 		$action->schedule_key		= (string)	$actionXML[ 'schedule_key' ];
-		$action->enable_recursion   = (string)  $actionXML[ 'recursion' ];
+		$action->enable_recursion   = (int)  $actionXML[ 'recursion' ];
 		$action->footprint		= (string)	$actionXML[ 'footprint' ];
 		$action->else			= (int)		$actionXML[ 'else' ];
 		
