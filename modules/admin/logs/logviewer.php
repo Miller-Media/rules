@@ -40,7 +40,11 @@ class _logviewer extends \IPS\Dispatcher\Controller
 		
 		if ( ! \IPS\Request::i()->isAjax() )
 		{
-			\IPS\Output::i()->redirect( $entity->url()->setQueryString( array( 'log' => $log->id, 'logtab' => $log->id, 'logsortby' => \IPS\Request::i()->sortby, 'logsortdir' => \IPS\Request::i()->sortdirection, 'logpage' => \IPS\Request::i()->page ) ) );
+			$url = $entity->url();
+			if ( $entity instanceof \IPS\Member ) {
+				$url = $url->setQueryString( array( 'tab' => 'node_rules_ProfileLogs' ) );
+			}
+			\IPS\Output::i()->redirect( $url->setQueryString( array( 'log' => $log->id, 'logtab' => $log->id, 'logsortby' => \IPS\Request::i()->sortby, 'logsortdir' => \IPS\Request::i()->sortdirection, 'logpage' => \IPS\Request::i()->page ) ) );
 		}
 	}
 
