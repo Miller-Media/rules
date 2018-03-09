@@ -1,4 +1,5 @@
 <ips:template parameters="$table, $headers, $rows, $quickSearch" />
 <div data-controller="rules.front.ui.table">
-	{template="table" app="core" group="tables" location="admin" params="$table, $headers, $rows, $quickSearch"}
+    {{$table = str_replace( 'core.global.core.table', 'core.global.core.genericTable', \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' )->table( $table, $headers, $rows, $quickSearch ) );}}
+	{$table|raw}
 </div>

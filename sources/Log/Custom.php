@@ -774,15 +774,14 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 		 */
 		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' )
 		{
-			$controllerUrl = \IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}" );
-			
-			if ( $entity )
-			{
+			$controllerUrl = \IPS\Http\Url::internal( "app=rules&module=logs&controller=logviewer&log={$this->id}" )
+				->setQueryString( array( 'sortby' => $sortBy, 'sortdirection' => $sortDirection, 'page' => $page ) );
+
+			if ( $entity ) {
 				$controllerUrl = $controllerUrl->setQueryString( 'entity', $entity->activeid );
 			}
 			
-			if ( ! static::$tableControllerLoaded )
-			{
+			if ( ! static::$tableControllerLoaded ) {
 				\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_ui.js', 'rules', 'front' ) );
 				static::$tableControllerLoaded = TRUE;
 			}
@@ -809,6 +808,9 @@ class _Custom extends \IPS\Node\Model implements \IPS\Node\Permissions
 			$table->include[] = 'message';
 			$table->noSort = array( 'message', 'entity_id' );
 		}
+		
+		/* If we are setting log params using our proprietary 'logsortby' etc, then the base \IPS\Helpers\Table class overwrites our base url */
+		$table->baseUrl = $controllerUrl;
 		
 		$table->resortKey 	= 'listResort_log' . $this->id;
 		$table->tableTemplate 	= array( \IPS\Theme::i()->getTemplate( 'components', 'rules', 'front' ), 'logTable' );
