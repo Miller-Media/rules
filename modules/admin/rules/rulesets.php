@@ -641,6 +641,7 @@ class _rulesets extends \IPS\Node\Controller
 		$conditions->sortBy = 'id';
 		$conditions->sortDirection = 'asc';
 		$conditions->noSort = array( 'op_id', 'message', 'result' );
+		$conditions->limit = 1000;
 		
 		$actions		= new \IPS\Helpers\Table\Db( 'rules_logs', $this->url, array( 'thread=? AND type=? AND rule_id=?', $log[ 'thread' ], 'IPS\rules\Action', $log[ 'rule_id' ] ) );
 		$actions->include 	= array( 'op_id', 'message', 'result', 'time' );
@@ -682,6 +683,7 @@ class _rulesets extends \IPS\Node\Controller
 		$actions->sortBy = 'id';
 		$actions->sortDirection = 'asc';
 		$actions->noSort = array( 'op_id', 'message', 'result' );
+		$actions->limit = 1000;
 		
 		$subrules		= new \IPS\Helpers\Table\Db( 'rules_logs', $this->url, array( 'thread=? AND op_id=0 AND rule_parent=?', $log[ 'thread' ], $log[ 'rule_id' ] ) );
 		$subrules->include 	= array( 'rule_id', 'message', 'result' );
@@ -739,7 +741,8 @@ class _rulesets extends \IPS\Node\Controller
 			return $buttons;
 		};
 		$subrules->noSort = array( 'rule_id', 'message', 'result' );
-				
+		$subrules->limit = 1000;
+		
 		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'views' )->logdetails( $log, $event, $rule, $conditions, $actions, $subrules );
 	}
 	
