@@ -896,7 +896,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				
 				$field_type = 'FLOAT';
 				$field_length = 22;
-				$field_decimals = 2;
+				$field_decimals = 10;
 				break;
 
 			case 'array':
