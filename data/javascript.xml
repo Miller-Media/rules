@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <javascript app="rules">
- <file javascript_app="rules" javascript_location="admin" javascript_path="controllers/ui" javascript_name="ips.ui.chosen.js" javascript_type="controller" javascript_version="100402" javascript_position="1000050"><![CDATA[/**
+ <file javascript_app="rules" javascript_location="admin" javascript_path="controllers/ui" javascript_name="ips.ui.chosen.js" javascript_type="controller" javascript_version="100403" javascript_position="1000050"><![CDATA[/**
  * Rules Chosen Controller
  * 
  * Author: Kevin Carwile
@@ -76,7 +76,7 @@
 		
 	});
 }(jQuery, _));]]></file>
- <file javascript_app="rules" javascript_location="admin" javascript_path="controllers/ui" javascript_name="ips.ui.tokens.js" javascript_type="controller" javascript_version="100402" javascript_position="1000050">/**
+ <file javascript_app="rules" javascript_location="admin" javascript_path="controllers/ui" javascript_name="ips.ui.tokens.js" javascript_type="controller" javascript_version="100403" javascript_position="1000050">/**
  * Rules Chosen Controller
  * 
  * Author: Kevin Carwile
@@ -99,7 +99,7 @@
 		
 	});
 }(jQuery, _));</file>
- <file javascript_app="rules" javascript_location="front" javascript_path="controllers/ui" javascript_name="ips.ui.table.js" javascript_type="controller" javascript_version="100402" javascript_position="1000050">/**
+ <file javascript_app="rules" javascript_location="front" javascript_path="controllers/ui" javascript_name="ips.ui.table.js" javascript_type="controller" javascript_version="100403" javascript_position="1000050">/**
  * Rules Table Controller
  * 
  * Author: Kevin Carwile

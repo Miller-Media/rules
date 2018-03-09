@@ -62,7 +62,8 @@
 	</div>
 </div>]]></template>
  <template template_group="components" template_name="logTable" template_data="$table, $headers, $rows, $quickSearch" template_location="front" template_app="rules"><![CDATA[<div data-controller="rules.front.ui.table">
-	{template="table" app="core" group="tables" location="admin" params="$table, $headers, $rows, $quickSearch"}
+    {{$table = str_replace( 'core.global.core.table', 'core.global.core.genericTable', \IPS\Theme::i()->getTemplate( 'tables', 'core', 'admin' )->table( $table, $headers, $rows, $quickSearch ) );}}
+	{$table|raw}
 </div>]]></template>
  <template template_group="components" template_name="memberDataDisplay" template_data="$member" template_location="front" template_app="rules"><![CDATA[
 {{if $dataFields = $member->rulesDataFields()}}
