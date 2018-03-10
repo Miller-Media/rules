@@ -2147,9 +2147,9 @@ class _Content
 			throw new \UnexpectedValueException( 'invalid new author' );
 		}
 		
-		if ( $author = $content::$databaseColumnMap[ 'author' ] )
+		if ( $author_col = $content::$databaseColumnMap[ 'author' ] )
 		{
-			$content->$author = $author->member_id;
+			$content->$author_col = $author->member_id;
 			$content->save();
 			return 'author changed';
 		}
