@@ -295,7 +295,7 @@ class _Content
 		/**
 		 * App Content Reportable
 		 */
-		if ( in_array( 'IPS\Content\ReportCenter', class_implements( $contentClass ) ) )
+		if ( in_array( 'IPS\Content\Reportable', class_uses( $contentClass ) ) )
 		{
 			$this->buildEvent( $app_events, 'content_reported', $build_data );
 		}
