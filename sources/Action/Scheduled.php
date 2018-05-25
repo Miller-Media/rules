@@ -227,7 +227,8 @@ class _Scheduled extends \IPS\Patterns\ActiveRecord
 							$next_run = time() + ( 60 * 5 );
 							break;
 						}
-
+						
+						$next_run += $interval;
 					}
 					
 					$this->time = $next_run;
