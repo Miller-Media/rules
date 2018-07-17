@@ -323,7 +323,7 @@ class _Argument extends \IPS\Node\Model
 				}
 			}
 			
-			$object_classes[ $appname ] = $_object_classes;
+			$object_classes[ $appname ] = array_merge( ( isset( $object_classes[ $appname ] ) ? $object_classes[ $appname ] : [] ), $_object_classes );
 		}
 		
 		$form->add( new \IPS\Helpers\Form\Select( 'argument_type', $this->type, TRUE, array( 'options' => $argument_types, 'toggles' => array( 'object' => array( 'argument_class' ), 'array' => array( 'argument_class' ) ) ), NULL, $wrap_chosen_prefix, $wrap_chosen_suffix ) );
