@@ -1857,19 +1857,16 @@ class _Content
 		{
 			case 'add':
 			
-				$_tags = array_merge( (array) $content->tags(), (array) $tags );
-				$_tags = array_unique( $_tags );
+				$_tags = array_filter( array_unique( array_merge( (array) $content->tags(), array( 'prefix' => $content->prefix() ), (array) $tags ) ) );
 				$content->setTags( $_tags );
 				$status = "content tags added";
 				break;
 			
 			case 'remove':
 			
-				$_tags = $content->tags();
-				foreach ( (array) $tags as $tag )
-				{
-					if ( ( $i = array_search( $tag, $_tags ) ) !== FALSE )
-					{
+				$_tags = array_filter( array_unique( array_merge( (array) $content->tags(), array( 'prefix' => $content->prefix() ) ) ) );
+				foreach ( (array) $tags as $tag ) {
+					if ( ( $i = array_search( $tag, $_tags ) ) !== FALSE ) {
 						unset( $_tags[ $i ] );
 					}
 				}
