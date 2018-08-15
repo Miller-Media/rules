@@ -412,7 +412,7 @@ class _Data extends \IPS\Node\Model implements \IPS\Node\Permissions
 				}
 			}
 			
-			$object_classes[ $appname ] = $_object_classes;
+			$object_classes[ $appname ] = array_merge( ( isset( $object_classes[ $appname ] ) ? $object_classes[ $appname ] : [] ), $_object_classes );
 		}
 		
 		$data_classes = array
