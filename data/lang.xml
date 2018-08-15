@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="rules" version="100403">
+ <app key="rules" version="100405">
   <word key="__app_rules" js="0">Rules</word>
   <word key="__api_rules_actions" js="0">Custom Actions</word>
   <word key="menu__rules_rules" js="0">Rules</word>
