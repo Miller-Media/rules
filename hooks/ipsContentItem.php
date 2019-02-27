@@ -197,6 +197,16 @@ abstract class rules_hook_ipsContentItem extends _HOOK_CLASS_
 		parent::processForm( $values );
 		
 		/**
+		 * Support for IPS 4.4+ where they now assume that the content has not been saved in a parent method to 
+		 * perform their content creation correctly.
+		 *
+		 * @see: ./applications/core/sources/Statuses/Status.php : 421
+		 */
+		if ( $this instanceof \IPS\core\Statuses\Status and $this->_new ) {
+			return;
+		}
+		
+		/**
 		 * Make sure we have an ID
 		 */
 		$idField = static::$databaseColumnId;
